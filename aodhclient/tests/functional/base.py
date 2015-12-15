@@ -21,23 +21,23 @@ from tempest_lib.cli import base
 from tempest_lib import exceptions
 
 
-class GnocchiClient(object):
-    """Gnocchi Client for tempest-lib
+class AodhClient(object):
+    """Aodh Client for tempest-lib
 
     This client doesn't use any authentication system
     """
 
     def __init__(self):
-        self.cli_dir = os.environ.get('GNOCCHI_CLIENT_EXEC_DIR')
-        self.endpoint = os.environ.get('GNOCCHI_ENDPOINT')
+        self.cli_dir = os.environ.get('AODH_CLIENT_EXEC_DIR')
+        self.endpoint = os.environ.get('AODH_ENDPOINT')
         self.user_id = str(uuid.uuid4())
         self.project_id = str(uuid.uuid4())
 
-    def gnocchi(self, action, flags='', params='',
-                fail_ok=False, merge_stderr=False):
-        creds = ("--os-auth-plugin gnocchi-noauth "
+    def aodh(self, action, flags='', params='',
+             fail_ok=False, merge_stderr=False):
+        creds = ("--os-auth-plugin aodh-noauth "
                  "--user-id %s --project-id %s "
-                 "--gnocchi-endpoint %s") % (self.user_id,
+                 "--aodh-endpoint %s") % (self.user_id,
                                              self.project_id,
                                              self.endpoint)
 
@@ -45,10 +45,10 @@ class GnocchiClient(object):
 
         # FIXME(sileht): base.execute is broken in py3 in tempest-lib
         # see: https://review.openstack.org/#/c/218870/
-        # return base.execute("gnocchi", action, flags, params, fail_ok,
+        # return base.execute("aodh", action, flags, params, fail_ok,
         #                      merge_stderr, self.cli_dir)
 
-        cmd = "gnocchi"
+        cmd = "aodh"
 
         # from fixed tempestlib
         cmd = ' '.join([os.path.join(self.cli_dir, cmd),
@@ -74,26 +74,26 @@ class GnocchiClient(object):
 
 
 class ClientTestBase(base.ClientTestBase):
-    """Base class for gnocchiclient tests.
+    """Base class for aodhclient tests.
 
-    Establishes the gnocchi client and retrieves the essential environment
+    Establishes the aodhclient and retrieves the essential environment
     information.
     """
 
     def _get_clients(self):
-        return GnocchiClient()
+        return AodhClient()
 
-    def retry_gnocchi(self, retry, *args, **kwargs):
+    def retry_aodh(self, retry, *args, **kwargs):
         result = ""
         while not result.strip() and retry > 0:
-            result = self.gnocchi(*args, **kwargs)
+            result = self.aodh(*args, **kwargs)
             if not result:
                 time.sleep(1)
                 retry -= 1
         return result
 
-    def gnocchi(self, *args, **kwargs):
-        return self.clients.gnocchi(*args, **kwargs)
+    def aodh(self, *args, **kwargs):
+        return self.clients.aodh(*args, **kwargs)
 
     def details_multiple(self, output_lines, with_label=False):
         """Return list of dicts with item details from cli output tables.

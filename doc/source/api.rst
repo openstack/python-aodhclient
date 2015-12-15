@@ -1,19 +1,19 @@
-The :mod:`gnocchiclient` Python API
-===================================
+The :mod:`aodhclient` Python API
+================================
 
-.. module:: gnocchiclient
-   :synopsis: A client for the Gnocchi API.
+.. module:: aodhclient
+   :synopsis: A client for the Aodh API.
 
-.. currentmodule:: gnocchiclient
+.. currentmodule:: aodhclient
 
 Usage
 -----
 
-To use gnocchiclient in a project::
+To use aodhclient in a project::
 
-    >>> from gnocchiclient.v1 import client
-    >>> gnocchi = client.Client(...)
-    >>> gnocchi.resource.list("instance")
+    >>> from aodhclient.v1 import client
+    >>> aodh = client.Client(...)
+    >>> aodh.alarm.list("alarm")
 
 Reference
 ---------

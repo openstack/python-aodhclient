@@ -17,8 +17,8 @@ from keystoneauth1 import loading
 from keystoneauth1 import plugin
 
 
-class GnocchiNoAuthPlugin(plugin.BaseAuthPlugin):
-    """No authentication plugin for Gnocchi
+class AodhNoAuthPlugin(plugin.BaseAuthPlugin):
+    """No authentication plugin for Aodh
 
     This is a keystoneauth plugin that instead of
     doing authentication, it just fill the 'x-user-id'
@@ -48,7 +48,7 @@ class GnocchiNoAuthPlugin(plugin.BaseAuthPlugin):
         return self._endpoint
 
 
-class GnocchiOpt(loading.Opt):
+class AodhOpt(loading.Opt):
     @property
     def argparse_args(self):
         return ['--%s' % o.name for o in self._all_opts]
@@ -57,22 +57,22 @@ class GnocchiOpt(loading.Opt):
     def argparse_default(self):
         # select the first ENV that is not false-y or return None
         for o in self._all_opts:
-            v = os.environ.get('GNOCCHI_%s' % o.name.replace('-', '_').upper())
+            v = os.environ.get('AODH_%s' % o.name.replace('-', '_').upper())
             if v:
                 return v
         return self.default
 
 
-class GnocchiNoAuthLoader(loading.BaseLoader):
-    plugin_class = GnocchiNoAuthPlugin
+class AodhNoAuthLoader(loading.BaseLoader):
+    plugin_class = AodhNoAuthPlugin
 
     def get_options(self):
-        options = super(GnocchiNoAuthLoader, self).get_options()
+        options = super(AodhNoAuthLoader, self).get_options()
         options.extend([
-            GnocchiOpt('user-id', help='User ID', required=True),
-            GnocchiOpt('project-id', help='Project ID', required=True),
-            GnocchiOpt('roles', help='Roles', default="admin"),
-            GnocchiOpt('aodh-endpoint', help='Gnocchi endpoint',
-                       dest="endpoint", required=True),
+            AodhOpt('user-id', help='User ID', required=True),
+            AodhOpt('project-id', help='Project ID', required=True),
+            AodhOpt('roles', help='Roles', default="admin"),
+            AodhOpt('aodh-endpoint', help='Aodh endpoint',
+                    dest="endpoint", required=True),
         ])
         return options

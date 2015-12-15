@@ -14,7 +14,7 @@
 
 from oslotest import base
 
-from gnocchiclient import utils
+from aodhclient import utils
 
 
 class SearchQueryBuilderTest(base.BaseTestCase):

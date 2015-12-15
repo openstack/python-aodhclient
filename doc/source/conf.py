@@ -24,7 +24,7 @@ sys.path.insert(0, BASE_DIR)
 
 def gen_ref(ver, title, names):
     refdir = os.path.join(BASE_DIR, "ref")
-    pkg = "gnocchiclient"
+    pkg = "aodhclient"
     if ver:
         pkg = "%s.%s" % (pkg, ver)
         refdir = os.path.join(refdir, ver)
@@ -79,7 +79,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'gnocchiclient'
+project = u'aodhclient'
 copyright = u'2015, OpenStack Foundation'
 
 # If true, '()' will be appended to :func: etc. cross-reference text.

@@ -4,4 +4,4 @@ Installation
 
 At the command line::
 
-    $ pip install gnocchiclient
+    $ pip install aodhclient

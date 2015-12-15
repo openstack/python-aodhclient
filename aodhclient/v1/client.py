@@ -13,24 +13,24 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from gnocchiclient import client
-from gnocchiclient.v1 import archive_policy
-from gnocchiclient.v1 import archive_policy_rule
-from gnocchiclient.v1 import capabilities
-from gnocchiclient.v1 import metric
-from gnocchiclient.v1 import resource
-from gnocchiclient.v1 import status
+from aodhclient import client
+from aodhclient.v1 import archive_policy
+from aodhclient.v1 import archive_policy_rule
+from aodhclient.v1 import capabilities
+from aodhclient.v1 import metric
+from aodhclient.v1 import resource
+from aodhclient.v1 import status
 
 
 class Client(object):
-    """Client for the Gnocchi v1 API.
+    """Client for the Aodh v2 API.
 
     :param string session: session
     :type session: :py:class:`keystoneauth.adapter.Adapter`
     """
 
     def __init__(self, session=None, service_type='metric', **kwargs):
-        """Initialize a new client for the Gnocchi v1 API."""
+        """Initialize a new client for the Aodh v2 API."""
         self.api = client.SessionClient(session, service_type=service_type,
                                         **kwargs)
         self.resource = resource.ResourceManager(self)

@@ -35,7 +35,7 @@ from aodhclient.v1 import status_cli
 from aodhclient.version import __version__
 
 
-class GnocchiCommandManager(commandmanager.CommandManager):
+class AodhCommandManager(commandmanager.CommandManager):
     SHELL_COMMANDS = {
         "status": status_cli.CliStatusShow,
         "resource list": resource_cli.CliResourceList,
@@ -72,13 +72,13 @@ class GnocchiCommandManager(commandmanager.CommandManager):
             self.add_command(name, command_class)
 
 
-class GnocchiShell(app.App):
+class AodhShell(app.App):
     def __init__(self):
-        super(GnocchiShell, self).__init__(
-            description='Gnocchi command line client',
+        super(AodhShell, self).__init__(
+            description='Aodh command line client',
             # FIXME(sileht): get version from pbr
             version=__version__,
-            command_manager=GnocchiCommandManager(None),
+            command_manager=AodhCommandManager(None),
             deferred_help=True,
             )
 
@@ -95,7 +95,7 @@ class GnocchiShell(app.App):
         :param version: version number for the application
         :paramtype version: str
         """
-        parser = super(GnocchiShell, self).build_option_parser(description,
+        parser = super(AodhShell, self).build_option_parser(description,
                                                                version)
         # Global arguments, one day this should go to keystoneauth1
         parser.add_argument(
@@ -115,19 +115,19 @@ class GnocchiShell(app.App):
                  ' (Env: OS_INTERFACE)')
         parser.add_argument(
             '--aodh-api-version',
-            default=os.environ.get('GNOCCHI_API_VERSION', '1'),
-            help='Defaults to env[GNOCCHI_API_VERSION] or 1.')
+            default=os.environ.get('AODH_API_VERSION', '2'),
+            help='Defaults to env[AODH_API_VERSION] or 2.')
         loading.register_session_argparse_arguments(parser=parser)
         plugin = loading.register_auth_argparse_arguments(
             parser=parser, argv=sys.argv, default="password")
 
-        if not isinstance(plugin, noauth.GnocchiNoAuthLoader):
+        if not isinstance(plugin, noauth.AodhNoAuthLoader):
             parser.add_argument(
                 '--aodh-endpoint',
                 metavar='<endpoint>',
                 dest='endpoint',
-                default=os.environ.get('GNOCCHI_ENDPOINT'),
-                help='Gnocchi endpoint (Env: GNOCCHI_ENDPOINT)')
+                default=os.environ.get('AODH_ENDPOINT'),
+                help='Aodh endpoint (Env: AODH_ENDPOINT)')
 
         return parser
 
@@ -167,7 +167,7 @@ class GnocchiShell(app.App):
             # Set this here so cliff.app.configure_logging() can work
             self.options.verbose_level = 3
 
-        super(GnocchiShell, self).configure_logging()
+        super(AodhShell, self).configure_logging()
         root_logger = logging.getLogger('')
 
         # Set logging to the requested level
@@ -206,4 +206,4 @@ class GnocchiShell(app.App):
 def main(args=None):
     if args is None:
         args = sys.argv[1:]
-    return GnocchiShell().run(args)
+    return AodhShell().run(args)
