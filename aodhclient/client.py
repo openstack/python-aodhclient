@@ -13,11 +13,11 @@
 from keystoneauth1 import adapter
 from oslo_utils import importutils
 
-from gnocchiclient import exceptions
+from aodhclient import exceptions
 
 
 def Client(version, *args, **kwargs):
-    module = 'gnocchiclient.v%s.client' % version
+    module = 'aodhclient.v%s.client' % version
     module = importutils.import_module(module)
     client_class = getattr(module, 'Client')
     return client_class(*args, **kwargs)
@@ -27,7 +27,7 @@ class SessionClient(adapter.Adapter):
     def request(self, url, method, **kwargs):
         kwargs.setdefault('headers', kwargs.get('headers', {}))
         # NOTE(sileht): The standard call raises errors from
-        # keystoneauth, where we need to raise the gnocchiclient errors.
+        # keystoneauth, where we need to raise the aodhclient errors.
         raise_exc = kwargs.pop('raise_exc', True)
         resp = super(SessionClient, self).request(url,
                                                   method,

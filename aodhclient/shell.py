@@ -23,16 +23,16 @@ from cliff import commandmanager
 from keystoneauth1 import exceptions
 from keystoneauth1 import loading
 
-from gnocchiclient import benchmark
-from gnocchiclient import client
-from gnocchiclient import noauth
-from gnocchiclient.v1 import archive_policy_cli
-from gnocchiclient.v1 import archive_policy_rule_cli as ap_rule_cli
-from gnocchiclient.v1 import capabilities_cli
-from gnocchiclient.v1 import metric_cli
-from gnocchiclient.v1 import resource_cli
-from gnocchiclient.v1 import status_cli
-from gnocchiclient.version import __version__
+from aodhclient import benchmark
+from aodhclient import client
+from aodhclient import noauth
+from aodhclient.v1 import archive_policy_cli
+from aodhclient.v1 import archive_policy_rule_cli as ap_rule_cli
+from aodhclient.v1 import capabilities_cli
+from aodhclient.v1 import metric_cli
+from aodhclient.v1 import resource_cli
+from aodhclient.v1 import status_cli
+from aodhclient.version import __version__
 
 
 class GnocchiCommandManager(commandmanager.CommandManager):
@@ -114,7 +114,7 @@ class GnocchiShell(app.App):
                  ' Valid interface types: [admin, public, internal].'
                  ' (Env: OS_INTERFACE)')
         parser.add_argument(
-            '--gnocchi-api-version',
+            '--aodh-api-version',
             default=os.environ.get('GNOCCHI_API_VERSION', '1'),
             help='Defaults to env[GNOCCHI_API_VERSION] or 1.')
         loading.register_session_argparse_arguments(parser=parser)
@@ -123,7 +123,7 @@ class GnocchiShell(app.App):
 
         if not isinstance(plugin, noauth.GnocchiNoAuthLoader):
             parser.add_argument(
-                '--gnocchi-endpoint',
+                '--aodh-endpoint',
                 metavar='<endpoint>',
                 dest='endpoint',
                 default=os.environ.get('GNOCCHI_ENDPOINT'),
@@ -145,7 +145,7 @@ class GnocchiShell(app.App):
             session = loading.load_session_from_argparse_arguments(
                 self.options, auth=auth_plugin)
 
-            self._client = client.Client(self.options.gnocchi_api_version,
+            self._client = client.Client(self.options.aodh_api_version,
                                          session=session,
                                          interface=self.options.interface,
                                          region_name=self.options.region_name,

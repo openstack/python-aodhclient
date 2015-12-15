@@ -72,7 +72,7 @@ class GnocchiNoAuthLoader(loading.BaseLoader):
             GnocchiOpt('user-id', help='User ID', required=True),
             GnocchiOpt('project-id', help='Project ID', required=True),
             GnocchiOpt('roles', help='Roles', default="admin"),
-            GnocchiOpt('gnocchi-endpoint', help='Gnocchi endpoint',
+            GnocchiOpt('aodh-endpoint', help='Gnocchi endpoint',
                        dest="endpoint", required=True),
         ])
         return options

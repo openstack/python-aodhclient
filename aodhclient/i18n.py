@@ -12,7 +12,7 @@
 
 import oslo_i18n as i18n
 
-_translators = i18n.TranslatorFactory(domain='gnocchiclient')
+_translators = i18n.TranslatorFactory(domain='aodhclient')
 
 # The primary translation function using the well-known name "_"
 _ = _translators.primary

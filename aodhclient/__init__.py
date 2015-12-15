@@ -16,4 +16,4 @@ import pbr.version
 
 
 __version__ = pbr.version.VersionInfo(
-    'gnocchiclient').version_string()
+    'aodhclient').version_string()

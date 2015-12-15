@@ -25,7 +25,7 @@ import futurist
 from oslo_utils import timeutils
 import six.moves
 
-from gnocchiclient.v1 import metric_cli
+from aodhclient.v1 import metric_cli
 
 LOG = logging.getLogger(__name__)
 
