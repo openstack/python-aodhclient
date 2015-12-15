@@ -11,21 +11,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from cliff import show
+from aodhclient.v2 import base
 
 
-class CliStatusShow(show.ShowOne):
-    """Show the status of measurements processing"""
+class CapabilitiesManager(base.Manager):
+    cap_url = "v2/capabilities/"
 
-    def take_action(self, parsed_args):
-        status = self.app.client.status.get()
+    def list(self):
+        """List capabilities
 
-        nb_metric = len(status['storage']['measures_to_process'])
-        nb_measures = (
-            sum(status['storage']['measures_to_process'].values())
-        )
-
-        return self.dict2columns({
-            "storage/total number of measures to process": nb_measures,
-            "storage/number of metric having measures to process": nb_metric,
-        })
+        """
+        return self._get(self.cap_url).json()
