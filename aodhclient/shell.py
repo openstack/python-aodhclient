@@ -23,48 +23,15 @@ from cliff import commandmanager
 from keystoneauth1 import exceptions
 from keystoneauth1 import loading
 
-from aodhclient import benchmark
 from aodhclient import client
 from aodhclient import noauth
-from aodhclient.v1 import archive_policy_cli
-from aodhclient.v1 import archive_policy_rule_cli as ap_rule_cli
-from aodhclient.v1 import capabilities_cli
-from aodhclient.v1 import metric_cli
-from aodhclient.v1 import resource_cli
-from aodhclient.v1 import status_cli
+from aodhclient.v2 import capabilities_cli
 from aodhclient.version import __version__
 
 
 class AodhCommandManager(commandmanager.CommandManager):
     SHELL_COMMANDS = {
-        "status": status_cli.CliStatusShow,
-        "resource list": resource_cli.CliResourceList,
-        "resource show": resource_cli.CliResourceShow,
-        "resource history": resource_cli.CliResourceHistory,
-        "resource search": resource_cli.CliResourceSearch,
-        "resource create": resource_cli.CliResourceCreate,
-        "resource update": resource_cli.CliResourceUpdate,
-        "resource delete": resource_cli.CliResourceDelete,
-        "archive-policy list": archive_policy_cli.CliArchivePolicyList,
-        "archive-policy show": archive_policy_cli.CliArchivePolicyShow,
-        "archive-policy create": archive_policy_cli.CliArchivePolicyCreate,
-        "archive-policy delete": archive_policy_cli.CliArchivePolicyDelete,
-        "archive-policy-rule list": ap_rule_cli.CliArchivePolicyRuleList,
-        "archive-policy-rule show": ap_rule_cli.CliArchivePolicyRuleShow,
-        "archive-policy-rule create": ap_rule_cli.CliArchivePolicyRuleCreate,
-        "archive-policy-rule delete": ap_rule_cli.CliArchivePolicyRuleDelete,
-        "metric list": metric_cli.CliMetricList,
-        "metric show": metric_cli.CliMetricShow,
-        "metric create": metric_cli.CliMetricCreate,
-        "metric delete": metric_cli.CliMetricDelete,
-        "measures show": metric_cli.CliMeasuresShow,
-        "measures add": metric_cli.CliMeasuresAdd,
-        "measures aggregation": metric_cli.CliMeasuresAggregation,
         "capabilities list": capabilities_cli.CliCapabilitiesList,
-        "benchmark metric create": benchmark.CliBenchmarkMetricCreate,
-        "benchmark metric show": benchmark.CliBenchmarkMetricShow,
-        "benchmark measures add": benchmark.CliBenchmarkMeasuresAdd,
-        "benchmark measures show": benchmark.CliBenchmarkMeasuresShow,
     }
 
     def load_commands(self, namespace):
@@ -96,7 +63,7 @@ class AodhShell(app.App):
         :paramtype version: str
         """
         parser = super(AodhShell, self).build_option_parser(description,
-                                                               version)
+                                                            version)
         # Global arguments, one day this should go to keystoneauth1
         parser.add_argument(
             '--os-region-name',

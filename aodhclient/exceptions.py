@@ -11,8 +11,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import re
-
 
 class ClientException(Exception):
     """The base exception class for all exceptions this library raises."""
@@ -76,26 +74,6 @@ class NotFound(ClientException):
     message = "Not found"
 
 
-class MetricNotFound(NotFound, MutipleMeaningException):
-    message = "Metric not found"
-    match = re.compile("Metric .* does not exist")
-
-
-class ResourceNotFound(NotFound, MutipleMeaningException):
-    message = "Resource not found"
-    match = re.compile("Resource .* does not exist")
-
-
-class ArchivePolicyNotFound(NotFound, MutipleMeaningException):
-    message = "Archive policy not found"
-    match = re.compile("Archive policy .* does not exist")
-
-
-class ArchivePolicyRuleNotFound(NotFound, MutipleMeaningException):
-    message = "Archive policy rule not found"
-    match = re.compile("Archive policy rule .* does not exist")
-
-
 class MethodNotAllowed(ClientException):
     """HTTP 405 - Method Not Allowed"""
     http_status = 405
@@ -112,26 +90,6 @@ class Conflict(ClientException):
     """HTTP 409 - Conflict"""
     http_status = 409
     message = "Conflict"
-
-
-class NamedMetricAreadyExists(Conflict, MutipleMeaningException):
-    message = "Named metric already exists"
-    match = re.compile("Named metric .* does not exist")
-
-
-class ResourceAlreadyExists(Conflict, MutipleMeaningException):
-    message = "Resource already exists"
-    match = re.compile("Resource .* already exists")
-
-
-class ArchivePolicyAlreadyExists(Conflict, MutipleMeaningException):
-    message = "Archive policy already exists"
-    match = re.compile("Archive policy .* already exists")
-
-
-class ArchivePolicyRuleAlreadyExists(Conflict, MutipleMeaningException):
-    message = "Archive policy rule already exists"
-    match = re.compile("Archive policy Rule .* already exists")
 
 
 class OverLimit(RetryAfterException):
@@ -164,13 +122,7 @@ class NotImplemented(ClientException):
 _error_classes = [BadRequest, Unauthorized, Forbidden, NotFound,
                   MethodNotAllowed, NotAcceptable, Conflict, OverLimit,
                   RateLimit, NotImplemented]
-_error_classes_enhanced = {
-    NotFound: [MetricNotFound, ResourceNotFound, ArchivePolicyNotFound,
-               ArchivePolicyRuleNotFound],
-    Conflict: [NamedMetricAreadyExists, ResourceAlreadyExists,
-               ArchivePolicyAlreadyExists,
-               ArchivePolicyRuleAlreadyExists]
-}
+_error_classes_enhanced = {}
 _code_map = dict(
     (c.http_status, (c, _error_classes_enhanced.get(c, [])))
     for c in _error_classes)

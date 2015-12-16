@@ -14,12 +14,7 @@
 #    under the License.
 
 from aodhclient import client
-from aodhclient.v1 import archive_policy
-from aodhclient.v1 import archive_policy_rule
-from aodhclient.v1 import capabilities
-from aodhclient.v1 import metric
-from aodhclient.v1 import resource
-from aodhclient.v1 import status
+from aodhclient.v2 import capabilities
 
 
 class Client(object):
@@ -29,14 +24,8 @@ class Client(object):
     :type session: :py:class:`keystoneauth.adapter.Adapter`
     """
 
-    def __init__(self, session=None, service_type='metric', **kwargs):
+    def __init__(self, session=None, service_type='alarming', **kwargs):
         """Initialize a new client for the Aodh v2 API."""
         self.api = client.SessionClient(session, service_type=service_type,
                                         **kwargs)
-        self.resource = resource.ResourceManager(self)
-        self.archive_policy = archive_policy.ArchivePolicyManager(self)
-        self.archive_policy_rule = (
-            archive_policy_rule.ArchivePolicyRuleManager(self))
-        self.metric = metric.MetricManager(self)
         self.capabilities = capabilities.CapabilitiesManager(self)
-        self.status = status.StatusManager(self)

@@ -10,13 +10,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from gnocchiclient.tests.functional import base
+from aodhclient.tests.functional import base
 
 
 class CapabilitiesClientTest(base.ClientTestBase):
     def test_capabilities_scenario(self):
         # GET
-        result = self.gnocchi('capabilities', params="list")
+        result = self.aodh('capabilities', params="list")
         caps = self.parser.listing(result)[0]
         self.assertIsNotNone(caps)
         self.assertEqual('aggregation_methods', caps['Field'])

@@ -38,8 +38,8 @@ class AodhClient(object):
         creds = ("--os-auth-plugin aodh-noauth "
                  "--user-id %s --project-id %s "
                  "--aodh-endpoint %s") % (self.user_id,
-                                             self.project_id,
-                                             self.endpoint)
+                                          self.project_id,
+                                          self.endpoint)
 
         flags = creds + ' ' + flags
 
