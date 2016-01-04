@@ -14,6 +14,6 @@ tempest-lib>=0.6.1
 testrepository>=0.0.18
 testscenarios>=0.4
 testtools>=1.4.0
-http://tarballs.openstack.org/aodh/aodh-master.tar.gz#egg=aodh
+http://tarballs.openstack.org/aodh/aodh-master.tar.gz#egg=aodh[mysql]
 # FIXME(sileht): should be in aodh ?
 keystonemiddleware

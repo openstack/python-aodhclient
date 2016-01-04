@@ -21,6 +21,7 @@ AODH_DATA=`mktemp -d /tmp/aodh-data-XXXXX`
 MYSQL_DATA=`mktemp -d /tmp/aodh-mysql-XXXXX`
 trap "clean_exit \"$AODH_DATA\" \"$MYSQL_DATA\"" EXIT
 
+mysqld --initialize-insecure --datadir=${MYSQL_DATA} || true
 mkfifo ${MYSQL_DATA}/out
 PATH=$PATH:/usr/libexec
 mysqld --no-defaults --datadir=${MYSQL_DATA} --pid-file=${MYSQL_DATA}/mysql.pid --socket=${MYSQL_DATA}/mysql.socket --skip-networking --skip-grant-tables &> ${MYSQL_DATA}/out &
@@ -30,8 +31,11 @@ export AODH_TEST_STORAGE_URL="mysql+pymysql://root@localhost/test?unix_socket=${
 mysql --no-defaults -S ${MYSQL_DATA}/mysql.socket -e 'CREATE DATABASE test;'
 
 
+mkfifo ${AODH_DATA}/out
 echo '{"default": ""}' > ${AODH_DATA}/policy.json
 cat > ${AODH_DATA}/aodh.conf <<EOF
+[api]
+paste_config = ${AODH_DATA}/api-paste.ini
 [oslo_policy]
 policy_file = ${AODH_DATA}/policy.json
 [database]
@@ -41,7 +45,7 @@ cat <<EOF > ${AODH_DATA}/api-paste.ini
 [pipeline:main]
 pipeline = aodh
 [app:aodh]
-paste.app_factory = aodh.rest.app:app_factory
+paste.app_factory = aodh.api.app:app_factory
 EOF
 aodh-dbsync --config-file ${AODH_DATA}/aodh.conf
 aodh-api --config-file ${AODH_DATA}/aodh.conf &> ${AODH_DATA}/out &

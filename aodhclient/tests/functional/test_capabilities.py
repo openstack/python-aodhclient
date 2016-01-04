@@ -19,4 +19,4 @@ class CapabilitiesClientTest(base.ClientTestBase):
         result = self.aodh('capabilities', params="list")
         caps = self.parser.listing(result)[0]
         self.assertIsNotNone(caps)
-        self.assertEqual('aggregation_methods', caps['Field'])
+        self.assertEqual('alarm_storage', caps['Field'])
