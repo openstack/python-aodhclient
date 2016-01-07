@@ -15,6 +15,7 @@
 
 from aodhclient import client
 from aodhclient.v2 import alarm
+from aodhclient.v2 import alarm_history
 from aodhclient.v2 import capabilities
 
 
@@ -30,4 +31,5 @@ class Client(object):
         self.api = client.SessionClient(session, service_type=service_type,
                                         **kwargs)
         self.alarm = alarm.AlarmManager(self)
+        self.alarm_history = alarm_history.AlarmHistoryManager(self)
         self.capabilities = capabilities.CapabilitiesManager(self)
