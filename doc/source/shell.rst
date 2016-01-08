@@ -5,7 +5,8 @@ The :program:`aodh` shell utility
 .. highlight:: bash
 
 The :program:`aodh` shell utility interacts with Aodh API
-from the command line. It supports the entirety of the Aodh API.
+from the command line. It supports the entirety of the Aodh API excluding
+deprecated combination alarms.
 
 You'll need to provide :program:`aodh` with your OpenStack credentials.
 You can do this with the :option:`--os-username`, :option:`--os-password`,
@@ -64,14 +65,14 @@ command.
 Examples
 --------
 
-Create a resource::
+Create an alarm::
 
-    gnocchi resource create --attribute id:5a301761-f78b-46e2-8900-8b4f6fe6675a --attribute project_id:eba5c38f-c3dd-4d9c-9235-32d430471f94 -n temperature:high instance
+    aodh alarm create --name alarm1 -m cpu_util --threshold 5
 
-List resources::
+List alarms::
 
-    gnocchi resource list --type instance
+    aodh alarm list
 
-Search of resources::
+Search for alarms::
 
-    gnocchi resource search --query "project_id=5a301761-f78b-46e2-8900-8b4f6fe6675a and type=instance"
+    aodh alarm search --query "project_id=5a301761-f78b-46e2-8900-8b4f6fe6675a and type=instance"
