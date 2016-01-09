@@ -20,9 +20,10 @@ class AlarmManager(base.Manager):
 
     url = "v2/alarms"
 
-    def list(self):
+    def list(self, alarm_type):
         """List alarms"""
-        return self._get(self.url).json()
+        return self._get(self.url + '?q.field=type&q.op=eq' +
+                         '&q.value=' + alarm_type).json()
 
     def get(self, alarm_id):
         """Get an alarm

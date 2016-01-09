@@ -17,7 +17,7 @@ from oslo_utils import strutils
 
 from aodhclient import utils
 
-
+ALARM_TYPES = ['threshold']
 ALARM_STATES = ['ok', 'alarm', 'insufficient data']
 ALARM_SEVERITY = ['low', 'moderate', 'critical']
 ALARM_OPERATORS = ['lt', 'le', 'eq', 'ne', 'ge', 'gt']
@@ -27,12 +27,23 @@ STATISTICS = ['max', 'min', 'avg', 'sum', 'count']
 class CliAlarmList(lister.Lister):
     """List alarms"""
 
-    COLS = ('alarm_id', 'name', 'state', 'severity', 'enabled',
-            'repeat_actions', 'threshold_rule', 'time_constraints')
+    @staticmethod
+    def get_columns(alarm_type):
+        cols = ['alarm_id', 'name', 'state', 'severity', 'enabled',
+                'repeat_actions', 'time_constraints']
+        if alarm_type == 'threshold':
+            cols.append('threshold_rule')
+        return cols
+
+    def get_parser(self, prog_name):
+        parser = super(CliAlarmList, self).get_parser(prog_name)
+        parser.add_argument('-t', '--type', required=True,
+                            help='Type of alarm')
+        return parser
 
     def take_action(self, parsed_args):
-        alarms = self.app.client.alarm.list()
-        return utils.list2cols(self.COLS, alarms)
+        alarms = self.app.client.alarm.list(alarm_type=parsed_args.type)
+        return utils.list2cols(self.get_columns(parsed_args.type), alarms)
 
 
 class CliAlarmSearch(CliAlarmList):
@@ -44,8 +55,13 @@ class CliAlarmSearch(CliAlarmList):
         return parser
 
     def take_action(self, parsed_args):
-        alarms = self.app.client.alarm.search(query=parsed_args.query)
-        return utils.list2cols(self.COLS, alarms)
+        type_query = '{"=": {"type": "%s"}}' % parsed_args.type
+        if parsed_args.query:
+            query = '{"and": [%s, %s]}' % (type_query, parsed_args.query)
+        else:
+            query = type_query
+        alarms = self.app.client.alarm.search(query=query)
+        return utils.list2cols(self.get_columns(parsed_args.type), alarms)
 
 
 def _format_alarm(alarm):
@@ -73,6 +89,9 @@ class CliAlarmCreate(show.ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(CliAlarmCreate, self).get_parser(prog_name)
+        parser.add_argument('-t', '--type', metavar='<TYPE>',
+                            required=self.create,
+                            choices=ALARM_TYPES, help='Type of alarm')
         parser.add_argument('--name', metavar='<NAME>', required=self.create,
                             help='Name of the alarm')
         parser.add_argument('--project-id', metavar='<PROJECT_ID>',
@@ -84,15 +103,16 @@ class CliAlarmCreate(show.ShowOne):
         parser.add_argument('--description', metavar='<DESCRIPTION>',
                             help='Free text description of the alarm')
         parser.add_argument('--state', metavar='<STATE>',
+                            choices=ALARM_STATES,
                             help='State of the alarm, one of: '
                             + str(ALARM_STATES))
         parser.add_argument('--severity', metavar='<SEVERITY>',
+                            choices=ALARM_SEVERITY,
                             help='Severity of the alarm, one of: '
                             + str(ALARM_SEVERITY))
         parser.add_argument('--enabled', type=strutils.bool_from_string,
                             metavar='{True|False}',
-                            help=('True if alarm evaluation/actioning is '
-                                  'enabled'))
+                            help=('True if alarm evaluation is enabled'))
         parser.add_argument('--alarm-action', dest='alarm_actions',
                             metavar='<Webhook URL>', action='append',
                             help=('URL to invoke when state transitions to '
@@ -125,33 +145,42 @@ class CliAlarmCreate(show.ShowOne):
                             help=('True if actions should be repeatedly '
                                   'notified while alarm remains in target '
                                   'state'))
-        parser.add_argument(
-            '-m', '--meter-name', metavar='<METRIC>', required=self.create,
+
+        threshold_group = parser.add_argument_group('threshold alarm')
+        threshold_group.add_argument(
+            '-m', '--meter-name', metavar='<METRIC>',
             dest='meter_name', help='Metric to evaluate against')
-        parser.add_argument(
+        threshold_group.add_argument(
+            '--threshold', type=float, metavar='<THRESHOLD>',
+            dest='threshold', help='Threshold to evaluate against.')
+        threshold_group.add_argument(
             '--period', type=int, metavar='<PERIOD>', dest='period',
             help='Length of each period (seconds) to evaluate over.')
-        parser.add_argument(
+        threshold_group.add_argument(
             '--evaluation-periods', type=int, metavar='<EVAL_PERIODS>',
             dest='evaluation_periods',
             help='Number of periods to evaluate over')
-        parser.add_argument(
+        threshold_group.add_argument(
             '--statistic', metavar='<STATISTIC>', dest='statistic',
+            choices=STATISTICS,
             help='Statistic to evaluate, one of: ' + str(STATISTICS))
-        parser.add_argument(
+        threshold_group.add_argument(
             '--comparison-operator', metavar='<OPERATOR>',
-            dest='comparison_operator',
+            dest='comparison_operator', choices=ALARM_OPERATORS,
             help='Operator to compare with, one of: ' + str(ALARM_OPERATORS))
-        parser.add_argument(
-            '--threshold', type=float, metavar='<THRESHOLD>',
-            required=self.create, dest='threshold',
-            help='Threshold to evaluate against.')
-        parser.add_argument(
+        threshold_group.add_argument(
             '-q', '--query', metavar='<QUERY>', dest='query',
             help='key[op]data_type::value; list. data_type is optional, '
                  'but if supplied must be string, integer, float, or boolean.')
 
+        self.parser = parser
         return parser
+
+    def _validate_args(self, parsed_args):
+        if (parsed_args.type == 'threshold' and
+                not (parsed_args.meter_name and parsed_args.threshold)):
+            self.parser.error('threshold requires --meter-name and '
+                              '--threshold')
 
     def _alarm_from_args(self, parsed_args):
         alarm = utils.dict_from_parsed_args(
@@ -164,7 +193,8 @@ class CliAlarmCreate(show.ShowOne):
                           'statistic', 'comparison_operator', 'threshold',
                           'query'])
         if self.create:
-            alarm['type'] = 'threshold'
+            alarm['type'] = parsed_args.type
+            self._validate_args(parsed_args)
         return alarm
 
     def take_action(self, parsed_args):
