@@ -13,6 +13,7 @@
 
 from oslo_serialization import jsonutils
 
+from aodhclient.v2.alarm_cli import ALARM_TYPES
 from aodhclient.v2 import base
 
 
@@ -33,12 +34,19 @@ class AlarmManager(base.Manager):
         """
         return self._get(self.url + '/' + alarm_id).json()
 
+    @staticmethod
+    def _clean_rules(alarm_type, alarm):
+        for rule in ALARM_TYPES:
+            if rule != alarm_type:
+                alarm.pop('%s_rule' % rule, None)
+
     def create(self, alarm):
         """Create an alarm
 
         :param alarm: the alarm
         :type alarm: dict
         """
+        self._clean_rules(alarm['type'], alarm)
         return self._post(
             self.url, headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(alarm)).json()
@@ -52,9 +60,15 @@ class AlarmManager(base.Manager):
         :type attributes: dict
         """
         alarm = self._get(self.url + '/' + alarm_id).json()
-        if alarm_update.get('threshold_rule'):
+        self._clean_rules(alarm['type'], alarm_update)
+
+        if 'threshold_rule' in alarm_update:
             alarm['threshold_rule'].update(alarm_update.get('threshold_rule'))
             alarm_update.pop('threshold_rule')
+        elif 'event_rule' in alarm_update:
+            alarm['event_rule'].update(alarm_update.get('event_rule'))
+            alarm_update.pop('event_rule')
+
         alarm.update(alarm_update)
         return self._put(
             self.url + '/' + alarm_id,

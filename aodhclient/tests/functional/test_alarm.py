@@ -27,7 +27,95 @@ class AodhClientTest(base.ClientTestBase):
         self.aodh("help", params="alarm show")
         self.aodh("help", params="alarm update")
 
-    def test_alarm_scenario(self):
+    def test_event_scenario(self):
+
+        PROJECT_ID = str(uuid.uuid4())
+
+        # CREATE
+        result = self.aodh(u'alarm',
+                           params=(u"create --type event --name ev_alarm1 "
+                                   "--project-id %s" % PROJECT_ID))
+        alarm = self.details_multiple(result)[0]
+        ALARM_ID = alarm['alarm_id']
+        self.assertEqual('ev_alarm1', alarm['name'])
+        self.assertEqual('*', alarm['event_type'])
+
+        # CREATE FAIL
+        result = self.aodh(u'alarm',
+                           params=(u"create --type event --name ev_alarm1 "
+                                   "--project-id %s" % PROJECT_ID),
+                           fail_ok=True, merge_stderr=True)
+        self.assertEqual(result.strip(), 'Conflict (HTTP 409)')
+
+        # UPDATE IGNORE INVALID
+        result = self.aodh(
+            'alarm', params=("update %s --severity critical --threshold 10"
+                             % ALARM_ID))
+        alarm_updated = self.details_multiple(result)[0]
+        self.assertEqual(ALARM_ID, alarm_updated["alarm_id"])
+        self.assertEqual('critical', alarm_updated['severity'])
+
+        # UPDATE IGNORE INVALID
+        result = self.aodh(
+            'alarm', params=("update %s --event-type dummy" % ALARM_ID))
+        alarm_updated = self.details_multiple(result)[0]
+        self.assertEqual(ALARM_ID, alarm_updated["alarm_id"])
+        self.assertEqual('dummy', alarm_updated['event_type'])
+
+        # GET
+        result = self.aodh(
+            'alarm', params="show %s" % ALARM_ID)
+        alarm_show = self.details_multiple(result)[0]
+        self.assertEqual(ALARM_ID, alarm_show["alarm_id"])
+        self.assertEqual(PROJECT_ID, alarm_show["project_id"])
+        self.assertEqual('ev_alarm1', alarm_show['name'])
+        self.assertEqual('dummy', alarm_show['event_type'])
+
+        # LIST
+        result = self.aodh('alarm', params="list --type event")
+        self.assertIn(ALARM_ID,
+                      [r['alarm_id'] for r in self.parser.listing(result)])
+        for alarm_list in self.parser.listing(result):
+            if alarm_list["alarm_id"] == ALARM_ID:
+                self.assertEqual('ev_alarm1', alarm_list['name'])
+
+        # SEARCH ALL
+        result = self.aodh('alarm', params=("search --type event"))
+        self.assertIn(ALARM_ID,
+                      [r['alarm_id'] for r in self.parser.listing(result)])
+        for alarm_list in self.parser.listing(result):
+            if alarm_list["alarm_id"] == ALARM_ID:
+                self.assertEqual('ev_alarm1', alarm_list['name'])
+
+        # SEARCH SOME
+        result = self.aodh('alarm',
+                           params=("search --type event --query "
+                                   "'{\"=\": {\"project_id\": \"%s\"}}'"
+                                   % PROJECT_ID))
+        alarm_list = self.parser.listing(result)[0]
+        self.assertEqual(ALARM_ID, alarm_list["alarm_id"])
+        self.assertEqual('ev_alarm1', alarm_list['name'])
+
+        # DELETE
+        result = self.aodh('alarm', params="delete %s" % ALARM_ID)
+        self.assertEqual("", result)
+
+        # GET FAIL
+        result = self.aodh('alarm', params="show %s" % ALARM_ID,
+                           fail_ok=True, merge_stderr=True)
+        self.assertEqual(result.strip(), "Not found (HTTP 404)")
+
+        # DELETE FAIL
+        result = self.aodh('alarm', params="delete %s" % ALARM_ID,
+                           fail_ok=True, merge_stderr=True)
+        self.assertEqual(result.strip(), "Not found (HTTP 404)")
+
+        # LIST DOES NOT HAVE ALARM
+        result = self.aodh('alarm', params="list --type event")
+        self.assertNotIn(ALARM_ID,
+                         [r['alarm_id'] for r in self.parser.listing(result)])
+
+    def test_threshold_scenario(self):
 
         PROJECT_ID = str(uuid.uuid4())
 
