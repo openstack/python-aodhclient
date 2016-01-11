@@ -68,6 +68,21 @@ class AlarmManager(base.Manager):
         elif 'event_rule' in alarm_update:
             alarm['event_rule'].update(alarm_update.get('event_rule'))
             alarm_update.pop('event_rule')
+        elif 'gnocchi_resources_threshold_rule' in alarm_update:
+            alarm['gnocchi_resources_threshold_rule'].update(
+                alarm_update.get('gnocchi_resources_threshold_rule'))
+            alarm_update.pop('gnocchi_resources_threshold_rule')
+        elif 'gnocchi_aggregation_by_metrics_threshold_rule' in alarm_update:
+            alarm['gnocchi_aggregation_by_metrics_threshold_rule'].update(
+                alarm_update.get(
+                    'gnocchi_aggregation_by_metrics_threshold_rule'))
+            alarm_update.pop('gnocchi_aggregation_by_metrics_threshold_rule')
+        elif 'gnocchi_aggregation_by_resources_threshold_rule' in alarm_update:
+            alarm['gnocchi_aggregation_by_resources_threshold_rule'].update(
+                alarm_update.get(
+                    'gnocchi_aggregation_by_resources_threshold_rule'))
+            alarm_update.pop(
+                'gnocchi_aggregation_by_resources_threshold_rule')
 
         alarm.update(alarm_update)
         return self._put(
