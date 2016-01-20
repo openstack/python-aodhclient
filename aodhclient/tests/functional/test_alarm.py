@@ -12,6 +12,8 @@
 
 import uuid
 
+from tempest_lib import exceptions
+
 from aodhclient.tests.functional import base
 
 
@@ -31,8 +33,8 @@ class AodhClientTest(base.ClientTestBase):
 
         # CREATE
         result = self.aodh(u'alarm',
-                           params=(u"create --name alarm1 -m meter_name "
-                                   " --threshold 5 "
+                           params=(u"create --type threshold --name alarm1 "
+                                   " -m meter_name --threshold 5 "
                                    "--project-id %s" % PROJECT_ID))
         alarm = self.details_multiple(result)[0]
         ALARM_ID = alarm['alarm_id']
@@ -42,11 +44,17 @@ class AodhClientTest(base.ClientTestBase):
 
         # CREATE FAIL
         result = self.aodh(u'alarm',
-                           params=(u"create --name alarm1 -m meter_name "
-                                   " --threshold 5 "
+                           params=(u"create --type threshold --name alarm1 "
+                                   "-m meter_name --threshold 5 "
                                    "--project-id %s" % PROJECT_ID),
                            fail_ok=True, merge_stderr=True)
         self.assertEqual(result.strip(), 'Conflict (HTTP 409)')
+
+        # CREATE FAIL MISSING PARAM
+        self.assertRaises(exceptions.CommandFailed,
+                          self.aodh, u'alarm',
+                          params=(u"create --type threshold --name alarm1 "
+                                  "--project-id %s" % PROJECT_ID))
 
         # UPDATE
         result = self.aodh(
@@ -68,7 +76,7 @@ class AodhClientTest(base.ClientTestBase):
         self.assertEqual('10.0', alarm_show['threshold'])
 
         # LIST
-        result = self.aodh('alarm', params="list")
+        result = self.aodh('alarm', params="list --type threshold")
         self.assertIn(ALARM_ID,
                       [r['alarm_id'] for r in self.parser.listing(result)])
         for alarm_list in self.parser.listing(result):
@@ -76,7 +84,7 @@ class AodhClientTest(base.ClientTestBase):
                 self.assertEqual('alarm1', alarm_list['name'])
 
         # SEARCH ALL
-        result = self.aodh('alarm', params=("search"))
+        result = self.aodh('alarm', params=("search --type threshold"))
         self.assertIn(ALARM_ID,
                       [r['alarm_id'] for r in self.parser.listing(result)])
         for alarm_list in self.parser.listing(result):
@@ -85,7 +93,7 @@ class AodhClientTest(base.ClientTestBase):
 
         # SEARCH SOME
         result = self.aodh('alarm',
-                           params=("search --query "
+                           params=("search --type threshold --query "
                                    "'{\"=\": {\"project_id\": \"%s\"}}'"
                                    % PROJECT_ID))
         alarm_list = self.parser.listing(result)[0]
@@ -107,6 +115,6 @@ class AodhClientTest(base.ClientTestBase):
         self.assertEqual(result.strip(), "Not found (HTTP 404)")
 
         # LIST DOES NOT HAVE ALARM
-        result = self.aodh('alarm', params="list")
+        result = self.aodh('alarm', params="list --type threshold")
         self.assertNotIn(ALARM_ID,
                          [r['alarm_id'] for r in self.parser.listing(result)])
