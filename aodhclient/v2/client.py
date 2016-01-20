@@ -14,6 +14,7 @@
 #    under the License.
 
 from aodhclient import client
+from aodhclient.v2 import alarm
 from aodhclient.v2 import capabilities
 
 
@@ -28,4 +29,5 @@ class Client(object):
         """Initialize a new client for the Aodh v2 API."""
         self.api = client.SessionClient(session, service_type=service_type,
                                         **kwargs)
+        self.alarm = alarm.AlarmManager(self)
         self.capabilities = capabilities.CapabilitiesManager(self)

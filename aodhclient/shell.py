@@ -25,12 +25,19 @@ from keystoneauth1 import loading
 
 from aodhclient import client
 from aodhclient import noauth
+from aodhclient.v2 import alarm_cli
 from aodhclient.v2 import capabilities_cli
 from aodhclient.version import __version__
 
 
 class AodhCommandManager(commandmanager.CommandManager):
     SHELL_COMMANDS = {
+        "alarm create": alarm_cli.CliAlarmCreate,
+        "alarm delete": alarm_cli.CliAlarmDelete,
+        "alarm list": alarm_cli.CliAlarmList,
+        "alarm show": alarm_cli.CliAlarmShow,
+        "alarm search": alarm_cli.CliAlarmSearch,
+        "alarm update": alarm_cli.CliAlarmUpdate,
         "capabilities list": capabilities_cli.CliCapabilitiesList,
     }
 
