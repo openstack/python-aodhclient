@@ -17,7 +17,7 @@ from oslo_utils import strutils
 
 from aodhclient import utils
 
-ALARM_TYPES = ['threshold']
+ALARM_TYPES = ['threshold', 'event']
 ALARM_STATES = ['ok', 'alarm', 'insufficient data']
 ALARM_SEVERITY = ['low', 'moderate', 'critical']
 ALARM_OPERATORS = ['lt', 'le', 'eq', 'ne', 'ge', 'gt']
@@ -33,6 +33,8 @@ class CliAlarmList(lister.Lister):
                 'repeat_actions', 'time_constraints']
         if alarm_type == 'threshold':
             cols.append('threshold_rule')
+        elif alarm_type == 'event':
+            cols.append('event_rule')
         return cols
 
     def get_parser(self, prog_name):
@@ -65,7 +67,9 @@ class CliAlarmSearch(CliAlarmList):
 
 
 def _format_alarm(alarm):
-    alarm.update(alarm.pop('threshold_rule'))
+    for alarm_type in ALARM_TYPES:
+        if alarm.get('%s_rule' % alarm_type):
+            alarm.update(alarm.pop('%s_rule' % alarm_type))
     return alarm
 
 
@@ -146,6 +150,13 @@ class CliAlarmCreate(show.ShowOne):
                                   'notified while alarm remains in target '
                                   'state'))
 
+        common_group = parser.add_argument_group('common alarm rules')
+        common_group.add_argument(
+            '-q', '--query', metavar='<QUERY>', dest='query',
+            help='key[op]data_type::value; list. data_type is optional, '
+                 'but if supplied must be string, integer, float, or boolean. '
+                 'Used by threshold and event alarms')
+
         threshold_group = parser.add_argument_group('threshold alarm')
         threshold_group.add_argument(
             '-m', '--meter-name', metavar='<METRIC>',
@@ -168,10 +179,11 @@ class CliAlarmCreate(show.ShowOne):
             '--comparison-operator', metavar='<OPERATOR>',
             dest='comparison_operator', choices=ALARM_OPERATORS,
             help='Operator to compare with, one of: ' + str(ALARM_OPERATORS))
-        threshold_group.add_argument(
-            '-q', '--query', metavar='<QUERY>', dest='query',
-            help='key[op]data_type::value; list. data_type is optional, '
-                 'but if supplied must be string, integer, float, or boolean.')
+
+        event_group = parser.add_argument_group('event alarm')
+        event_group.add_argument(
+            '--event-type', metavar='<EVENT_TYPE>',
+            dest='event_type', help='Event type to evaluate against')
 
         self.parser = parser
         return parser
@@ -192,6 +204,8 @@ class CliAlarmCreate(show.ShowOne):
             parsed_args, ['meter_name', 'period', 'evaluation_periods',
                           'statistic', 'comparison_operator', 'threshold',
                           'query'])
+        alarm['event_rule'] = utils.dict_from_parsed_args(
+            parsed_args, ['event_type', 'query'])
         if self.create:
             alarm['type'] = parsed_args.type
             self._validate_args(parsed_args)
