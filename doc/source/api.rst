@@ -13,7 +13,7 @@ To use aodhclient in a project::
 
     >>> from aodhclient.v2 import client
     >>> aodh = client.Client(...)
-    >>> aodh.alarm.list("alarm")
+    >>> aodh.alarm.list()
 
 Reference
 ---------
@@ -21,7 +21,7 @@ Reference
 For more information, see the reference:
 
 .. toctree::
-   :maxdepth: 2 
+   :maxdepth: 2
 
    ref/v2/index
 
