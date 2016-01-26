@@ -219,6 +219,112 @@ class AodhClientTest(base.ClientTestBase):
         self.assertNotIn(ALARM_ID,
                          [r['alarm_id'] for r in self.parser.listing(result)])
 
+    def test_composite_scenario(self):
+
+        project_id = str(uuid.uuid4())
+        # CREATE
+        result = self.aodh(u'alarm',
+                           params=(u"create --type composite --name calarm1 "
+                                   " --composite-rule '{\"or\":[{\"threshold\""
+                                   ": 0.8,\"meter_name\": \"cpu_util\","
+                                   "\"type\": \"threshold\"},{\"and\": ["
+                                   "{\"threshold\": 200, \"meter_name\": "
+                                   "\"disk.iops\", \"type\": \"threshold\"},"
+                                   "{\"threshold\": 1000,\"meter_name\":"
+                                   "\"network.incoming.packets.rate\","
+                                   "\"type\": \"threshold\"}]}]}' "
+                                   "--project-id %s" % project_id))
+        alarm = self.details_multiple(result)[0]
+        alarm_id = alarm['alarm_id']
+        self.assertEqual('calarm1', alarm['name'])
+        self.assertEqual('composite', alarm['type'])
+        self.assertIn('composite_rule', alarm)
+
+        # CREATE FAIL
+        result = self.aodh(u'alarm',
+                           params=(u"create --type composite --name calarm1 "
+                                   " --composite-rule '{\"or\":[{\"threshold\""
+                                   ": 0.8,\"meter_name\": \"cpu_util\","
+                                   "\"type\": \"threshold\"},{\"and\": ["
+                                   "{\"threshold\": 200, \"meter_name\": "
+                                   "\"disk.iops\", \"type\": \"threshold\"},"
+                                   "{\"threshold\": 1000,\"meter_name\":"
+                                   "\"network.incoming.packets.rate\","
+                                   "\"type\": \"threshold\"}]}]}' "
+                                   "--project-id %s" % project_id),
+                           fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(
+            result.split('\n'), "Alarm with name='calarm1' exists (HTTP 409)")
+
+        # CREATE FAIL MISSING PARAM
+        self.assertRaises(exceptions.CommandFailed,
+                          self.aodh, u'alarm',
+                          params=(u"create --type composite --name calarm1 "
+                                  "--project-id %s" % project_id))
+
+        # UPDATE
+        result = self.aodh(
+            'alarm', params=("update %s --severity critical" % alarm_id))
+        alarm_updated = self.details_multiple(result)[0]
+        self.assertEqual(alarm_id, alarm_updated["alarm_id"])
+        self.assertEqual('critical', alarm_updated['severity'])
+
+        # GET
+        result = self.aodh(
+            'alarm', params="show %s" % alarm_id)
+        alarm_show = self.details_multiple(result)[0]
+        self.assertEqual(alarm_id, alarm_show["alarm_id"])
+        self.assertEqual(project_id, alarm_show["project_id"])
+        self.assertEqual('calarm1', alarm_show['name'])
+
+        # LIST
+        result = self.aodh('alarm', params="list --type composite")
+        self.assertIn(alarm_id,
+                      [r['alarm_id'] for r in self.parser.listing(result)])
+        output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
+                         'enabled']
+        for alarm_list in self.parser.listing(result):
+            self.assertEqual(sorted(output_colums), sorted(alarm_list.keys()))
+            if alarm_list["alarm_id"] == alarm_id:
+                self.assertEqual('calarm1', alarm_list['name'])
+
+        # SEARCH ALL
+        result = self.aodh('alarm', params="search --type composite")
+        self.assertIn(alarm_id,
+                      [r['alarm_id'] for r in self.parser.listing(result)])
+        for alarm_list in self.parser.listing(result):
+            if alarm_list["alarm_id"] == alarm_id:
+                self.assertEqual('calarm1', alarm_list['name'])
+
+        # SEARCH SOME
+        result = self.aodh('alarm',
+                           params=("search --type composite --query "
+                                   "'{\"=\": {\"project_id\": \"%s\"}}'"
+                                   % project_id))
+        alarm_list = self.parser.listing(result)[0]
+        self.assertEqual(alarm_id, alarm_list["alarm_id"])
+        self.assertEqual('calarm1', alarm_list['name'])
+
+        # DELETE
+        result = self.aodh('alarm', params="delete %s" % alarm_id)
+        self.assertEqual("", result)
+
+        # GET FAIL
+        result = self.aodh('alarm', params="show %s" % alarm_id,
+                           fail_ok=True, merge_stderr=True)
+        expected = "Alarm %s not found (HTTP 404)" % alarm_id
+        self.assertFirstLineStartsWith(result.split('\n'), expected)
+
+        # DELETE FAIL
+        result = self.aodh('alarm', params="delete %s" % alarm_id,
+                           fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(result.split('\n'), expected)
+
+        # LIST DOES NOT HAVE ALARM
+        result = self.aodh('alarm', params="list --type composite")
+        self.assertNotIn(alarm_id,
+                         [r['alarm_id'] for r in self.parser.listing(result)])
+
 
 class AodhClientGnocchiRulesTest(base.ClientTestBase):
 

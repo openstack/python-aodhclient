@@ -83,6 +83,10 @@ class AlarmManager(base.Manager):
                     'gnocchi_aggregation_by_resources_threshold_rule'))
             alarm_update.pop(
                 'gnocchi_aggregation_by_resources_threshold_rule')
+        elif 'composite_rule' in alarm_update:
+            if alarm_update['composite_rule']:
+                alarm['composite_rule'] = alarm_update['composite_rule']
+            alarm_update.pop('composite_rule')
 
         alarm.update(alarm_update)
         return self._put(

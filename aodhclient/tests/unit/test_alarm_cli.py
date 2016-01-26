@@ -189,6 +189,7 @@ class CliAlarmCreateTest(testtools.TestCase):
                 'query': '{}',
                 'resource_type': 'generic'
                 },
+            'composite_rule': None,
             'type': 'threshold'
             }
         alarm_rep = self.cli_alarm_create._alarm_from_args(test_parsed_args)

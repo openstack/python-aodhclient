@@ -13,11 +13,13 @@
 from cliff import command
 from cliff import lister
 from cliff import show
+from oslo_serialization import jsonutils
 from oslo_utils import strutils
 
 from aodhclient import utils
 
-ALARM_TYPES = ['threshold', 'event', 'gnocchi_resources_threshold',
+ALARM_TYPES = ['threshold', 'event', 'composite',
+               'gnocchi_resources_threshold',
                'gnocchi_aggregation_by_metrics_threshold',
                'gnocchi_aggregation_by_resources_threshold']
 ALARM_STATES = ['ok', 'alarm', 'insufficient data']
@@ -61,6 +63,10 @@ class CliAlarmSearch(CliAlarmList):
 
 
 def _format_alarm(alarm):
+    if alarm.get('composite_rule'):
+        composite_rule = jsonutils.dumps(alarm['composite_rule'], indent=2)
+        alarm['composite_rule'] = composite_rule
+        return alarm
     for alarm_type in ALARM_TYPES:
         if alarm.get('%s_rule' % alarm_type):
             alarm.update(alarm.pop('%s_rule' % alarm_type))
@@ -209,7 +215,19 @@ class CliAlarmCreate(show.ShowOne):
         gnocchi_aggr_metrics_group.add_argument(
             '--metrics', metavar='<METRICS>', action='append',
             dest='metrics', help='The list of metric ids.')
-
+        composite_group = parser.add_argument_group('composite alarm')
+        composite_group.add_argument(
+            '--composite-rule', metavar='<COMPOSITE_RULE>',
+            dest='composite_rule',
+            type=jsonutils.loads,
+            help='Composite threshold rule with JSON format, the form can'
+                 'be a nested dict which combine threshold/gnocchi rules by'
+                 ' "and", "or". For example, the form is like: '
+                 '{"or":[RULE1, RULE2, {"and": [RULE3, RULE4]}]}, The'
+                 'RULEx can be basic threshold rules but must include a'
+                 '"type" field, like this: {"threshold": 0.8,'
+                 '"meter_name":"cpu_util","type":"threshold"}'
+        )
         self.parser = parser
         return parser
 
@@ -239,6 +257,10 @@ class CliAlarmCreate(show.ShowOne):
                               'requires --metric, --threshold, '
                               '--aggregation-method, --query and '
                               '--resource_type')
+        elif (parsed_args.type == 'composite' and
+              not parsed_args.composite_rule):
+            self.parser.error('composite alarm requires'
+                              ' --composite-rule parameter')
 
     def _alarm_from_args(self, parsed_args):
         alarm = utils.dict_from_parsed_args(
@@ -270,6 +292,7 @@ class CliAlarmCreate(show.ShowOne):
                                          'evaluation_periods', 'metric',
                                          'query', 'resource_type']))
 
+        alarm['composite_rule'] = parsed_args.composite_rule
         if self.create:
             alarm['type'] = parsed_args.type
             self._validate_args(parsed_args)
