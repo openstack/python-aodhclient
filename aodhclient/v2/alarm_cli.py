@@ -10,6 +10,9 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
+import argparse
+
 from cliff import command
 from cliff import lister
 from cliff import show
@@ -134,6 +137,7 @@ class CliAlarmCreate(show.ShowOne):
         parser.add_argument(
             '--time-constraint', dest='time_constraints',
             metavar='<Time Constraint>', action='append',
+            type=self.validate_time_constraint,
             help=('Only evaluate the alarm if the time at evaluation '
                   'is within this time constraint. Start point(s) of '
                   'the constraint are specified with a cron expression'
@@ -230,6 +234,19 @@ class CliAlarmCreate(show.ShowOne):
         )
         self.parser = parser
         return parser
+
+    def validate_time_constraint(self, values_to_convert):
+        """Converts 'a=1;b=2' to {a:1,b:2}."""
+
+        try:
+            return dict((item.strip(" \"'")
+                         for item in kv.split("=", 1))
+                        for kv in values_to_convert.split(";"))
+        except ValueError:
+            msg = ('must be a list of '
+                   'key1=value1;key2=value2;... not %s'
+                   % values_to_convert)
+            raise argparse.ArgumentTypeError(msg)
 
     def _validate_args(self, parsed_args):
         if (parsed_args.type == 'threshold' and

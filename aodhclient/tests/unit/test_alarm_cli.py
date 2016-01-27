@@ -118,7 +118,8 @@ class CliAlarmCreateTest(testtools.TestCase):
             '--repeat-action', 'True',
             '--insufficient-data-action',
             'http://something/insufficient',
-            '--time-constraint', '',
+            '--time-constraint',
+            'name=cons1;start="0 11 * * *";duration=300;description=desc1',
             '--meter-name', 'cpu',
             '--period', '60',
             '--evaluation-periods', '60',
@@ -147,7 +148,10 @@ class CliAlarmCreateTest(testtools.TestCase):
             'ok_actions': ['http://something/ok'],
             'insufficient_data_actions':
                 ['http://something/insufficient'],
-            'time_constraints': [''],
+            'time_constraints': [{'description': 'desc1',
+                                  'duration': '300',
+                                  'name': 'cons1',
+                                  'start': '0 11 * * *'}],
             'repeat_actions': True,
             'threshold_rule': {
                 'meter_name': 'cpu',
@@ -194,3 +198,21 @@ class CliAlarmCreateTest(testtools.TestCase):
             }
         alarm_rep = self.cli_alarm_create._alarm_from_args(test_parsed_args)
         self.assertEqual(alarm, alarm_rep)
+
+    def test_validate_time_constraint(self):
+        starts = ['0 11 * * *', ' 0 11 * * * ',
+                  '"0 11 * * *"', '\'0 11 * * *\'']
+        for start in starts:
+            string = 'name=const1;start=%s;duration=1' % start
+            expected = dict(name='const1',
+                            start='0 11 * * *',
+                            duration='1')
+            self.assertEqual(
+                expected,
+                self.cli_alarm_create.validate_time_constraint(string))
+
+    def test_validate_time_constraint_with_bad_format(self):
+        string = 'name=const2;start="0 11 * * *";duration:2'
+        self.assertRaises(argparse.ArgumentTypeError,
+                          self.cli_alarm_create.validate_time_constraint,
+                          string)
