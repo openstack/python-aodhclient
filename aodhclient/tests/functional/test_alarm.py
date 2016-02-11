@@ -45,7 +45,8 @@ class AodhClientTest(base.ClientTestBase):
                            params=(u"create --type event --name ev_alarm1 "
                                    "--project-id %s" % PROJECT_ID),
                            fail_ok=True, merge_stderr=True)
-        self.assertEqual(result.strip(), 'Conflict (HTTP 409)')
+        self.assertFirstLineStartsWith(result.split('\n'),
+                                       'Conflict (HTTP 409)')
 
         # UPDATE IGNORE INVALID
         result = self.aodh(
@@ -103,12 +104,14 @@ class AodhClientTest(base.ClientTestBase):
         # GET FAIL
         result = self.aodh('alarm', params="show %s" % ALARM_ID,
                            fail_ok=True, merge_stderr=True)
-        self.assertEqual(result.strip(), "Not found (HTTP 404)")
+        self.assertFirstLineStartsWith(result.split('\n'),
+                                       "Not found (HTTP 404)")
 
         # DELETE FAIL
         result = self.aodh('alarm', params="delete %s" % ALARM_ID,
                            fail_ok=True, merge_stderr=True)
-        self.assertEqual(result.strip(), "Not found (HTTP 404)")
+        self.assertFirstLineStartsWith(result.split('\n'),
+                                       "Not found (HTTP 404)")
 
         # LIST DOES NOT HAVE ALARM
         result = self.aodh('alarm', params="list --type event")
@@ -136,7 +139,8 @@ class AodhClientTest(base.ClientTestBase):
                                    "-m meter_name --threshold 5 "
                                    "--project-id %s" % PROJECT_ID),
                            fail_ok=True, merge_stderr=True)
-        self.assertEqual(result.strip(), 'Conflict (HTTP 409)')
+        self.assertFirstLineStartsWith(result.split('\n'),
+                                       'Conflict (HTTP 409)')
 
         # CREATE FAIL MISSING PARAM
         self.assertRaises(exceptions.CommandFailed,
@@ -195,12 +199,14 @@ class AodhClientTest(base.ClientTestBase):
         # GET FAIL
         result = self.aodh('alarm', params="show %s" % ALARM_ID,
                            fail_ok=True, merge_stderr=True)
-        self.assertEqual(result.strip(), "Not found (HTTP 404)")
+        self.assertFirstLineStartsWith(result.split('\n'),
+                                       "Not found (HTTP 404)")
 
         # DELETE FAIL
         result = self.aodh('alarm', params="delete %s" % ALARM_ID,
                            fail_ok=True, merge_stderr=True)
-        self.assertEqual(result.strip(), "Not found (HTTP 404)")
+        self.assertFirstLineStartsWith(result.split('\n'),
+                                       "Not found (HTTP 404)")
 
         # LIST DOES NOT HAVE ALARM
         result = self.aodh('alarm', params="list --type threshold")
