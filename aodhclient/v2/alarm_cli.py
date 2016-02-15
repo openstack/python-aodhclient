@@ -40,7 +40,7 @@ class CliAlarmList(lister.Lister):
     def get_parser(self, prog_name):
         parser = super(CliAlarmList, self).get_parser(prog_name)
         parser.add_argument('-t', '--type', required=True,
-                            help='Type of alarm')
+                            choices=ALARM_TYPES, help='Type of alarm')
         return parser
 
     def take_action(self, parsed_args):
