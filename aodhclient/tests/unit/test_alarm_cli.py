@@ -70,8 +70,8 @@ class CliAlarmCreateTest(testtools.TestCase):
             ])
         self.cli_alarm_create._validate_args(test_parsed_args)
         mock_arg.assert_called_with(
-            'threshold requires --meter-name and '
-            '--threshold')
+            'threshold alarm requires -m/--meter-name and '
+            '--threshold parameters')
 
     @mock.patch.object(argparse.ArgumentParser, 'error')
     def test_validate_args_gno_agg_by_resources_threshold(self, mock_arg):
