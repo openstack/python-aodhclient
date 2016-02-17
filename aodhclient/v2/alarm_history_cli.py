@@ -30,11 +30,6 @@ class CliAlarmHistorySearch(lister.Lister):
         return utils.list2cols(self.COLS, history)
 
 
-def _format_alarm(alarm):
-    alarm.update(alarm.pop('threshold_rule'))
-    return alarm
-
-
 class CliAlarmHistoryShow(lister.Lister):
     """Show history for an alarm"""
 
