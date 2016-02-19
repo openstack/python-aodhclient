@@ -161,7 +161,7 @@ def from_response(response, url, method=None):
         except ValueError:
             pass
         else:
-            desc = body.get('description')
+            desc = body.get('error_message', {}).get('faultstring')
             for enhanced_cls in enhanced_classes:
                 if enhanced_cls.match.match(desc):
                     cls = enhanced_cls
