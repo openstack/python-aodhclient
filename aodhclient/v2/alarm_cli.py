@@ -25,25 +25,11 @@ ALARM_SEVERITY = ['low', 'moderate', 'critical']
 ALARM_OPERATORS = ['lt', 'le', 'eq', 'ne', 'ge', 'gt']
 STATISTICS = ['max', 'min', 'avg', 'sum', 'count']
 
+ALARM_LIST_COLS = ['alarm_id', 'type', 'name', 'state', 'severity', 'enabled']
+
 
 class CliAlarmList(lister.Lister):
     """List alarms"""
-
-    @staticmethod
-    def get_columns(alarm_type):
-        cols = ['alarm_id', 'name', 'state', 'severity', 'enabled',
-                'repeat_actions', 'time_constraints']
-        if alarm_type == 'threshold':
-            cols.append('threshold_rule')
-        elif alarm_type == 'event':
-            cols.append('event_rule')
-        elif alarm_type == 'gnocchi_resources_threshold':
-            cols.append('gnocchi_resources_threshold_rule')
-        elif alarm_type == 'gnocchi_aggregation_by_metrics_threshold':
-            cols.append('gnocchi_aggregation_by_metrics_threshold_rule')
-        elif alarm_type == 'gnocchi_aggregation_by_resources_threshold':
-            cols.append('gnocchi_aggregation_by_resources_threshold_rule')
-        return cols
 
     def get_parser(self, prog_name):
         parser = super(CliAlarmList, self).get_parser(prog_name)
@@ -53,7 +39,7 @@ class CliAlarmList(lister.Lister):
 
     def take_action(self, parsed_args):
         alarms = self.app.client.alarm.list(alarm_type=parsed_args.type)
-        return utils.list2cols(self.get_columns(parsed_args.type), alarms)
+        return utils.list2cols(ALARM_LIST_COLS, alarms)
 
 
 class CliAlarmSearch(CliAlarmList):
@@ -71,7 +57,7 @@ class CliAlarmSearch(CliAlarmList):
         else:
             query = type_query
         alarms = self.app.client.alarm.search(query=query)
-        return utils.list2cols(self.get_columns(parsed_args.type), alarms)
+        return utils.list2cols(ALARM_LIST_COLS, alarms)
 
 
 def _format_alarm(alarm):

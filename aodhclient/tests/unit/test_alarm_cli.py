@@ -21,15 +21,6 @@ import testtools
 from aodhclient.v2 import alarm_cli
 
 
-class CliAlarmListTest(testtools.TestCase):
-
-    def test_get_columns(self):
-        expected_value = 'gnocchi_resources_threshold_rule'
-        result = alarm_cli.CliAlarmList.get_columns(
-            'gnocchi_resources_threshold')
-        self.assertIn(expected_value, result)
-
-
 class CliAlarmCreateTest(testtools.TestCase):
 
     def setUp(self):

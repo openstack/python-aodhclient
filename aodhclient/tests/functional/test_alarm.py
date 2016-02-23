@@ -78,7 +78,10 @@ class AodhClientTest(base.ClientTestBase):
         result = self.aodh('alarm', params="list --type event")
         self.assertIn(ALARM_ID,
                       [r['alarm_id'] for r in self.parser.listing(result)])
+        output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
+                         'enabled']
         for alarm_list in self.parser.listing(result):
+            self.assertEqual(sorted(output_colums), sorted(alarm_list.keys()))
             if alarm_list["alarm_id"] == ALARM_ID:
                 self.assertEqual('ev_alarm1', alarm_list['name'])
 
@@ -172,7 +175,10 @@ class AodhClientTest(base.ClientTestBase):
         result = self.aodh('alarm', params="list --type threshold")
         self.assertIn(ALARM_ID,
                       [r['alarm_id'] for r in self.parser.listing(result)])
+        output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
+                         'enabled']
         for alarm_list in self.parser.listing(result):
+            self.assertEqual(sorted(output_colums), sorted(alarm_list.keys()))
             if alarm_list["alarm_id"] == ALARM_ID:
                 self.assertEqual('alarm1', alarm_list['name'])
 
@@ -294,7 +300,10 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
             'alarm', params="list --type gnocchi_resources_threshold")
         self.assertIn(ALARM_ID,
                       [r['alarm_id'] for r in self.parser.listing(result)])
+        output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
+                         'enabled']
         for alarm_list in self.parser.listing(result):
+            self.assertEqual(sorted(output_colums), sorted(alarm_list.keys()))
             if alarm_list["alarm_id"] == ALARM_ID:
                 self.assertEqual('alarm1', alarm_list['name'])
 
@@ -422,7 +431,10 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                             "gnocchi_aggregation_by_resources_threshold")
         self.assertIn(ALARM_ID,
                       [r['alarm_id'] for r in self.parser.listing(result)])
+        output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
+                         'enabled']
         for alarm_list in self.parser.listing(result):
+            self.assertEqual(sorted(output_colums), sorted(alarm_list.keys()))
             if alarm_list["alarm_id"] == ALARM_ID:
                 self.assertEqual('alarm1', alarm_list['name'])
 
@@ -594,5 +606,9 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         result = self.aodh(
             'alarm', params="list --type "
                             "gnocchi_aggregation_by_metrics_threshold")
+        output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
+                         'enabled']
+        for alarm_list in self.parser.listing(result):
+            self.assertEqual(sorted(output_colums), sorted(alarm_list.keys()))
         self.assertNotIn(ALARM_ID,
                          [r['alarm_id'] for r in self.parser.listing(result)])
