@@ -24,7 +24,6 @@ class AodhClientTest(base.ClientTestBase):
         self.aodh("help", params="alarm create")
         self.aodh("help", params="alarm delete")
         self.aodh("help", params="alarm list")
-        self.aodh("help", params="alarm search")
         self.aodh("help", params="alarm show")
         self.aodh("help", params="alarm update")
 
@@ -75,7 +74,7 @@ class AodhClientTest(base.ClientTestBase):
         self.assertEqual('dummy', alarm_show['event_type'])
 
         # LIST
-        result = self.aodh('alarm', params="list --type event")
+        result = self.aodh('alarm', params="list")
         self.assertIn(ALARM_ID,
                       [r['alarm_id'] for r in self.parser.listing(result)])
         output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
@@ -84,23 +83,6 @@ class AodhClientTest(base.ClientTestBase):
             self.assertEqual(sorted(output_colums), sorted(alarm_list.keys()))
             if alarm_list["alarm_id"] == ALARM_ID:
                 self.assertEqual('ev_alarm1', alarm_list['name'])
-
-        # SEARCH ALL
-        result = self.aodh('alarm', params=("search --type event"))
-        self.assertIn(ALARM_ID,
-                      [r['alarm_id'] for r in self.parser.listing(result)])
-        for alarm_list in self.parser.listing(result):
-            if alarm_list["alarm_id"] == ALARM_ID:
-                self.assertEqual('ev_alarm1', alarm_list['name'])
-
-        # SEARCH SOME
-        result = self.aodh('alarm',
-                           params=("search --type event --query "
-                                   "'{\"=\": {\"project_id\": \"%s\"}}'"
-                                   % PROJECT_ID))
-        alarm_list = self.parser.listing(result)[0]
-        self.assertEqual(ALARM_ID, alarm_list["alarm_id"])
-        self.assertEqual('ev_alarm1', alarm_list['name'])
 
         # DELETE
         result = self.aodh('alarm', params="delete %s" % ALARM_ID)
@@ -118,7 +100,7 @@ class AodhClientTest(base.ClientTestBase):
         self.assertFirstLineStartsWith(result.split('\n'), expected)
 
         # LIST DOES NOT HAVE ALARM
-        result = self.aodh('alarm', params="list --type event")
+        result = self.aodh('alarm', params="list")
         self.assertNotIn(ALARM_ID,
                          [r['alarm_id'] for r in self.parser.listing(result)])
 
@@ -188,7 +170,7 @@ class AodhClientTest(base.ClientTestBase):
         self.assertEqual('10.0', alarm_show['threshold'])
 
         # LIST
-        result = self.aodh('alarm', params="list --type threshold")
+        result = self.aodh('alarm', params="list")
         self.assertIn(ALARM_ID,
                       [r['alarm_id'] for r in self.parser.listing(result)])
         output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
@@ -197,23 +179,6 @@ class AodhClientTest(base.ClientTestBase):
             self.assertEqual(sorted(output_colums), sorted(alarm_list.keys()))
             if alarm_list["alarm_id"] == ALARM_ID:
                 self.assertEqual('alarm1', alarm_list['name'])
-
-        # SEARCH ALL
-        result = self.aodh('alarm', params=("search --type threshold"))
-        self.assertIn(ALARM_ID,
-                      [r['alarm_id'] for r in self.parser.listing(result)])
-        for alarm_list in self.parser.listing(result):
-            if alarm_list["alarm_id"] == ALARM_ID:
-                self.assertEqual('alarm1', alarm_list['name'])
-
-        # SEARCH SOME
-        result = self.aodh('alarm',
-                           params=("search --type threshold --query "
-                                   "'{\"=\": {\"project_id\": \"%s\"}}'"
-                                   % PROJECT_ID))
-        alarm_list = self.parser.listing(result)[0]
-        self.assertEqual(ALARM_ID, alarm_list["alarm_id"])
-        self.assertEqual('alarm1', alarm_list['name'])
 
         # DELETE
         result = self.aodh('alarm', params="delete %s" % ALARM_ID)
@@ -231,7 +196,7 @@ class AodhClientTest(base.ClientTestBase):
         self.assertFirstLineStartsWith(result.split('\n'), expected)
 
         # LIST DOES NOT HAVE ALARM
-        result = self.aodh('alarm', params="list --type threshold")
+        result = self.aodh('alarm', params="list")
         self.assertNotIn(ALARM_ID,
                          [r['alarm_id'] for r in self.parser.listing(result)])
 
@@ -294,7 +259,7 @@ class AodhClientTest(base.ClientTestBase):
         self.assertEqual('calarm1', alarm_show['name'])
 
         # LIST
-        result = self.aodh('alarm', params="list --type composite")
+        result = self.aodh('alarm', params="list")
         self.assertIn(alarm_id,
                       [r['alarm_id'] for r in self.parser.listing(result)])
         output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
@@ -303,23 +268,6 @@ class AodhClientTest(base.ClientTestBase):
             self.assertEqual(sorted(output_colums), sorted(alarm_list.keys()))
             if alarm_list["alarm_id"] == alarm_id:
                 self.assertEqual('calarm1', alarm_list['name'])
-
-        # SEARCH ALL
-        result = self.aodh('alarm', params="search --type composite")
-        self.assertIn(alarm_id,
-                      [r['alarm_id'] for r in self.parser.listing(result)])
-        for alarm_list in self.parser.listing(result):
-            if alarm_list["alarm_id"] == alarm_id:
-                self.assertEqual('calarm1', alarm_list['name'])
-
-        # SEARCH SOME
-        result = self.aodh('alarm',
-                           params=("search --type composite --query "
-                                   "'{\"=\": {\"project_id\": \"%s\"}}'"
-                                   % project_id))
-        alarm_list = self.parser.listing(result)[0]
-        self.assertEqual(alarm_id, alarm_list["alarm_id"])
-        self.assertEqual('calarm1', alarm_list['name'])
 
         # DELETE
         result = self.aodh('alarm', params="delete %s" % alarm_id)
@@ -337,7 +285,7 @@ class AodhClientTest(base.ClientTestBase):
         self.assertFirstLineStartsWith(result.split('\n'), expected)
 
         # LIST DOES NOT HAVE ALARM
-        result = self.aodh('alarm', params="list --type composite")
+        result = self.aodh('alarm', params="list")
         self.assertNotIn(alarm_id,
                          [r['alarm_id'] for r in self.parser.listing(result)])
 
@@ -418,8 +366,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual('instance', alarm_show['resource_type'])
 
         # LIST
-        result = self.aodh(
-            'alarm', params="list --type gnocchi_resources_threshold")
+        result = self.aodh('alarm', params="list")
         self.assertIn(ALARM_ID,
                       [r['alarm_id'] for r in self.parser.listing(result)])
         output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
@@ -428,25 +375,6 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
             self.assertEqual(sorted(output_colums), sorted(alarm_list.keys()))
             if alarm_list["alarm_id"] == ALARM_ID:
                 self.assertEqual('alarm1', alarm_list['name'])
-
-        # SEARCH ALL
-        result = self.aodh(
-            'alarm', params=("search --type gnocchi_resources_threshold"))
-        self.assertIn(ALARM_ID,
-                      [r['alarm_id'] for r in self.parser.listing(result)])
-        for alarm_list in self.parser.listing(result):
-            if alarm_list["alarm_id"] == ALARM_ID:
-                self.assertEqual('alarm1', alarm_list['name'])
-
-        # SEARCH SOME
-        result = self.aodh('alarm',
-                           params=("search --type gnocchi_resources_threshold "
-                                   "--query "
-                                   "'{\"=\": {\"project_id\": \"%s\"}}'"
-                                   % PROJECT_ID))
-        alarm_list = self.parser.listing(result)[0]
-        self.assertEqual(ALARM_ID, alarm_list["alarm_id"])
-        self.assertEqual('alarm1', alarm_list['name'])
 
         # DELETE
         result = self.aodh('alarm', params="delete %s" % ALARM_ID)
@@ -464,8 +392,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertFirstLineStartsWith(result.split('\n'), expected)
 
         # LIST DOES NOT HAVE ALARM
-        result = self.aodh('alarm',
-                           params="list --type gnocchi_resources_threshold")
+        result = self.aodh('alarm', params="list")
         self.assertNotIn(ALARM_ID,
                          [r['alarm_id'] for r in self.parser.listing(result)])
 
@@ -548,9 +475,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual('instance', alarm_show['resource_type'])
 
         # LIST
-        result = self.aodh(
-            'alarm', params="list --type "
-                            "gnocchi_aggregation_by_resources_threshold")
+        result = self.aodh('alarm', params="list")
         self.assertIn(ALARM_ID,
                       [r['alarm_id'] for r in self.parser.listing(result)])
         output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
@@ -559,26 +484,6 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
             self.assertEqual(sorted(output_colums), sorted(alarm_list.keys()))
             if alarm_list["alarm_id"] == ALARM_ID:
                 self.assertEqual('alarm1', alarm_list['name'])
-
-        # SEARCH ALL
-        result = self.aodh(
-            'alarm', params=("search --type "
-                             "gnocchi_aggregation_by_resources_threshold"))
-        self.assertIn(ALARM_ID,
-                      [r['alarm_id'] for r in self.parser.listing(result)])
-        for alarm_list in self.parser.listing(result):
-            if alarm_list["alarm_id"] == ALARM_ID:
-                self.assertEqual('alarm1', alarm_list['name'])
-
-        # SEARCH SOME
-        result = self.aodh(
-            'alarm', params=("search --type "
-                             "gnocchi_aggregation_by_resources_threshold "
-                             "--query '{\"=\": {\"project_id\": \"%s\"}}'"
-                             % PROJECT_ID))
-        alarm_list = self.parser.listing(result)[0]
-        self.assertEqual(ALARM_ID, alarm_list["alarm_id"])
-        self.assertEqual('alarm1', alarm_list['name'])
 
         # DELETE
         result = self.aodh('alarm', params="delete %s" % ALARM_ID)
@@ -596,8 +501,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertFirstLineStartsWith(result.split('\n'), expected)
 
         # LIST DOES NOT HAVE ALARM
-        result = self.aodh('alarm', params="list --type "
-                           "gnocchi_aggregation_by_resources_threshold")
+        result = self.aodh('alarm', params="list")
         self.assertNotIn(ALARM_ID,
                          [r['alarm_id'] for r in self.parser.listing(result)])
 
@@ -678,35 +582,12 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual('last', alarm_show['aggregation_method'])
 
         # LIST
-        result = self.aodh(
-            'alarm', params="list --type "
-                            "gnocchi_aggregation_by_metrics_threshold")
+        result = self.aodh('alarm', params="list")
         self.assertIn(ALARM_ID,
                       [r['alarm_id'] for r in self.parser.listing(result)])
         for alarm_list in self.parser.listing(result):
             if alarm_list["alarm_id"] == ALARM_ID:
                 self.assertEqual('alarm1', alarm_list['name'])
-
-        # SEARCH ALL
-        result = self.aodh(
-            'alarm', params=("search --type "
-                             "gnocchi_aggregation_by_metrics_threshold"))
-        self.assertIn(ALARM_ID,
-                      [r['alarm_id'] for r in self.parser.listing(result)])
-        for alarm_list in self.parser.listing(result):
-            if alarm_list["alarm_id"] == ALARM_ID:
-                self.assertEqual('alarm1', alarm_list['name'])
-
-        # SEARCH SOME
-        result = self.aodh(
-            'alarm',
-            params=("search --type "
-                    "gnocchi_aggregation_by_metrics_threshold "
-                    "--query '{\"=\": {\"project_id\": \"%s\"}}'"
-                    % PROJECT_ID))
-        alarm_list = self.parser.listing(result)[0]
-        self.assertEqual(ALARM_ID, alarm_list["alarm_id"])
-        self.assertEqual('alarm1', alarm_list['name'])
 
         # DELETE
         result = self.aodh('alarm', params="delete %s" % ALARM_ID)
@@ -725,9 +606,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertFirstLineStartsWith(result.split('\n'), expected)
 
         # LIST DOES NOT HAVE ALARM
-        result = self.aodh(
-            'alarm', params="list --type "
-                            "gnocchi_aggregation_by_metrics_threshold")
+        result = self.aodh('alarm', params="list")
         output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
                          'enabled']
         for alarm_list in self.parser.listing(result):

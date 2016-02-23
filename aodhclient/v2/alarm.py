@@ -21,10 +21,9 @@ class AlarmManager(base.Manager):
 
     url = "v2/alarms"
 
-    def list(self, alarm_type):
+    def list(self):
         """List alarms"""
-        return self._get(self.url + '?q.field=type&q.op=eq' +
-                         '&q.value=' + alarm_type).json()
+        return self._get(self.url).json()
 
     def get(self, alarm_id):
         """Get an alarm
@@ -101,14 +100,3 @@ class AlarmManager(base.Manager):
         :type alarm_id: str
         """
         self._delete(self.url + '/' + alarm_id)
-
-    def search(self, query=None):
-        """List alarms
-
-        :param query: The query dictionary
-        :type query: dict
-        """
-        query = {'filter': query} if query else {}
-        url = "v2/query/alarms"
-        return self._post(url, headers={'Content-Type': "application/json"},
-                          data=jsonutils.dumps(query)).json()

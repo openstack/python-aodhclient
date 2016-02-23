@@ -36,32 +36,8 @@ ALARM_LIST_COLS = ['alarm_id', 'type', 'name', 'state', 'severity', 'enabled']
 class CliAlarmList(lister.Lister):
     """List alarms"""
 
-    def get_parser(self, prog_name):
-        parser = super(CliAlarmList, self).get_parser(prog_name)
-        parser.add_argument('-t', '--type', required=True,
-                            choices=ALARM_TYPES, help='Type of alarm')
-        return parser
-
     def take_action(self, parsed_args):
-        alarms = self.app.client.alarm.list(alarm_type=parsed_args.type)
-        return utils.list2cols(ALARM_LIST_COLS, alarms)
-
-
-class CliAlarmSearch(CliAlarmList):
-    """Search alarms with specified query rules"""
-
-    def get_parser(self, prog_name):
-        parser = super(CliAlarmSearch, self).get_parser(prog_name)
-        parser.add_argument("--query", help="Query"),
-        return parser
-
-    def take_action(self, parsed_args):
-        type_query = '{"=": {"type": "%s"}}' % parsed_args.type
-        if parsed_args.query:
-            query = '{"and": [%s, %s]}' % (type_query, parsed_args.query)
-        else:
-            query = type_query
-        alarms = self.app.client.alarm.search(query=query)
+        alarms = self.app.client.alarm.list()
         return utils.list2cols(ALARM_LIST_COLS, alarms)
 
 

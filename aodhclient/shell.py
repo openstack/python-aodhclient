@@ -37,7 +37,6 @@ class AodhCommandManager(commandmanager.CommandManager):
         "alarm delete": alarm_cli.CliAlarmDelete,
         "alarm list": alarm_cli.CliAlarmList,
         "alarm show": alarm_cli.CliAlarmShow,
-        "alarm search": alarm_cli.CliAlarmSearch,
         "alarm update": alarm_cli.CliAlarmUpdate,
         "alarm-history show": alarm_history_cli.CliAlarmHistoryShow,
         "alarm-history search": alarm_history_cli.CliAlarmHistorySearch,
