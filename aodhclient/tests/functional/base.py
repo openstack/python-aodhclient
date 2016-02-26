@@ -11,9 +11,6 @@
 #    under the License.
 
 import os
-import shlex
-import six
-import subprocess
 import time
 import uuid
 
@@ -43,34 +40,8 @@ class AodhClient(object):
 
         flags = creds + ' ' + flags
 
-        # FIXME(sileht): base.execute is broken in py3 in tempest-lib
-        # see: https://review.openstack.org/#/c/218870/
-        # return base.execute("aodh", action, flags, params, fail_ok,
-        #                      merge_stderr, self.cli_dir)
-
-        cmd = "aodh"
-
-        # from fixed tempestlib
-        cmd = ' '.join([os.path.join(self.cli_dir, cmd),
-                        flags, action, params])
-        if six.PY2:
-            cmd = cmd.encode('utf-8')
-        cmd = shlex.split(cmd)
-        result = ''
-        result_err = ''
-        stdout = subprocess.PIPE
-        stderr = subprocess.STDOUT if merge_stderr else subprocess.PIPE
-        proc = subprocess.Popen(cmd, stdout=stdout, stderr=stderr)
-        result, result_err = proc.communicate()
-        if not fail_ok and proc.returncode != 0:
-            raise exceptions.CommandFailed(proc.returncode,
-                                           cmd,
-                                           result,
-                                           result_err)
-        if six.PY2:
-            return result
-        else:
-            return os.fsdecode(result)
+        return base.execute("aodh", action, flags, params, fail_ok,
+                            merge_stderr, self.cli_dir)
 
 
 class ClientTestBase(base.ClientTestBase):
