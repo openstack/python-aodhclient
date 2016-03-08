@@ -256,7 +256,7 @@ class CliAlarmCreate(show.ShowOne):
             self.parser.error('gnocchi_aggregation_by_resources_threshold '
                               'requires --metric, --threshold, '
                               '--aggregation-method, --query and '
-                              '--resource_type')
+                              '--resource-type')
         elif (parsed_args.type == 'composite' and
               not parsed_args.composite_rule):
             self.parser.error('composite alarm requires'
