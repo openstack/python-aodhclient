@@ -38,16 +38,16 @@ class CliAlarmCreateTest(testtools.TestCase):
         test_parsed_args = parser.parse_args([
             '--name', 'gnocchi_resources_threshold_test',
             '--type', 'gnocchi_resources_threshold',
-            '--metric', 'cpu'
-            '--aggregation_method', 'last',
+            '--metric', 'cpu',
+            '--aggregation-method', 'last',
             '--resource-type', 'generic',
             '--threshold', '80'
             ])
         self.cli_alarm_create._validate_args(test_parsed_args)
-        mock_arg.assert_called_with(
-            'gnocchi_resources_threshold requires --metric'
-            ', --threshold, --resource-id, --resource-type '
-            'and --aggregation-method')
+        mock_arg.assert_called_once_with(
+            'gnocchi_resources_threshold requires --metric, '
+            '--threshold, --resource-id, --resource-type and '
+            '--aggregation-method')
 
     @mock.patch.object(argparse.ArgumentParser, 'error')
     def test_validate_args_threshold(self, mock_arg):
@@ -60,7 +60,7 @@ class CliAlarmCreateTest(testtools.TestCase):
             '--threshold', '80'
             ])
         self.cli_alarm_create._validate_args(test_parsed_args)
-        mock_arg.assert_called_with(
+        mock_arg.assert_called_once_with(
             'threshold alarm requires -m/--meter-name and '
             '--threshold parameters')
 
@@ -73,15 +73,14 @@ class CliAlarmCreateTest(testtools.TestCase):
             '--name', 'gnocchi_aggregation_by_resources_threshold_test',
             '--type', 'gnocchi_aggregation_by_resources_threshold',
             '--metric', 'cpu',
-            '--aggregation_method', 'last',
+            '--aggregation-method', 'last',
             '--resource-type', 'generic',
             '--threshold', '80'
             ])
         self.cli_alarm_create._validate_args(test_parsed_args)
-        mock_arg.assert_called_with(
-            'gnocchi_aggregation_by_resources_threshold '
-            'requires --metric, --threshold, '
-            '--aggregation-method, --query and '
+        mock_arg.assert_called_once_with(
+            'gnocchi_aggregation_by_resources_threshold requires '
+            '--metric, --threshold, --aggregation-method, --query and '
             '--resource-type')
 
     @mock.patch.object(argparse.ArgumentParser, 'error')
@@ -96,10 +95,9 @@ class CliAlarmCreateTest(testtools.TestCase):
             '--threshold', '80'
             ])
         self.cli_alarm_create._validate_args(test_parsed_args)
-        mock_arg.assert_called_with(
-            'gnocchi_aggregation_by_metrics_threshold'
-            ' requires --metrics, --threshold and '
-            '--aggregation-method')
+        mock_arg.assert_called_once_with(
+            'gnocchi_aggregation_by_metrics_threshold requires '
+            '--metrics, --threshold and --aggregation-method')
 
     def test_alarm_from_args(self):
         # The test case to cover the method _alarm_from_args
