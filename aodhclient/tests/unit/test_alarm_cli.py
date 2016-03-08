@@ -124,7 +124,7 @@ class CliAlarmCreateTest(testtools.TestCase):
             '--comparison-operator', 'le',
             '--threshold', '80',
             '--event-type', 'event',
-            '--query', '{}',
+            '--query', 'resource=fake-resource-id',
             '--granularity', '60',
             '--aggregation-method', 'last',
             '--metric', 'cpu',
@@ -154,12 +154,18 @@ class CliAlarmCreateTest(testtools.TestCase):
                 'statistic': 'max',
                 'comparison_operator': 'le',
                 'threshold': 80.0,
-                'query': '{}'
-                },
+                'query': [{'field': 'resource',
+                           'op': 'eq',
+                           'type': '',
+                           'value': 'fake-resource-id'}]
+            },
             'event_rule': {
                 'event_type': 'event',
-                'query': '{}'
-                },
+                'query': [{'field': 'resource',
+                           'op': 'eq',
+                           'type': '',
+                           'value': 'fake-resource-id'}]
+            },
             'gnocchi_resources_threshold_rule': {
                 'granularity': '60',
                 'metric': 'cpu',
@@ -169,14 +175,14 @@ class CliAlarmCreateTest(testtools.TestCase):
                 'comparison_operator': 'le',
                 'threshold': 80.0,
                 'resource_type': 'generic'
-                },
+            },
             'gnocchi_aggregation_by_metrics_threshold_rule': {
                 'granularity': '60',
                 'aggregation_method': 'last',
                 'evaluation_periods': 60,
                 'comparison_operator': 'le',
                 'threshold': 80.0
-                },
+            },
             'gnocchi_aggregation_by_resources_threshold_rule': {
                 'granularity': '60',
                 'metric': 'cpu',
@@ -184,9 +190,12 @@ class CliAlarmCreateTest(testtools.TestCase):
                 'evaluation_periods': 60,
                 'comparison_operator': 'le',
                 'threshold': 80.0,
-                'query': '{}',
+                'query': [{'field': 'resource',
+                           'op': 'eq',
+                           'type': '',
+                           'value': 'fake-resource-id'}],
                 'resource_type': 'generic'
-                },
+            },
             'composite_rule': None,
             'type': 'threshold'
             }
