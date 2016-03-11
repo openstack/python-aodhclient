@@ -36,8 +36,21 @@ ALARM_LIST_COLS = ['alarm_id', 'type', 'name', 'state', 'severity', 'enabled']
 class CliAlarmList(lister.Lister):
     """List alarms"""
 
+    def get_parser(self, prog_name):
+        parser = super(CliAlarmList, self).get_parser(prog_name)
+        parser.add_argument("--query",
+                            help="Rich query supported by aodh, "
+                                 "e.g. project_id!=my-id "
+                                 "user_id=foo or user_id=bar"),
+        return parser
+
     def take_action(self, parsed_args):
-        alarms = self.app.client.alarm.list()
+        if parsed_args.query:
+            query = jsonutils.dumps(
+                utils.search_query_builder(parsed_args.query))
+        else:
+            query = None
+        alarms = self.app.client.alarm.list(query)
         return utils.list2cols(ALARM_LIST_COLS, alarms)
 
 

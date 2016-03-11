@@ -28,37 +28,27 @@ class SearchQueryBuilderTest(base.BaseTestCase):
         self._do_test('foo=True', {"=": {"foo": True}})
         self._do_test('foo=null', {"=": {"foo": None}})
         self._do_test('foo="null"', {"=": {"foo": "null"}})
-        self._do_test('foo in ["null", "foo"]',
-                      {"in": {"foo": ["null", "foo"]}})
-        self._do_test(u'foo="quote" and bar≠1',
-                      {"and": [{u"≠": {"bar": 1}},
-                               {"=": {"foo": "quote"}}]})
-        self._do_test('foo="quote" or bar like "%%foo"',
-                      {"or": [{"like": {"bar": "%%foo"}},
-                              {"=": {"foo": "quote"}}]})
 
-        self._do_test('not (foo="quote" or bar like "%%foo" or foo="what!" '
+        self._do_test('not (foo="quote" or foo="what!" '
                       'or bar="who?")',
                       {"not": {"or": [
                           {"=": {"bar": "who?"}},
                           {"=": {"foo": "what!"}},
-                          {"like": {"bar": "%%foo"}},
                           {"=": {"foo": "quote"}},
                       ]}})
 
-        self._do_test('(foo="quote" or bar like "%%foo" or not foo="what!" '
+        self._do_test('(foo="quote" or not foo="what!" '
                       'or bar="who?") and cat="meme"',
                       {"and": [
                           {"=": {"cat": "meme"}},
                           {"or": [
                               {"=": {"bar": "who?"}},
                               {"not": {"=": {"foo": "what!"}}},
-                              {"like": {"bar": "%%foo"}},
                               {"=": {"foo": "quote"}},
                           ]}
                       ]})
 
-        self._do_test('foo="quote" or bar like "%%foo" or foo="what!" '
+        self._do_test('foo="quote" or foo="what!" '
                       'or bar="who?" and cat="meme"',
                       {"or": [
                           {"and": [
@@ -66,20 +56,18 @@ class SearchQueryBuilderTest(base.BaseTestCase):
                               {"=": {"bar": "who?"}},
                           ]},
                           {"=": {"foo": "what!"}},
-                          {"like": {"bar": "%%foo"}},
                           {"=": {"foo": "quote"}},
                       ]})
 
-        self._do_test('foo="quote" or bar like "%%foo" and foo="what!" '
+        self._do_test('foo="quote" and foo="what!" '
                       'or bar="who?" or cat="meme"',
-                      {"or": [
-                          {"=": {"cat": "meme"}},
-                          {"=": {"bar": "who?"}},
-                          {"and": [
-                              {"=": {"foo": "what!"}},
-                              {"like": {"bar": "%%foo"}},
-                          ]},
-                          {"=": {"foo": "quote"}},
+                      {'or': [
+                          {'=': {'cat': 'meme'}},
+                          {'=': {'bar': 'who?'}},
+                          {'and': [
+                              {'=': {'foo': 'what!'}},
+                              {'=': {'foo': 'quote'}}
+                          ]}
                       ]})
 
 

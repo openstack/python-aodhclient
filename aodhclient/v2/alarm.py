@@ -21,9 +21,16 @@ class AlarmManager(base.Manager):
 
     url = "v2/alarms"
 
-    def list(self):
+    def list(self, query=None):
         """List alarms"""
-        return self._get(self.url).json()
+        if query:
+            query = {'filter': query}
+            url = "v2/query/alarms"
+            return self._post(url,
+                              headers={'Content-Type': "application/json"},
+                              data=jsonutils.dumps(query)).json()
+        else:
+            return self._get(self.url).json()
 
     def get(self, alarm_id):
         """Get an alarm

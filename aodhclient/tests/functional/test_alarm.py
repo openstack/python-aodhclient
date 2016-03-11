@@ -84,6 +84,13 @@ class AodhClientTest(base.ClientTestBase):
             if alarm_list["alarm_id"] == ALARM_ID:
                 self.assertEqual('ev_alarm1', alarm_list['name'])
 
+        # LIST WITH QUERY
+        result = self.aodh('alarm',
+                           params=("list --query project_id=%s" % PROJECT_ID))
+        alarm_list = self.parser.listing(result)[0]
+        self.assertEqual(ALARM_ID, alarm_list["alarm_id"])
+        self.assertEqual('ev_alarm1', alarm_list['name'])
+
         # DELETE
         result = self.aodh('alarm', params="delete %s" % ALARM_ID)
         self.assertEqual("", result)
@@ -180,6 +187,13 @@ class AodhClientTest(base.ClientTestBase):
             if alarm_list["alarm_id"] == ALARM_ID:
                 self.assertEqual('alarm1', alarm_list['name'])
 
+        # LIST WITH QUERY
+        result = self.aodh('alarm',
+                           params=("list --query project_id=%s" % PROJECT_ID))
+        alarm_list = self.parser.listing(result)[0]
+        self.assertEqual(ALARM_ID, alarm_list["alarm_id"])
+        self.assertEqual('alarm1', alarm_list['name'])
+
         # DELETE
         result = self.aodh('alarm', params="delete %s" % ALARM_ID)
         self.assertEqual("", result)
@@ -268,6 +282,13 @@ class AodhClientTest(base.ClientTestBase):
             self.assertEqual(sorted(output_colums), sorted(alarm_list.keys()))
             if alarm_list["alarm_id"] == alarm_id:
                 self.assertEqual('calarm1', alarm_list['name'])
+
+        # LIST WITH QUERY
+        result = self.aodh('alarm',
+                           params=("list --query project_id=%s" % project_id))
+        alarm_list = self.parser.listing(result)[0]
+        self.assertEqual(alarm_id, alarm_list["alarm_id"])
+        self.assertEqual('calarm1', alarm_list['name'])
 
         # DELETE
         result = self.aodh('alarm', params="delete %s" % alarm_id)
@@ -375,6 +396,13 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
             self.assertEqual(sorted(output_colums), sorted(alarm_list.keys()))
             if alarm_list["alarm_id"] == ALARM_ID:
                 self.assertEqual('alarm1', alarm_list['name'])
+
+        # LIST WITH QUERY
+        result = self.aodh('alarm',
+                           params=("list --query project_id=%s" % PROJECT_ID))
+        alarm_list = self.parser.listing(result)[0]
+        self.assertEqual(ALARM_ID, alarm_list["alarm_id"])
+        self.assertEqual('alarm1', alarm_list['name'])
 
         # DELETE
         result = self.aodh('alarm', params="delete %s" % ALARM_ID)
@@ -588,6 +616,13 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         for alarm_list in self.parser.listing(result):
             if alarm_list["alarm_id"] == ALARM_ID:
                 self.assertEqual('alarm1', alarm_list['name'])
+
+        # LIST WITH QUERY
+        result = self.aodh('alarm',
+                           params=("list --query project_id=%s" % PROJECT_ID))
+        alarm_list = self.parser.listing(result)[0]
+        self.assertEqual(ALARM_ID, alarm_list["alarm_id"])
+        self.assertEqual('alarm1', alarm_list['name'])
 
         # DELETE
         result = self.aodh('alarm', params="delete %s" % ALARM_ID)

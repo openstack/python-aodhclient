@@ -46,6 +46,20 @@ class AlarmManagerTest(testtools.TestCase):
         am.list()
         mock_am.assert_called_with('v2/alarms')
 
+    @mock.patch.object(alarm.AlarmManager, '_post')
+    def test_list_with_query(self, mock_am):
+        am = alarm.AlarmManager(self.client)
+        query = '{"=": {"type": "event"}}'
+        am.list(query)
+        url = 'v2/query/alarms'
+        expected_value = ('{"filter": "{\\"=\\": {\\"type\\":'
+                          ' \\"event\\"}}"}')
+        headers_value = {'Content-Type': "application/json"}
+        mock_am.assert_called_with(
+            url,
+            data=expected_value,
+            headers=headers_value)
+
     @mock.patch.object(alarm.AlarmManager, '_get')
     def test_get(self, mock_am):
         am = alarm.AlarmManager(self.client)

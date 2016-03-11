@@ -17,9 +17,8 @@ import pyparsing as pp
 
 uninary_operators = ("not", )
 binary_operator = (u">=", u"<=", u"!=", u">", u"<", u"=", u"==", u"eq", u"ne",
-                   u"lt", u"gt", u"ge", u"le", u"in", u"like", u"≠", u"≥",
-                   u"≤", u"like" "in")
-multiple_operators = (u"and", u"or", u"∧", u"∨")
+                   u"lt", u"gt", u"ge", u"le")
+multiple_operators = (u"and", u"or")
 
 operator = pp.Regex(u"|".join(binary_operator))
 null = pp.Regex("None|none|null").setParseAction(pp.replaceWith(None))
@@ -37,15 +36,13 @@ in_list = pp.Group(pp.Suppress('[') +
                    pp.Optional(pp.delimitedList(comparison_term)) +
                    pp.Suppress(']'))("list")
 comparison_term << (null | boolean | uuid | identifier | number |
-                    quoted_string | in_list)
+                    quoted_string)
 condition = pp.Group(comparison_term + operator + comparison_term)
 
 expr = pp.operatorPrecedence(condition, [
     ("not", 1, pp.opAssoc.RIGHT, ),
     ("and", 2, pp.opAssoc.LEFT, ),
-    ("∧", 2, pp.opAssoc.LEFT, ),
     ("or", 2, pp.opAssoc.LEFT, ),
-    ("∨", 2, pp.opAssoc.LEFT, ),
 ])
 
 OP_LOOKUP = {'!=': 'ne',
