@@ -123,7 +123,7 @@ class CliAlarmCreate(show.ShowOne):
                                   'alarm. May be used multiple times'))
         parser.add_argument('--ok-action', dest='ok_actions',
                             metavar='<Webhook URL>', action='append',
-                            help=('URL to invoke when state transitions to'
+                            help=('URL to invoke when state transitions to '
                                   'OK. May be used multiple times'))
         parser.add_argument('--insufficient-data-action',
                             dest='insufficient_data_actions',
