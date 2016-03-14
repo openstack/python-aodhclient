@@ -18,9 +18,8 @@ clean_exit () {
 }
 
 AODH_DATA=`mktemp -d /tmp/aodh-data-XXXXX`
-GNOCCHI_DATA=`mktemp -d /tmp/gnocchi-data-XXXXX`
 MYSQL_DATA=`mktemp -d /tmp/aodh-mysql-XXXXX`
-trap "clean_exit \"$AODH_DATA\" \"$GNOCCHI_DATA\" \"$MYSQL_DATA\"" EXIT
+trap "clean_exit \"$AODH_DATA\" \"$MYSQL_DATA\"" EXIT
 
 mysqld --initialize-insecure --datadir=${MYSQL_DATA} || true
 mkfifo ${MYSQL_DATA}/out
@@ -29,8 +28,7 @@ mysqld --no-defaults --datadir=${MYSQL_DATA} --pid-file=${MYSQL_DATA}/mysql.pid 
 # Wait for MySQL to start listening to connections
 wait_for_line "mysqld: ready for connections." ${MYSQL_DATA}/out
 export AODH_TEST_STORAGE_URL="mysql+pymysql://root@localhost/test?unix_socket=${MYSQL_DATA}/mysql.socket&charset=utf8"
-export GNOCCHI_TEST_INDEXER_URL="mysql+pymysql://root@localhost/gnocchi?unix_socket=${MYSQL_DATA}/mysql.socket&charset=utf8"
-mysql --no-defaults -S ${MYSQL_DATA}/mysql.socket -e 'CREATE DATABASE test; CREATE DATABASE gnocchi;'
+mysql --no-defaults -S ${MYSQL_DATA}/mysql.socket -e 'CREATE DATABASE test;'
 
 
 
@@ -100,31 +98,10 @@ aodh-api --config-file ${AODH_DATA}/aodh.conf &> ${AODH_DATA}/out &
 wait_for_line "Running on http://0.0.0.0:8042/" ${AODH_DATA}/out
 export AODH_ENDPOINT=http://localhost:8042/
 
-
-mkfifo ${GNOCCHI_DATA}/out
-cat > ${GNOCCHI_DATA}/gnocchi.conf <<EOF
-[oslo_policy]
-policy_file = ${VIRTUAL_ENV}/etc/gnocchi/policy.json
-[api]
-paste_config = ${VIRTUAL_ENV}/etc/gnocchi/api-paste.ini
-[storage]
-metric_processing_delay = 1
-file_basepath = ${GNOCCHI_DATA}
-driver = file
-coordination_url = file://${GNOCCHI_DATA}
-[indexer]
-url = $GNOCCHI_TEST_INDEXER_URL
-EOF
-gnocchi-upgrade --config-file ${GNOCCHI_DATA}/gnocchi.conf
-gnocchi-metricd --config-file ${GNOCCHI_DATA}/gnocchi.conf &>/dev/null &
-gnocchi-api --config-file ${GNOCCHI_DATA}/gnocchi.conf &> ${GNOCCHI_DATA}/out &
-# Wait for Gnocchi to start
-wait_for_line "Running on http://0.0.0.0:8041/" ${GNOCCHI_DATA}/out
-
-export GNOCCHI_ENDPOINT=http://localhost:8041/
+source $(which overtest) gnocchi
 
 # gnocchi alarms validate existence
-curl -X POST -H 'Content-Type:application/json' ${GNOCCHI_ENDPOINT}v1/resource/instance --data '{
+curl -X POST -H 'Content-Type:application/json' ${OVERTEST_GNOCCHI_HTTP_URL}/v1/resource/instance --data '{
   "display_name": "myvm",
   "flavor_id": "2", "host": "blah",
   "id": "6868DA77-FA82-4E67-ABA9-270C5AE8CBCA",
