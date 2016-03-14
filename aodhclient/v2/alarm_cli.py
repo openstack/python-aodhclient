@@ -156,10 +156,14 @@ class CliAlarmCreate(show.ShowOne):
 
         common_group = parser.add_argument_group('common alarm rules')
         common_group.add_argument(
-            '-q', '--query', metavar='<QUERY>', dest='query',
-            help='key[op]data_type::value; list. data_type is optional, '
-                 'but if supplied must be string, integer, float, or boolean. '
-                 'Used by threshold and event alarms')
+            '--query', metavar='<QUERY>', dest='query',
+            help="For alarms of type threshold or event: "
+                 "key[op]data_type::value; list. data_type is optional, "
+                 "but if supplied must be string, integer, float, or boolean. "
+                 'For alarms of '
+                 'type gnocchi_aggregation_by_resources_threshold: '
+                 'need to specify a complex query json string, like:'
+                 ' {"and": [{"=": {"ended_at": null}}, ...]}.')
         common_group.add_argument(
             '--comparison-operator', metavar='<OPERATOR>',
             dest='comparison_operator', choices=ALARM_OPERATORS,
@@ -285,6 +289,8 @@ class CliAlarmCreate(show.ShowOne):
                           'state', 'severity', 'enabled', 'alarm_actions',
                           'ok_actions', 'insufficient_data_actions',
                           'time_constraints', 'repeat_actions'])
+        if parsed_args.type in ('threshold', 'event') and parsed_args.query:
+            parsed_args.query = utils.cli_to_array(parsed_args.query)
         alarm['threshold_rule'] = utils.dict_from_parsed_args(
             parsed_args, ['meter_name', 'period', 'evaluation_periods',
                           'statistic', 'comparison_operator', 'threshold',
