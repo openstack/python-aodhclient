@@ -19,6 +19,8 @@ from cliff import show
 from oslo_serialization import jsonutils
 from oslo_utils import strutils
 
+from aodhclient import exceptions
+from aodhclient.i18n import _
 from aodhclient import utils
 
 ALARM_TYPES = ['threshold', 'event', 'composite',
@@ -65,16 +67,56 @@ def _format_alarm(alarm):
     return alarm
 
 
+def _find_alarm_by_name(client, name, return_id=False):
+    # then try to get entity as name
+    query = jsonutils.dumps({"=": {"name": name}})
+    alarms = client.list(query)
+    if len(alarms) > 1:
+        msg = (_("Multiple alarms matches found for '%s', "
+                 "use an ID to be more specific.") % name)
+        raise exceptions.NoUniqueMatch(msg)
+    elif not alarms:
+        msg = (_("Alarm %s not found") % name)
+        raise exceptions.NotFound(404, msg)
+    else:
+        if return_id:
+            return alarms[0]['alarm_id']
+        return alarms[0]
+
+
+def _check_name_and_id(parsed_args, action):
+    if parsed_args.id and parsed_args.alarm_name:
+        raise exceptions.CommandError(
+            "You should provide only one of "
+            "alarm ID and alarm name(--alarm-name) "
+            "to %s an alarm." % action)
+    if not parsed_args.id and not parsed_args.alarm_name:
+        msg = (_("You need to specify one of "
+                 "alarm ID and alarm name(--alarm-name) "
+                 "to %s an alarm.") % action)
+        raise exceptions.CommandError(msg)
+
+
 class CliAlarmShow(show.ShowOne):
     """Show an alarm"""
 
     def get_parser(self, prog_name):
         parser = super(CliAlarmShow, self).get_parser(prog_name)
-        parser.add_argument("alarm_id", help="ID of an alarm")
+        parser.add_argument("id", nargs='?',
+                            metavar='<ALARM ID>',
+                            help="ID of an alarm")
+        parser.add_argument("--alarm-name", dest='alarm_name',
+                            metavar='<ALARM NAME>',
+                            help="name of an alarm")
         return parser
 
     def take_action(self, parsed_args):
-        alarm = self.app.client.alarm.get(alarm_id=parsed_args.alarm_id)
+        _check_name_and_id(parsed_args, 'query')
+        if parsed_args.id:
+            alarm = self.app.client.alarm.get(alarm_id=parsed_args.id)
+        else:
+            alarm = _find_alarm_by_name(self.app.client.alarm,
+                                        parsed_args.alarm_name)
         return self.dict2columns(_format_alarm(alarm))
 
 
@@ -323,13 +365,26 @@ class CliAlarmUpdate(CliAlarmCreate):
 
     def get_parser(self, prog_name):
         parser = super(CliAlarmUpdate, self).get_parser(prog_name)
-        parser.add_argument("alarm_id", help="ID of the alarm")
+        parser.add_argument("id", nargs='?',
+                            metavar='<ALARM ID>',
+                            help="ID of an alarm")
+        parser.add_argument("--alarm-name", dest='alarm_name',
+                            metavar='<ALARM NAME>',
+                            help="name of an alarm")
         return parser
 
     def take_action(self, parsed_args):
+        _check_name_and_id(parsed_args, 'update')
         attributes = self._alarm_from_args(parsed_args)
-        updated_alarm = self.app.client.alarm.update(
-            alarm_id=parsed_args.alarm_id, alarm_update=attributes)
+        if parsed_args.id:
+            updated_alarm = self.app.client.alarm.update(
+                alarm_id=parsed_args.id, alarm_update=attributes)
+        else:
+            alarm_id = _find_alarm_by_name(self.app.client.alarm,
+                                           parsed_args.alarm_name,
+                                           return_id=True)
+            updated_alarm = self.app.client.alarm.update(
+                alarm_id=alarm_id, alarm_update=attributes)
         return self.dict2columns(_format_alarm(updated_alarm))
 
 
@@ -338,8 +393,20 @@ class CliAlarmDelete(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(CliAlarmDelete, self).get_parser(prog_name)
-        parser.add_argument("alarm_id", help="ID of the alarm")
+        parser.add_argument("id", nargs='?',
+                            metavar='<ALARM ID>',
+                            help="ID of an alarm")
+        parser.add_argument("--alarm-name", dest='alarm_name',
+                            metavar='<ALARM NAME>',
+                            help="name of an alarm")
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.alarm.delete(parsed_args.alarm_id)
+        _check_name_and_id(parsed_args, 'delete')
+        if parsed_args.id:
+            self.app.client.alarm.delete(parsed_args.id)
+        else:
+            alarm_id = _find_alarm_by_name(self.app.client.alarm,
+                                           parsed_args.alarm_name,
+                                           return_id=True)
+            self.app.client.alarm.delete(alarm_id)
