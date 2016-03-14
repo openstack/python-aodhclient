@@ -21,8 +21,27 @@ class AlarmManager(base.Manager):
 
     url = "v2/alarms"
 
-    def list(self, query=None):
-        """List alarms"""
+    @staticmethod
+    def _filtersdict_to_url(filters):
+        urls = []
+        for k, v in sorted(filters.items()):
+            url = "q.field=%s&q.op=eq&q.value=%s" % (k, v)
+            urls.append(url)
+        return '&'.join(urls)
+
+    def list(self, query=None, filters=None):
+        """List alarms.
+
+        :param query: A json format complex query expression, like this:
+                      '{"=":{"type":"threshold"}}', this expression is used to
+                      query all the threshold type alarms.
+        :type query: json
+        :param filters: A dict includes filters parameters, for example,
+                        {'type': 'threshold', 'severity': 'low'} represent
+                        filters to query alarms with type='threshold' and
+                        severity='low'.
+        :type filters: dict
+        """
         if query:
             query = {'filter': query}
             url = "v2/query/alarms"
@@ -30,7 +49,9 @@ class AlarmManager(base.Manager):
                               headers={'Content-Type': "application/json"},
                               data=jsonutils.dumps(query)).json()
         else:
-            return self._get(self.url).json()
+            url = (self.url + '?' + self._filtersdict_to_url(filters) if
+                   filters else self.url)
+            return self._get(url).json()
 
     def get(self, alarm_id):
         """Get an alarm

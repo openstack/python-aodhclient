@@ -61,6 +61,15 @@ class AlarmManagerTest(testtools.TestCase):
             headers=headers_value)
 
     @mock.patch.object(alarm.AlarmManager, '_get')
+    def test_list_with_filters(self, mock_am):
+        am = alarm.AlarmManager(self.client)
+        filters = dict(type='threshold', severity='low')
+        am.list(filters=filters)
+        expected_url = ("v2/alarms?q.field=severity&q.op=eq&q.value=low&"
+                        "q.field=type&q.op=eq&q.value=threshold")
+        mock_am.assert_called_with(expected_url)
+
+    @mock.patch.object(alarm.AlarmManager, '_get')
     def test_get(self, mock_am):
         am = alarm.AlarmManager(self.client)
         am.get('01919bbd-8b0e-451c-be28-abe250ae9b1b')
