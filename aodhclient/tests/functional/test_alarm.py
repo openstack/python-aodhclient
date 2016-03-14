@@ -129,13 +129,29 @@ class AodhClientTest(base.ClientTestBase):
         # CREATE
         result = self.aodh(u'alarm',
                            params=(u"create --type threshold --name alarm1 "
-                                   " -m meter_name --threshold 5 "
+                                   "-m meter_name --threshold 5 "
                                    "--project-id %s" % PROJECT_ID))
         alarm = self.details_multiple(result)[0]
         ALARM_ID = alarm['alarm_id']
         self.assertEqual('alarm1', alarm['name'])
         self.assertEqual('meter_name', alarm['meter_name'])
         self.assertEqual('5.0', alarm['threshold'])
+
+        # CREATE WITH --TIME-CONSTRAINT
+        result = self.aodh(
+            u'alarm',
+            params=(u"create --type threshold --name alarm_tc "
+                    "-m meter_name --threshold 5 "
+                    "--time-constraint "
+                    "name=cons1;start='0 11 * * *';duration=300 "
+                    "--time-constraint "
+                    "name=cons2;start='0 23 * * *';duration=600 "
+                    "--project-id %s" % PROJECT_ID))
+        alarm = self.details_multiple(result)[0]
+        self.assertEqual('alarm_tc', alarm['name'])
+        self.assertEqual('meter_name', alarm['meter_name'])
+        self.assertEqual('5.0', alarm['threshold'])
+        self.assertIsNotNone(alarm['time_constraints'])
 
         # CREATE FAIL
         result = self.aodh(u'alarm',
