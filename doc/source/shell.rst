@@ -46,7 +46,7 @@ set these environment variables::
     export OS_AUTH_TOKEN=3bcc3d3a03f44e3d8377f9247b0ad155
 
 Also, if the server doesn't support authentication, you can provide
-:option:`--os-auth-plugon` aodh-noauth, :option:`--aodh-endpoint`, :option:`--user-id` 
+:option:`--os-auth-plugon` aodh-noauth, :option:`--aodh-endpoint`, :option:`--user-id`
 and :option:`--project-id`. You can alternatively set these environment variables::
 
     export OS_AUTH_PLUGIN=aodh-noauth
@@ -67,12 +67,21 @@ Examples
 
 Create an alarm::
 
-    aodh alarm create --name alarm1 -m cpu_util --threshold 5
+    aodh alarm create -t threshold --name alarm1 -m cpu_util --threshold 5
 
 List alarms::
 
     aodh alarm list
 
-Search for alarms::
+List alarm with query parameters::
 
-    aodh alarm search --query "project_id=5a301761-f78b-46e2-8900-8b4f6fe6675a and type=instance"
+    aodh alarm list --query "state=alarm and type=threshold"
+
+Show an alarm's history::
+
+    aodh alarm-history show <ALARM_ID>
+
+Search alarm history data::
+
+    aodh alarm-history search --query '{">":{"timestamp":"2016-03-09T01:22:35.434961"}}'
+
