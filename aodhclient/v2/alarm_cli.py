@@ -62,6 +62,10 @@ def _format_alarm(alarm):
     for alarm_type in ALARM_TYPES:
         if alarm.get('%s_rule' % alarm_type):
             alarm.update(alarm.pop('%s_rule' % alarm_type))
+    if alarm["time_constraints"]:
+        alarm["time_constraints"] = jsonutils.dumps(alarm["time_constraints"],
+                                                    sort_keys=True,
+                                                    indent=2)
     return alarm
 
 
