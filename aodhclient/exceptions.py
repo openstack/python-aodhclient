@@ -47,6 +47,10 @@ class MutipleMeaningException(object):
     """An mixin for exception that can be enhanced by reading the details"""
 
 
+class CommandError(Exception):
+    pass
+
+
 class BadRequest(ClientException):
     """HTTP 400 - Bad request: you sent some malformed data."""
     http_status = 400
@@ -108,6 +112,10 @@ class RateLimit(RetryAfterException):
     """
     http_status = 429
     message = "Rate limit"
+
+
+class NoUniqueMatch(Exception):
+    pass
 
 
 class NotImplemented(ClientException):
