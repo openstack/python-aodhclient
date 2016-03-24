@@ -65,7 +65,7 @@ class AlarmHistoryTest(base.ClientTestBase):
         # SEARCH
         result = self.aodh('alarm-history',
                            params=("search --query "
-                                   "'{\"=\": {\"alarm_id\": \"%s\"}}'"
+                                   "alarm_id=%s"
                                    % ALARM_ID))
         history = self.parser.listing(result)[0]
         self.assertEqual(ALARM_ID, history["alarm_id"])
