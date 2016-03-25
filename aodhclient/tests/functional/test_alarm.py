@@ -10,8 +10,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import os
 import uuid
 
+import requests
 import six
 from tempest_lib import exceptions
 
@@ -362,8 +364,19 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
     def test_gnocchi_resources_threshold_scenario(self):
 
         PROJECT_ID = str(uuid.uuid4())
-        # NOTE(gordc): taken from setup-tests.sh
-        RESOURCE_ID = '6868DA77-FA82-4E67-ABA9-270C5AE8CBCA'
+        RESOURCE_ID = str(uuid.uuid4())
+
+        req = requests.post(
+            os.environ.get("GNOCCHI_ENDPOINT") + "/v1/resource/instance",
+            json={
+                "display_name": "myvm",
+                "flavor_id": "2", "host": "blah",
+                "id": RESOURCE_ID,
+                "image_ref": "http://image",
+                "project_id": "BD3A1E52-1C62-44CB-BF04-660BD88CD74D",
+                "user_id": "BD3A1E52-1C62-44CB-BF04-660BD88CD74D",
+            })
+        self.assertEqual(201, req.status_code)
 
         # CREATE
         result = self.aodh(u'alarm',
@@ -381,7 +394,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual('cpu_util', alarm['metric'])
         self.assertEqual('80.0', alarm['threshold'])
         self.assertEqual('last', alarm['aggregation_method'])
-        self.assertEqual('6868DA77-FA82-4E67-ABA9-270C5AE8CBCA',
+        self.assertEqual(RESOURCE_ID,
                          alarm['resource_id'])
         self.assertEqual('instance', alarm['resource_type'])
 
