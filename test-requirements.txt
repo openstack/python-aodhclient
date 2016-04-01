@@ -16,6 +16,4 @@ testscenarios>=0.4
 testtools>=1.4.0
 http://tarballs.openstack.org/aodh/aodh-master.tar.gz#egg=aodh[mysql]
 http://tarballs.openstack.org/gnocchi/gnocchi-master.tar.gz#egg=gnocchi[postgresql,file]
-# FIXME(sileht): should be in aodh ?
-keystonemiddleware
 pifpaf>=0.0.6
