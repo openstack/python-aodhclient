@@ -15,7 +15,7 @@ import uuid
 
 import requests
 import six
-from tempest_lib import exceptions
+from tempest.lib import exceptions
 
 from aodhclient.tests.functional import base
 
