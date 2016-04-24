@@ -29,6 +29,70 @@ class AodhClientTest(base.ClientTestBase):
         self.aodh("help", params="alarm show")
         self.aodh("help", params="alarm update")
 
+    def test_alarm_id_or_name_scenario(self):
+        def _test(name):
+            params = "create --type event --name %s" % name
+            result = self.aodh('alarm', params=params)
+            alarm_id = self.details_multiple(result)[0]['alarm_id']
+
+            params = 'show %s' % name
+            result = self.aodh('alarm', params=params)
+            self.assertEqual(alarm_id,
+                             self.details_multiple(result)[0]['alarm_id'])
+
+            params = 'show %s' % alarm_id
+            result = self.aodh('alarm', params=params)
+            self.assertEqual(alarm_id,
+                             self.details_multiple(result)[0]['alarm_id'])
+
+            params = "update --state ok %s" % name
+            result = self.aodh('alarm', params=params)
+            self.assertEqual("ok", self.details_multiple(result)[0]['state'])
+
+            params = "update --state alarm %s" % alarm_id
+            result = self.aodh('alarm', params=params)
+            self.assertEqual("alarm",
+                             self.details_multiple(result)[0]['state'])
+
+            params = "update --name another-name %s" % name
+            result = self.aodh('alarm', params=params)
+            self.assertEqual("another-name",
+                             self.details_multiple(result)[0]['name'])
+
+            params = "update --name %s %s" % (name, alarm_id)
+            result = self.aodh('alarm', params=params)
+            self.assertEqual(name,
+                             self.details_multiple(result)[0]['name'])
+
+            # Check update with no change is allowed
+            params = "update --name %s %s" % (name, name)
+            result = self.aodh('alarm', params=params)
+            self.assertEqual(name,
+                             self.details_multiple(result)[0]['name'])
+
+            params = "update --state ok"
+            result = self.aodh('alarm', params=params,
+                               fail_ok=True, merge_stderr=True)
+            self.assertFirstLineStartsWith(
+                result.splitlines(),
+                'You need to specify one of alarm ID and alarm name(--name) '
+                'to update an alarm.')
+
+            params = "delete %s" % name
+            result = self.aodh('alarm', params=params)
+            self.assertEqual("", result)
+
+            params = "create --type event --name %s" % name
+            result = self.aodh('alarm', params=params)
+            alarm_id = self.details_multiple(result)[0]['alarm_id']
+
+            params = "delete %s" % alarm_id
+            result = self.aodh('alarm', params=params)
+            self.assertEqual("", result)
+
+        _test(str(uuid.uuid4()))
+        _test('normal-alarm-name')
+
     def test_event_scenario(self):
 
         PROJECT_ID = str(uuid.uuid4())
@@ -77,7 +141,7 @@ class AodhClientTest(base.ClientTestBase):
 
         # GET BY NAME
         result = self.aodh(
-            'alarm', params="show --alarm-name ev_alarm1")
+            'alarm', params="show --name ev_alarm1")
         alarm_show = self.details_multiple(result)[0]
         self.assertEqual(ALARM_ID, alarm_show["alarm_id"])
         self.assertEqual(PROJECT_ID, alarm_show["project_id"])
@@ -87,7 +151,7 @@ class AodhClientTest(base.ClientTestBase):
         # GET BY NAME AND ID ERROR
         self.assertRaises(exceptions.CommandFailed,
                           self.aodh, u'alarm',
-                          params=(u"show %s --alarm-name ev_alarm1" %
+                          params=(u"show %s --name ev_alarm1" %
                                   ALARM_ID))
 
         # LIST
@@ -196,7 +260,7 @@ class AodhClientTest(base.ClientTestBase):
 
         # GET BY NAME
         result = self.aodh(
-            'alarm', params="show --alarm-name alarm_th")
+            'alarm', params="show --name alarm_th")
         alarm_show = self.details_multiple(result)[0]
         self.assertEqual(ALARM_ID, alarm_show["alarm_id"])
         self.assertEqual(PROJECT_ID, alarm_show["project_id"])
@@ -207,7 +271,7 @@ class AodhClientTest(base.ClientTestBase):
         # GET BY NAME AND ID ERROR
         self.assertRaises(exceptions.CommandFailed,
                           self.aodh, u'alarm',
-                          params=(u"show %s --alarm-name alarm_th" %
+                          params=(u"show %s --name alarm_th" %
                                   ALARM_ID))
 
         # LIST
@@ -308,7 +372,7 @@ class AodhClientTest(base.ClientTestBase):
 
         # GET BY NAME
         result = self.aodh(
-            'alarm', params="show --alarm-name calarm1")
+            'alarm', params="show --name calarm1")
         alarm_show = self.details_multiple(result)[0]
         self.assertEqual(alarm_id, alarm_show["alarm_id"])
         self.assertEqual(project_id, alarm_show["project_id"])
@@ -317,7 +381,7 @@ class AodhClientTest(base.ClientTestBase):
         # GET BY NAME AND ID ERROR
         self.assertRaises(exceptions.CommandFailed,
                           self.aodh, u'alarm',
-                          params=(u"show %s --alarm-name calarm1" %
+                          params=(u"show %s --name calarm1" %
                                   alarm_id))
 
         # LIST
@@ -448,7 +512,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
 
         # GET BY NAME
         result = self.aodh(
-            'alarm', params="show --alarm-name alarm_gn1")
+            'alarm', params="show --name alarm_gn1")
         self.assertEqual(ALARM_ID, alarm_show["alarm_id"])
         self.assertEqual(PROJECT_ID, alarm_show["project_id"])
         self.assertEqual('alarm_gn1', alarm_show['name'])
@@ -461,7 +525,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         # GET BY NAME AND ID ERROR
         self.assertRaises(exceptions.CommandFailed,
                           self.aodh, u'alarm',
-                          params=(u"show %s --alarm-name alarm_gn1" %
+                          params=(u"show %s --name alarm_gn1" %
                                   ALARM_ID))
 
         # LIST
