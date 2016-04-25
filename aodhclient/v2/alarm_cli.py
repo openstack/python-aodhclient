@@ -117,18 +117,22 @@ def _check_name_and_id(parsed_args, action):
         raise exceptions.CommandError(msg)
 
 
+def _add_name_and_id(parser):
+    parser.add_argument("id", nargs='?',
+                        metavar='<ALARM ID>',
+                        help="ID of an alarm.")
+    parser.add_argument("--alarm-name", dest='alarm_name',
+                        metavar='<ALARM NAME>',
+                        help="Name of an alarm.")
+    return parser
+
+
 class CliAlarmShow(show.ShowOne):
     """Show an alarm"""
 
     def get_parser(self, prog_name):
         parser = super(CliAlarmShow, self).get_parser(prog_name)
-        parser.add_argument("id", nargs='?',
-                            metavar='<ALARM ID>',
-                            help="ID of an alarm")
-        parser.add_argument("--alarm-name", dest='alarm_name',
-                            metavar='<ALARM NAME>',
-                            help="name of an alarm")
-        return parser
+        return _add_name_and_id(parser)
 
     def take_action(self, parsed_args):
         _check_name_and_id(parsed_args, 'query')
@@ -385,13 +389,7 @@ class CliAlarmUpdate(CliAlarmCreate):
 
     def get_parser(self, prog_name):
         parser = super(CliAlarmUpdate, self).get_parser(prog_name)
-        parser.add_argument("id", nargs='?',
-                            metavar='<ALARM ID>',
-                            help="ID of an alarm")
-        parser.add_argument("--alarm-name", dest='alarm_name',
-                            metavar='<ALARM NAME>',
-                            help="name of an alarm")
-        return parser
+        return _add_name_and_id(parser)
 
     def take_action(self, parsed_args):
         _check_name_and_id(parsed_args, 'update')
@@ -413,13 +411,7 @@ class CliAlarmDelete(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(CliAlarmDelete, self).get_parser(prog_name)
-        parser.add_argument("id", nargs='?',
-                            metavar='<ALARM ID>',
-                            help="ID of an alarm")
-        parser.add_argument("--alarm-name", dest='alarm_name',
-                            metavar='<ALARM NAME>',
-                            help="name of an alarm")
-        return parser
+        return _add_name_and_id(parser)
 
     def take_action(self, parsed_args):
         _check_name_and_id(parsed_args, 'delete')
