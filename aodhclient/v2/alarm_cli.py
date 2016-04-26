@@ -237,8 +237,8 @@ class CliAlarmCreate(show.ShowOne):
 
         threshold_group = parser.add_argument_group('threshold alarm')
         threshold_group.add_argument(
-            '-m', '--meter-name', metavar='<METRIC>',
-            dest='meter_name', help='Metric to evaluate against')
+            '-m', '--meter-name', metavar='<METER NAME>',
+            dest='meter_name', help='Meter to evaluate against')
 
         threshold_group.add_argument(
             '--period', type=int, metavar='<PERIOD>', dest='period',
