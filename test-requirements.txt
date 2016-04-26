@@ -17,3 +17,4 @@ testtools>=1.4.0
 http://tarballs.openstack.org/aodh/aodh-master.tar.gz#egg=aodh[mysql]
 http://tarballs.openstack.org/gnocchi/gnocchi-master.tar.gz#egg=gnocchi[postgresql,file]
 pifpaf>=0.0.6
+mock>=1.2  # BSD
