@@ -48,7 +48,7 @@ class AodhClientTest(base.ClientTestBase):
                                    "--project-id %s" % PROJECT_ID),
                            fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(
-            result.split('\n'),
+            result.splitlines(),
             "Alarm with name='ev_alarm1' exists (HTTP 409)")
 
         # UPDATE IGNORE INVALID
@@ -116,12 +116,12 @@ class AodhClientTest(base.ClientTestBase):
         result = self.aodh('alarm', params="show %s" % ALARM_ID,
                            fail_ok=True, merge_stderr=True)
         expected = "Alarm %s not found (HTTP 404)" % ALARM_ID
-        self.assertFirstLineStartsWith(result.split('\n'), expected)
+        self.assertFirstLineStartsWith(result.splitlines(), expected)
 
         # DELETE FAIL
         result = self.aodh('alarm', params="delete %s" % ALARM_ID,
                            fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'), expected)
+        self.assertFirstLineStartsWith(result.splitlines(), expected)
 
         # LIST DOES NOT HAVE ALARM
         result = self.aodh('alarm', params="list")
@@ -166,7 +166,7 @@ class AodhClientTest(base.ClientTestBase):
                                    "--project-id %s" % PROJECT_ID),
                            fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(
-            result.split('\n'),
+            result.splitlines(),
             "Alarm with name='alarm_th' exists (HTTP 409)")
 
         # CREATE FAIL MISSING PARAM
@@ -236,12 +236,12 @@ class AodhClientTest(base.ClientTestBase):
         result = self.aodh('alarm', params="show %s" % ALARM_ID,
                            fail_ok=True, merge_stderr=True)
         expected = "Alarm %s not found (HTTP 404)" % ALARM_ID
-        self.assertFirstLineStartsWith(result.split('\n'), expected)
+        self.assertFirstLineStartsWith(result.splitlines(), expected)
 
         # DELETE FAIL
         result = self.aodh('alarm', params="delete %s" % ALARM_ID,
                            fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'), expected)
+        self.assertFirstLineStartsWith(result.splitlines(), expected)
 
         # LIST DOES NOT HAVE ALARM
         result = self.aodh('alarm', params="list")
@@ -253,16 +253,16 @@ class AodhClientTest(base.ClientTestBase):
         project_id = str(uuid.uuid4())
         # CREATE
         result = self.aodh(u'alarm',
-                           params=(u"create --type composite --name calarm1 "
-                                   " --composite-rule '{\"or\":[{\"threshold\""
-                                   ": 0.8,\"meter_name\": \"cpu_util\","
-                                   "\"type\": \"threshold\"},{\"and\": ["
-                                   "{\"threshold\": 200, \"meter_name\": "
-                                   "\"disk.iops\", \"type\": \"threshold\"},"
-                                   "{\"threshold\": 1000,\"meter_name\":"
-                                   "\"network.incoming.packets.rate\","
-                                   "\"type\": \"threshold\"}]}]}' "
-                                   "--project-id %s" % project_id))
+                           params=(u'create --type composite --name calarm1 '
+                                   ' --composite-rule \'{"or":[{"threshold"'
+                                   ': 0.8,"meter_name": "cpu_util",'
+                                   '"type": "threshold"},{"and": ['
+                                   '{"threshold": 200, "meter_name": '
+                                   '"disk.iops", "type": "threshold"},'
+                                   '{"threshold": 1000,"meter_name":'
+                                   '"network.incoming.packets.rate",'
+                                   '"type": "threshold"}]}]}\' '
+                                   '--project-id %s' % project_id))
         alarm = self.details_multiple(result)[0]
         alarm_id = alarm['alarm_id']
         self.assertEqual('calarm1', alarm['name'])
@@ -271,19 +271,19 @@ class AodhClientTest(base.ClientTestBase):
 
         # CREATE FAIL
         result = self.aodh(u'alarm',
-                           params=(u"create --type composite --name calarm1 "
-                                   " --composite-rule '{\"or\":[{\"threshold\""
-                                   ": 0.8,\"meter_name\": \"cpu_util\","
-                                   "\"type\": \"threshold\"},{\"and\": ["
-                                   "{\"threshold\": 200, \"meter_name\": "
-                                   "\"disk.iops\", \"type\": \"threshold\"},"
-                                   "{\"threshold\": 1000,\"meter_name\":"
-                                   "\"network.incoming.packets.rate\","
-                                   "\"type\": \"threshold\"}]}]}' "
-                                   "--project-id %s" % project_id),
+                           params=(u'create --type composite --name calarm1 '
+                                   ' --composite-rule \'{"or":[{"threshold"'
+                                   ': 0.8,"meter_name": "cpu_util",'
+                                   '"type": "threshold"},{"and": ['
+                                   '{"threshold": 200, "meter_name": '
+                                   '"disk.iops", "type": "threshold"},'
+                                   '{"threshold": 1000,"meter_name":'
+                                   '"network.incoming.packets.rate",'
+                                   '"type": "threshold"}]}]}\' '
+                                   '--project-id %s' % project_id),
                            fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(
-            result.split('\n'), "Alarm with name='calarm1' exists (HTTP 409)")
+            result.splitlines(), "Alarm with name='calarm1' exists (HTTP 409)")
 
         # CREATE FAIL MISSING PARAM
         self.assertRaises(exceptions.CommandFailed,
@@ -346,12 +346,12 @@ class AodhClientTest(base.ClientTestBase):
         result = self.aodh('alarm', params="show %s" % alarm_id,
                            fail_ok=True, merge_stderr=True)
         expected = "Alarm %s not found (HTTP 404)" % alarm_id
-        self.assertFirstLineStartsWith(result.split('\n'), expected)
+        self.assertFirstLineStartsWith(result.splitlines(), expected)
 
         # DELETE FAIL
         result = self.aodh('alarm', params="delete %s" % alarm_id,
                            fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'), expected)
+        self.assertFirstLineStartsWith(result.splitlines(), expected)
 
         # LIST DOES NOT HAVE ALARM
         result = self.aodh('alarm', params="list")
@@ -410,7 +410,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                                    % (RESOURCE_ID, PROJECT_ID)),
                            fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(
-            result.split('\n'),
+            result.splitlines(),
             "Alarm with name='alarm_gn1' exists (HTTP 409)")
 
         # CREATE FAIL MISSING PARAM
@@ -490,12 +490,12 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         result = self.aodh('alarm', params="show %s" % ALARM_ID,
                            fail_ok=True, merge_stderr=True)
         expected = "Alarm %s not found (HTTP 404)" % ALARM_ID
-        self.assertFirstLineStartsWith(result.split('\n'), expected)
+        self.assertFirstLineStartsWith(result.splitlines(), expected)
 
         # DELETE FAIL
         result = self.aodh('alarm', params="delete %s" % ALARM_ID,
                            fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'), expected)
+        self.assertFirstLineStartsWith(result.splitlines(), expected)
 
         # LIST DOES NOT HAVE ALARM
         result = self.aodh('alarm', params="list")
@@ -514,7 +514,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                     "gnocchi_aggregation_by_resources_threshold "
                     "--name alarm1 --metric cpu --threshold 80 "
                     "--query "
-                    "'{\"=\": {\"server_group\": \"my_group\"}}' "
+                    '\'{"=": {"server_group": "my_group"}}\' '
                     "--resource-type instance "
                     "--aggregation-method last "
                     "--project-id %s" % PROJECT_ID))
@@ -536,13 +536,13 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                     "gnocchi_aggregation_by_resources_threshold "
                     "--name alarm1 --metric cpu --threshold 80 "
                     "--query "
-                    "'{\"=\": {\"server_group\": \"my_group\"}}' "
+                    '\'{"=": {"server_group": "my_group"}}\' '
                     "--resource-type instance "
                     "--aggregation-method last "
                     "--project-id %s" % PROJECT_ID),
             fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(
-            result.split('\n'), "Alarm with name='alarm1' exists (HTTP 409)")
+            result.splitlines(), "Alarm with name='alarm1' exists (HTTP 409)")
 
         # CREATE FAIL MISSING PARAM
         self.assertRaises(
@@ -553,7 +553,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                     "gnocchi_aggregation_by_resources_threshold "
                     "--name alarm1 --metric cpu "
                     "--query "
-                    "'{\"=\": {\"server_group\": \"my_group\"}}' "
+                    '\'{"=": {"server_group": "my_group"}}\' '
                     "--resource-type instance "
                     "--aggregation-method last "
                     "--project-id %s" % PROJECT_ID))
@@ -599,12 +599,12 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         result = self.aodh('alarm', params="show %s" % ALARM_ID,
                            fail_ok=True, merge_stderr=True)
         expected = "Alarm %s not found (HTTP 404)" % ALARM_ID
-        self.assertFirstLineStartsWith(result.split('\n'), expected)
+        self.assertFirstLineStartsWith(result.splitlines(), expected)
 
         # DELETE FAIL
         result = self.aodh('alarm', params="delete %s" % ALARM_ID,
                            fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'), expected)
+        self.assertFirstLineStartsWith(result.splitlines(), expected)
 
         # LIST DOES NOT HAVE ALARM
         result = self.aodh('alarm', params="list")
@@ -651,7 +651,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                     % (METRIC1, METRIC2, PROJECT_ID)),
             fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(
-            result.split('\n'), "Alarm with name='alarm1' exists (HTTP 409)")
+            result.splitlines(), "Alarm with name='alarm1' exists (HTTP 409)")
 
         # CREATE FAIL MISSING PARAM
         self.assertRaises(
@@ -710,13 +710,13 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         result = self.aodh('alarm', params="show %s" % ALARM_ID,
                            fail_ok=True, merge_stderr=True)
         expected = "Alarm %s not found (HTTP 404)" % ALARM_ID
-        self.assertFirstLineStartsWith(result.split('\n'), expected)
+        self.assertFirstLineStartsWith(result.splitlines(), expected)
 
         # DELETE FAIL
         result = self.aodh('alarm', params="delete %s" % ALARM_ID,
                            fail_ok=True, merge_stderr=True)
 
-        self.assertFirstLineStartsWith(result.split('\n'), expected)
+        self.assertFirstLineStartsWith(result.splitlines(), expected)
 
         # LIST DOES NOT HAVE ALARM
         result = self.aodh('alarm', params="list")
