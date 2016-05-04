@@ -173,3 +173,13 @@ def cli_to_array(cli_query):
             raise ValueError(err)
         opts.append(opt)
     return opts
+
+
+def get_client(obj):
+    if hasattr(obj.app, 'client_manager'):
+        # NOTE(liusheng): cliff objects loaded by OSC
+        return obj.app.client_manager.alarming
+    else:
+        # TODO(liusheng): Remove this when OSC is able
+        # to install the aodh client binary itself
+        return obj.app.client

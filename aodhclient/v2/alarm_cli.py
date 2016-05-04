@@ -68,7 +68,8 @@ class CliAlarmList(lister.Lister):
         else:
             query = None
         filters = dict(parsed_args.filter) if parsed_args.filter else None
-        alarms = self.app.client.alarm.list(query=query, filters=filters)
+        alarms = utils.get_client(self).alarm.list(query=query,
+                                                   filters=filters)
         return utils.list2cols(ALARM_LIST_COLS, alarms)
 
 
@@ -137,9 +138,9 @@ class CliAlarmShow(show.ShowOne):
     def take_action(self, parsed_args):
         _check_name_and_id(parsed_args, 'query')
         if parsed_args.id:
-            alarm = self.app.client.alarm.get(alarm_id=parsed_args.id)
+            alarm = utils.get_client(self).alarm.get(alarm_id=parsed_args.id)
         else:
-            alarm = _find_alarm_by_name(self.app.client.alarm,
+            alarm = _find_alarm_by_name(utils.get_client(self).alarm,
                                         parsed_args.alarm_name)
         return self.dict2columns(_format_alarm(alarm))
 
@@ -377,7 +378,7 @@ class CliAlarmCreate(show.ShowOne):
         return alarm
 
     def take_action(self, parsed_args):
-        alarm = self.app.client.alarm.create(
+        alarm = utils.get_client(self).alarm.create(
             alarm=self._alarm_from_args(parsed_args))
         return self.dict2columns(_format_alarm(alarm))
 
@@ -395,13 +396,13 @@ class CliAlarmUpdate(CliAlarmCreate):
         _check_name_and_id(parsed_args, 'update')
         attributes = self._alarm_from_args(parsed_args)
         if parsed_args.id:
-            updated_alarm = self.app.client.alarm.update(
+            updated_alarm = utils.get_client(self).alarm.update(
                 alarm_id=parsed_args.id, alarm_update=attributes)
         else:
-            alarm_id = _find_alarm_by_name(self.app.client.alarm,
+            alarm_id = _find_alarm_by_name(utils.get_client(self).alarm,
                                            parsed_args.alarm_name,
                                            return_id=True)
-            updated_alarm = self.app.client.alarm.update(
+            updated_alarm = utils.get_client(self).alarm.update(
                 alarm_id=alarm_id, alarm_update=attributes)
         return self.dict2columns(_format_alarm(updated_alarm))
 
@@ -416,9 +417,9 @@ class CliAlarmDelete(command.Command):
     def take_action(self, parsed_args):
         _check_name_and_id(parsed_args, 'delete')
         if parsed_args.id:
-            self.app.client.alarm.delete(parsed_args.id)
+            utils.get_client(self).alarm.delete(parsed_args.id)
         else:
-            alarm_id = _find_alarm_by_name(self.app.client.alarm,
+            alarm_id = _find_alarm_by_name(utils.get_client(self).alarm,
                                            parsed_args.alarm_name,
                                            return_id=True)
-            self.app.client.alarm.delete(alarm_id)
+            utils.get_client(self).alarm.delete(alarm_id)

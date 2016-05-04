@@ -34,7 +34,7 @@ class CliAlarmHistorySearch(lister.Lister):
         if parsed_args.query:
             query = jsonutils.dumps(
                 utils.search_query_builder(parsed_args.query))
-        history = self.app.client.alarm_history.search(query=query)
+        history = utils.get_client(self).alarm_history.search(query=query)
         return utils.list2cols(self.COLS, history)
 
 
@@ -49,6 +49,6 @@ class CliAlarmHistoryShow(lister.Lister):
         return parser
 
     def take_action(self, parsed_args):
-        history = self.app.client.alarm_history.get(
+        history = utils.get_client(self).alarm_history.get(
             alarm_id=parsed_args.alarm_id)
         return utils.list2cols(self.COLS, history)
