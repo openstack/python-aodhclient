@@ -154,7 +154,9 @@ class CliAlarmCreate(show.ShowOne):
         parser = super(CliAlarmCreate, self).get_parser(prog_name)
         parser.add_argument('-t', '--type', metavar='<TYPE>',
                             required=self.create,
-                            choices=ALARM_TYPES, help='Type of alarm')
+                            choices=ALARM_TYPES,
+                            help='Type of alarm, should be one of: '
+                                 '%s.' % ', '.join(ALARM_TYPES))
         parser.add_argument('--name', metavar='<NAME>', required=self.create,
                             help='Name of the alarm')
         parser.add_argument('--project-id', metavar='<PROJECT_ID>',
