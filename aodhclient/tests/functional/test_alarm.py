@@ -42,15 +42,6 @@ class AodhClientTest(base.ClientTestBase):
         self.assertEqual('ev_alarm1', alarm['name'])
         self.assertEqual('*', alarm['event_type'])
 
-        # CREATE FAIL
-        result = self.aodh(u'alarm',
-                           params=(u"create --type event --name ev_alarm1 "
-                                   "--project-id %s" % PROJECT_ID),
-                           fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(
-            result.splitlines(),
-            "Alarm with name='ev_alarm1' exists (HTTP 409)")
-
         # UPDATE IGNORE INVALID
         result = self.aodh(
             'alarm', params=("update %s --severity critical --threshold 10"
@@ -159,16 +150,6 @@ class AodhClientTest(base.ClientTestBase):
         self.assertEqual('5.0', alarm['threshold'])
         self.assertIsNotNone(alarm['time_constraints'])
 
-        # CREATE FAIL
-        result = self.aodh(u'alarm',
-                           params=(u"create --type threshold --name alarm_th "
-                                   "-m meter_name --threshold 5 "
-                                   "--project-id %s" % PROJECT_ID),
-                           fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(
-            result.splitlines(),
-            "Alarm with name='alarm_th' exists (HTTP 409)")
-
         # CREATE FAIL MISSING PARAM
         self.assertRaises(exceptions.CommandFailed,
                           self.aodh, u'alarm',
@@ -268,22 +249,6 @@ class AodhClientTest(base.ClientTestBase):
         self.assertEqual('calarm1', alarm['name'])
         self.assertEqual('composite', alarm['type'])
         self.assertIn('composite_rule', alarm)
-
-        # CREATE FAIL
-        result = self.aodh(u'alarm',
-                           params=(u'create --type composite --name calarm1 '
-                                   ' --composite-rule \'{"or":[{"threshold"'
-                                   ': 0.8,"meter_name": "cpu_util",'
-                                   '"type": "threshold"},{"and": ['
-                                   '{"threshold": 200, "meter_name": '
-                                   '"disk.iops", "type": "threshold"},'
-                                   '{"threshold": 1000,"meter_name":'
-                                   '"network.incoming.packets.rate",'
-                                   '"type": "threshold"}]}]}\' '
-                                   '--project-id %s' % project_id),
-                           fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(
-            result.splitlines(), "Alarm with name='calarm1' exists (HTTP 409)")
 
         # CREATE FAIL MISSING PARAM
         self.assertRaises(exceptions.CommandFailed,
@@ -397,21 +362,6 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual(RESOURCE_ID,
                          alarm['resource_id'])
         self.assertEqual('instance', alarm['resource_type'])
-
-        # CREATE FAIL
-        result = self.aodh(u'alarm',
-                           params=(u"create "
-                                   "--type gnocchi_resources_threshold "
-                                   "--name alarm_gn1 --metric cpu_util "
-                                   "--threshold 80 "
-                                   "--resource-id %s --resource-type instance "
-                                   "--aggregation-method last "
-                                   "--project-id %s"
-                                   % (RESOURCE_ID, PROJECT_ID)),
-                           fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(
-            result.splitlines(),
-            "Alarm with name='alarm_gn1' exists (HTTP 409)")
 
         # CREATE FAIL MISSING PARAM
         self.assertRaises(exceptions.CommandFailed,
@@ -528,22 +478,6 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual('{"=": {"server_group": "my_group"}}',
                          alarm['query'])
 
-        # CREATE FAIL
-        result = self.aodh(
-            u'alarm',
-            params=(u"create "
-                    "--type "
-                    "gnocchi_aggregation_by_resources_threshold "
-                    "--name alarm1 --metric cpu --threshold 80 "
-                    "--query "
-                    '\'{"=": {"server_group": "my_group"}}\' '
-                    "--resource-type instance "
-                    "--aggregation-method last "
-                    "--project-id %s" % PROJECT_ID),
-            fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(
-            result.splitlines(), "Alarm with name='alarm1' exists (HTTP 409)")
-
         # CREATE FAIL MISSING PARAM
         self.assertRaises(
             exceptions.CommandFailed,
@@ -636,22 +570,6 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual(metrics, alarm['metrics'])
         self.assertEqual('80.0', alarm['threshold'])
         self.assertEqual('last', alarm['aggregation_method'])
-
-        # CREATE FAIL
-        result = self.aodh(
-            u'alarm',
-            params=(u"create "
-                    "--type gnocchi_aggregation_by_metrics_threshold "
-                    "--name alarm1 "
-                    "--metrics %s "
-                    "--metrics %s "
-                    "--threshold 80 "
-                    "--aggregation-method last "
-                    "--project-id %s"
-                    % (METRIC1, METRIC2, PROJECT_ID)),
-            fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(
-            result.splitlines(), "Alarm with name='alarm1' exists (HTTP 409)")
 
         # CREATE FAIL MISSING PARAM
         self.assertRaises(
