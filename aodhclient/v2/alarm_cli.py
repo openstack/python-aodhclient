@@ -18,6 +18,7 @@ from cliff import lister
 from cliff import show
 from oslo_serialization import jsonutils
 from oslo_utils import strutils
+from oslo_utils import uuidutils
 
 from aodhclient import exceptions
 from aodhclient.i18n import _
@@ -88,10 +89,10 @@ def _format_alarm(alarm):
     return alarm
 
 
-def _find_alarm_by_name(client, name, return_id=False):
+def _find_alarm_by_name(client, name):
     # then try to get entity as name
     query = jsonutils.dumps({"=": {"name": name}})
-    alarms = client.list(query)
+    alarms = client.alarm.list(query)
     if len(alarms) > 1:
         msg = (_("Multiple alarms matches found for '%s', "
                  "use an ID to be more specific.") % name)
@@ -100,31 +101,46 @@ def _find_alarm_by_name(client, name, return_id=False):
         msg = (_("Alarm %s not found") % name)
         raise exceptions.NotFound(msg)
     else:
-        if return_id:
-            return alarms[0]['alarm_id']
         return alarms[0]
 
 
-def _check_name_and_id(parsed_args, action):
-    if parsed_args.id and parsed_args.alarm_name:
+def _find_alarm_id_by_name(client, name):
+    alarm = _find_alarm_by_name(client, name)
+    return alarm['alarm_id']
+
+
+def _check_name_and_id_coexist(parsed_args, action):
+    if parsed_args.id and parsed_args.name:
         raise exceptions.CommandError(
             "You should provide only one of "
-            "alarm ID and alarm name(--alarm-name) "
+            "alarm ID and alarm name(--name) "
             "to %s an alarm." % action)
-    if not parsed_args.id and not parsed_args.alarm_name:
+
+
+def _check_name_and_id_exist(parsed_args, action):
+    if not parsed_args.id and not parsed_args.name:
         msg = (_("You need to specify one of "
-                 "alarm ID and alarm name(--alarm-name) "
+                 "alarm ID and alarm name(--name) "
                  "to %s an alarm.") % action)
         raise exceptions.CommandError(msg)
 
 
-def _add_name_and_id(parser):
+def _check_name_and_id(parsed_args, action):
+    _check_name_and_id_coexist(parsed_args, action)
+    _check_name_and_id_exist(parsed_args, action)
+
+
+def _add_name_to_parser(parser, required=False):
+    parser.add_argument('--name', metavar='<NAME>',
+                        required=required,
+                        help='Name of the alarm')
+    return parser
+
+
+def _add_id_to_parser(parser):
     parser.add_argument("id", nargs='?',
-                        metavar='<ALARM ID>',
-                        help="ID of an alarm.")
-    parser.add_argument("--alarm-name", dest='alarm_name',
-                        metavar='<ALARM NAME>',
-                        help="Name of an alarm.")
+                        metavar='<ALARM ID or NAME>',
+                        help="ID or name of an alarm.")
     return parser
 
 
@@ -132,16 +148,25 @@ class CliAlarmShow(show.ShowOne):
     """Show an alarm"""
 
     def get_parser(self, prog_name):
-        parser = super(CliAlarmShow, self).get_parser(prog_name)
-        return _add_name_and_id(parser)
+        return _add_name_to_parser(
+            _add_id_to_parser(
+                super(CliAlarmShow, self).get_parser(prog_name)))
 
     def take_action(self, parsed_args):
         _check_name_and_id(parsed_args, 'query')
-        if parsed_args.id:
-            alarm = utils.get_client(self).alarm.get(alarm_id=parsed_args.id)
+        c = utils.get_client(self)
+        if parsed_args.name:
+            alarm = _find_alarm_by_name(c, parsed_args.name)
         else:
-            alarm = _find_alarm_by_name(utils.get_client(self).alarm,
-                                        parsed_args.alarm_name)
+            if uuidutils.is_uuid_like(parsed_args.id):
+                try:
+                    alarm = c.alarm.get(alarm_id=parsed_args.id)
+                except exceptions.NotFound:
+                    # Maybe it's a name
+                    alarm = _find_alarm_by_name(c, parsed_args.id)
+            else:
+                alarm = _find_alarm_by_name(c, parsed_args.id)
+
         return self.dict2columns(_format_alarm(alarm))
 
 
@@ -151,14 +176,15 @@ class CliAlarmCreate(show.ShowOne):
     create = True
 
     def get_parser(self, prog_name):
-        parser = super(CliAlarmCreate, self).get_parser(prog_name)
+        parser = _add_name_to_parser(
+            super(CliAlarmCreate, self).get_parser(prog_name),
+            required=self.create)
+
         parser.add_argument('-t', '--type', metavar='<TYPE>',
                             required=self.create,
                             choices=ALARM_TYPES,
                             help='Type of alarm, should be one of: '
                                  '%s.' % ', '.join(ALARM_TYPES))
-        parser.add_argument('--name', metavar='<NAME>', required=self.create,
-                            help='Name of the alarm')
         parser.add_argument('--project-id', metavar='<PROJECT_ID>',
                             help='Project to associate with alarm '
                                  '(configurable by admin users only)')
@@ -391,37 +417,53 @@ class CliAlarmUpdate(CliAlarmCreate):
     create = False
 
     def get_parser(self, prog_name):
-        parser = super(CliAlarmUpdate, self).get_parser(prog_name)
-        return _add_name_and_id(parser)
+        return _add_id_to_parser(
+            super(CliAlarmUpdate, self).get_parser(prog_name))
 
     def take_action(self, parsed_args):
-        _check_name_and_id(parsed_args, 'update')
         attributes = self._alarm_from_args(parsed_args)
-        if parsed_args.id:
-            updated_alarm = utils.get_client(self).alarm.update(
-                alarm_id=parsed_args.id, alarm_update=attributes)
+        _check_name_and_id_exist(parsed_args, 'update')
+        c = utils.get_client(self)
+
+        if uuidutils.is_uuid_like(parsed_args.id):
+            try:
+                alarm = c.alarm.update(alarm_id=parsed_args.id,
+                                       alarm_update=attributes)
+            except exceptions.NotFound:
+                # Maybe it was not an ID but a name, damn
+                _id = _find_alarm_id_by_name(c, parsed_args.id)
+            else:
+                return self.dict2columns(_format_alarm(alarm))
+        elif parsed_args.id:
+            _id = _find_alarm_id_by_name(c, parsed_args.id)
         else:
-            alarm_id = _find_alarm_by_name(utils.get_client(self).alarm,
-                                           parsed_args.alarm_name,
-                                           return_id=True)
-            updated_alarm = utils.get_client(self).alarm.update(
-                alarm_id=alarm_id, alarm_update=attributes)
-        return self.dict2columns(_format_alarm(updated_alarm))
+            _id = _find_alarm_id_by_name(c, parsed_args.name)
+
+        alarm = c.alarm.update(alarm_id=_id, alarm_update=attributes)
+        return self.dict2columns(_format_alarm(alarm))
 
 
 class CliAlarmDelete(command.Command):
     """Delete an alarm"""
 
     def get_parser(self, prog_name):
-        parser = super(CliAlarmDelete, self).get_parser(prog_name)
-        return _add_name_and_id(parser)
+        return _add_name_to_parser(
+            _add_id_to_parser(
+                super(CliAlarmDelete, self).get_parser(prog_name)))
 
     def take_action(self, parsed_args):
         _check_name_and_id(parsed_args, 'delete')
-        if parsed_args.id:
-            utils.get_client(self).alarm.delete(parsed_args.id)
+        c = utils.get_client(self)
+
+        if parsed_args.name:
+            _id = _find_alarm_id_by_name(c, parsed_args.name)
+        elif uuidutils.is_uuid_like(parsed_args.id):
+            try:
+                return c.alarm.delete(parsed_args.id)
+            except exceptions.NotFound:
+                # Maybe it was not an ID after all
+                _id = _find_alarm_id_by_name(c, parsed_args.id)
         else:
-            alarm_id = _find_alarm_by_name(utils.get_client(self).alarm,
-                                           parsed_args.alarm_name,
-                                           return_id=True)
-            utils.get_client(self).alarm.delete(alarm_id)
+            _id = _find_alarm_id_by_name(c, parsed_args.id)
+
+        c.alarm.delete(_id)
