@@ -16,16 +16,20 @@ class ClientException(Exception):
     """The base exception class for all exceptions this library raises."""
     message = 'Unknown Error'
 
-    def __init__(self, code, message=None, request_id=None,
+    def __init__(self, message=None, request_id=None,
                  url=None, method=None):
-        self.code = code
         self.message = message or self.__class__.message
         self.request_id = request_id
         self.url = url
         self.method = method
 
+    # NOTE(jd) for backward compat
+    @property
+    def code(self):
+        return self.http_status
+
     def __str__(self):
-        formatted_string = "%s (HTTP %s)" % (self.message, self.code)
+        formatted_string = "%s (HTTP %s)" % (self.message, self.http_status)
         if self.request_id:
             formatted_string += " (Request-ID: %s)" % self.request_id
 
@@ -154,7 +158,6 @@ def from_response(response, url, method=None):
     content_type = response.headers.get("Content-Type", "").split(";")[0]
 
     kwargs = {
-        'code': response.status_code,
         'method': method,
         'url': url,
         'request_id': req_id,

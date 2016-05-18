@@ -98,7 +98,7 @@ def _find_alarm_by_name(client, name, return_id=False):
         raise exceptions.NoUniqueMatch(msg)
     elif not alarms:
         msg = (_("Alarm %s not found") % name)
-        raise exceptions.NotFound(404, msg)
+        raise exceptions.NotFound(msg)
     else:
         if return_id:
             return alarms[0]['alarm_id']
