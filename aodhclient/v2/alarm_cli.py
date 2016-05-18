@@ -339,8 +339,9 @@ class CliAlarmCreate(show.ShowOne):
     def _validate_args(self, parsed_args):
         if (parsed_args.type == 'threshold' and
                 not (parsed_args.meter_name and parsed_args.threshold)):
-            self.parser.error('threshold alarm requires -m/--meter-name and '
-                              '--threshold parameters')
+            self.parser.error('Threshold alarm requires -m/--meter-name and '
+                              '--threshold parameters. Meter name can be '
+                              'found in Ceilometer')
         elif (parsed_args.type == 'gnocchi_resources_threshold' and
               not (parsed_args.metric and parsed_args.threshold and
                    parsed_args.resource_id and parsed_args.resource_type
@@ -364,7 +365,7 @@ class CliAlarmCreate(show.ShowOne):
                               '--resource-type')
         elif (parsed_args.type == 'composite' and
               not parsed_args.composite_rule):
-            self.parser.error('composite alarm requires'
+            self.parser.error('Composite alarm requires'
                               ' --composite-rule parameter')
 
     def _alarm_from_args(self, parsed_args):
