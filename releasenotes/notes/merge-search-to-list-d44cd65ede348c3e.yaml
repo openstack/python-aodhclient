@@ -1,0 +1,6 @@
+---
+features:
+  - The support for alarm search CLI has been dropped. New options for alarm
+    list CLI(--filter and --query) has been added. The new option --query can
+    be used to perform the same operation as the old alarm search CLI, and
+    the new option --filter is used to perform filter query.
