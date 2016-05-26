@@ -61,16 +61,33 @@ class CliAlarmList(lister.Lister):
                                      action='append',
                                      help='Filter parameters to apply on'
                                           ' returned alarms.')
+        parser.add_argument("--limit", type=int, metavar="<LIMIT>",
+                            help="Number of resources to return "
+                                 "(Default is server default)")
+        parser.add_argument("--marker", metavar="<MARKER>",
+                            help="Last item of the previous listing. "
+                                 "Return the next results after this value,"
+                                 "the supported marker is alarm_id.")
+        parser.add_argument("--sort", action="append",
+                            metavar="<SORT_KEY:SORT_DIR>",
+                            help="Sort of resource attribute, "
+                                 "e.g. name:asc")
         return parser
 
     def take_action(self, parsed_args):
         if parsed_args.query:
+            if any([parsed_args.limit, parsed_args.sort, parsed_args.marker]):
+                raise exceptions.CommandError(
+                    "Query and pagination options are mutually "
+                    "exclusive.")
             query = jsonutils.dumps(
                 utils.search_query_builder(parsed_args.query))
             alarms = utils.get_client(self).alarm.query(query=query)
         else:
             filters = dict(parsed_args.filter) if parsed_args.filter else None
-            alarms = utils.get_client(self).alarm.list(filters=filters)
+            alarms = utils.get_client(self).alarm.list(
+                filters=filters, sorts=parsed_args.sort,
+                limit=parsed_args.limit, marker=parsed_args.marker)
         return utils.list2cols(ALARM_LIST_COLS, alarms)
 
 

@@ -40,6 +40,30 @@ class AlarmHistoryTest(base.ClientTestBase):
         alarm = self.details_multiple(result)[0]
         ALARM_ID2 = alarm['alarm_id']
 
+        # LIST WITH PAGINATION
+        # list with limit
+        result = self.aodh('alarm-history',
+                           params=("show %s --limit 1" % ALARM_ID))
+        alarm_list = self.parser.listing(result)
+        self.assertEqual(1, len(alarm_list))
+        # list with sort key=timestamp, dir=asc
+        result = self.aodh('alarm-history',
+                           params=("show %s --sort timestamp:asc" % ALARM_ID))
+        alarm_history_list = self.parser.listing(result)
+        timestamp = [r['timestamp'] for r in alarm_history_list]
+        sorted_timestamp = sorted(timestamp)
+        self.assertEqual(sorted_timestamp, timestamp)
+        # list with sort key=type dir = desc and key=timestamp, dir=asc
+        result = self.aodh('alarm-history',
+                           params=("show %s --sort type:desc "
+                                   "--sort timestamp:asc" % ALARM_ID))
+        alarm_history_list = self.parser.listing(result)
+        creation = alarm_history_list.pop(-1)
+        timestamp = [r['timestamp'] for r in alarm_history_list]
+        sorted_timestamp = sorted(timestamp)
+        self.assertEqual(sorted_timestamp, timestamp)
+        self.assertEqual('creation', creation['type'])
+
         # SHOW
         result = self.aodh(
             'alarm-history', params=("show %s" % ALARM_ID))

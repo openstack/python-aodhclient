@@ -1,0 +1,4 @@
+---
+features:
+  - Add pagination support for aodhclient, users can now use limit, sort
+    and marker when list alarms and show alarm histories.

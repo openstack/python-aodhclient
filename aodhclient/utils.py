@@ -12,6 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import re
+from six.moves.urllib import parse as urllib_parse
 
 import pyparsing as pp
 
@@ -173,6 +174,17 @@ def cli_to_array(cli_query):
             raise ValueError(err)
         opts.append(opt)
     return opts
+
+
+def get_pagination_options(limit=None, marker=None, sorts=None):
+    options = []
+    if limit:
+        options.append("limit=%d" % limit)
+    if marker:
+        options.append("marker=%s" % urllib_parse.quote(marker))
+    for sort in sorts or []:
+        options.append("sort=%s" % urllib_parse.quote(sort))
+    return "&".join(options)
 
 
 def get_client(obj):

@@ -266,6 +266,46 @@ class AodhClientTest(base.ClientTestBase):
             if alarm_list["alarm_id"] == ALARM_ID:
                 self.assertEqual('alarm_th', alarm_list['name'])
 
+        # LIST WITH PAGINATION
+        # list with limit
+        result = self.aodh('alarm',
+                           params="list --limit 1")
+        alarm_list = self.parser.listing(result)
+        self.assertEqual(1, len(alarm_list))
+        # list with sort with key=name dir=asc
+        result = self.aodh('alarm',
+                           params="list --sort name:asc")
+        names = [r['name'] for r in self.parser.listing(result)]
+        sorted_name = sorted(names)
+        self.assertEqual(sorted_name, names)
+        # list with sort with key=name dir=asc and key=alarm_id dir=asc
+        result = self.aodh(u'alarm',
+                           params=(u"create --type threshold --name alarm_th "
+                                   "-m meter_name --threshold 5 "
+                                   "--project-id %s" % PROJECT_ID))
+        created_alarm_id = self.details_multiple(result)[0]['alarm_id']
+        result = self.aodh('alarm',
+                           params="list --sort name:asc --sort alarm_id:asc")
+        alarm_list = self.parser.listing(result)
+        ids_with_same_name = []
+        names = []
+        for alarm in alarm_list:
+            names.append(['alarm_name'])
+            if alarm['name'] == 'alarm_th':
+                ids_with_same_name.append(alarm['alarm_id'])
+        sorted_ids = sorted(ids_with_same_name)
+        sorted_names = sorted(names)
+        self.assertEqual(sorted_names, names)
+        self.assertEqual(sorted_ids, ids_with_same_name)
+        # list with sort with key=name dir=desc and with the marker equal to
+        # the alarm_id of the alarm_th we created for this test.
+        result = self.aodh('alarm',
+                           params="list --sort name:desc "
+                                  "--marker %s" % created_alarm_id)
+        self.assertIn('alarm_tc',
+                      [r['name'] for r in self.parser.listing(result)])
+        self.aodh('alarm', params="delete %s" % created_alarm_id)
+
         # LIST WITH QUERY
         result = self.aodh('alarm',
                            params=("list --query project_id=%s" % PROJECT_ID))

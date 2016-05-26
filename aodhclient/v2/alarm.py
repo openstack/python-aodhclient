@@ -14,6 +14,7 @@
 from debtcollector import removals
 from oslo_serialization import jsonutils
 
+from aodhclient import utils
 from aodhclient.v2.alarm_cli import ALARM_TYPES
 from aodhclient.v2 import base
 
@@ -35,7 +36,8 @@ class AlarmManager(base.Manager):
                                     'is deprecated, and will be removed'
                                     'in python-aodhclient 0.7.0, please '
                                     'use query() instead.')
-    def list(self, filters=None, query=None):
+    def list(self, filters=None, query=None, limit=None,
+             marker=None, sorts=None):
         """List alarms.
 
         :param filters: A dict includes filters parameters, for example,
@@ -47,13 +49,29 @@ class AlarmManager(base.Manager):
               '{"=":{"type":"threshold"}}', this expression is used to
               query all the threshold type alarms.
         :type query: js
+        :param limit: maximum number of resources to return
+        :type limit: int
+        :param marker: the last item of the previous page; we return the next
+                       results after this value.
+        :type marker: str
+        :param sorts: list of resource attributes to order by.
+        :type sorts: list of str
         """
         if query:
             return query(query)
-        else:
-            url = (self.url + '?' + self._filtersdict_to_url(filters) if
-                   filters else self.url)
-            return self._get(url).json()
+
+        pagination = utils.get_pagination_options(limit, marker, sorts)
+        filter_string = (self._filtersdict_to_url(filters) if
+                         filters else "")
+        url = self.url
+        options = []
+        if filter_string:
+            options.append(filter_string)
+        if pagination:
+            options.append(pagination)
+        if options:
+            url += "?" + "&".join(options)
+        return self._get(url).json()
 
     def query(self, query=None):
         """Query alarms.
