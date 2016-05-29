@@ -387,6 +387,56 @@ class AodhClientTest(base.ClientTestBase):
         self.assertNotIn(alarm_id,
                          [r['alarm_id'] for r in self.parser.listing(result)])
 
+    def _test_alarm_create_show_query(self, create_params, expected_lines):
+
+        def test(params):
+            result = self.aodh('alarm', params=params)
+            alarm = self.details_multiple(result)[0]
+            for key, value in six.iteritems(expected_lines):
+                self.assertEqual(value, alarm[key])
+            return alarm
+
+        alarm = test(create_params)
+        params = 'show %s' % alarm['alarm_id']
+        test(params)
+        self.aodh('alarm', params='delete %s' % alarm['alarm_id'])
+
+    def test_threshold_alarm_create_show_query(self):
+        params = ('create --type threshold --name alarm-multiple-query '
+                  '-m cpu_util --threshold 90 --query "project_id=123;'
+                  'resource_id=456"')
+        expected_lines = {
+            'query': 'project_id = 123 AND',
+            '': 'resource_id = 456'
+        }
+        self._test_alarm_create_show_query(params, expected_lines)
+
+        params = ('create --type threshold --name alarm-single-query '
+                  '-m cpu_util --threshold 90 --query project_id=123')
+        expected_lines = {'query': 'project_id = 123'}
+        self._test_alarm_create_show_query(params, expected_lines)
+
+        params = ('create --type threshold --name alarm-no-query '
+                  '-m cpu_util --threshold 90')
+        self._test_alarm_create_show_query(params, {'query': ''})
+
+    def test_event_alarm_create_show_query(self):
+        params = ('create --type event --name alarm-multiple-query '
+                  '--query "traits.project_id=789;traits.resource_id=012"')
+        expected_lines = {
+            'query': 'traits.project_id = 789 AND',
+            '': 'traits.resource_id = 012',
+        }
+        self._test_alarm_create_show_query(params, expected_lines)
+
+        params = ('create --type event --name alarm-single-query '
+                  '--query "traits.project_id=789"')
+        expected_lines = {'query': 'traits.project_id = 789'}
+        self._test_alarm_create_show_query(params, expected_lines)
+
+        params = 'create --type event --name alarm-no-query'
+        self._test_alarm_create_show_query(params, {'query': ''})
+
 
 class AodhClientGnocchiRulesTest(base.ClientTestBase):
 
