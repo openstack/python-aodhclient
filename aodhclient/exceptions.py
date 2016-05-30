@@ -15,6 +15,7 @@
 class ClientException(Exception):
     """The base exception class for all exceptions this library raises."""
     message = 'Unknown Error'
+    http_status = 'N/A'
 
     def __init__(self, message=None, request_id=None,
                  url=None, method=None):
@@ -181,6 +182,10 @@ def from_response(response, url, method=None):
     elif content_type.startswith("text/"):
         kwargs['message'] = response.text
 
-    if not kwargs['message']:
-        del kwargs['message']
-    return cls(**kwargs)
+    if not kwargs.get('message'):
+        kwargs.pop('message', None)
+
+    exception = cls(**kwargs)
+    if isinstance(exception, ClientException) and response.status_code:
+        exception.http_status = response.status_code
+    return exception
