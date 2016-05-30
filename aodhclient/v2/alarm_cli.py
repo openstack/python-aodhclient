@@ -31,6 +31,7 @@ ALARM_TYPES = ['threshold', 'event', 'composite',
 ALARM_STATES = ['ok', 'alarm', 'insufficient data']
 ALARM_SEVERITY = ['low', 'moderate', 'critical']
 ALARM_OPERATORS = ['lt', 'le', 'eq', 'ne', 'ge', 'gt']
+ALARM_OP_MAP = dict(zip(ALARM_OPERATORS, ('<', '<=', '=', '!=', '>=', '>')))
 STATISTICS = ['max', 'min', 'avg', 'sum', 'count']
 
 ALARM_LIST_COLS = ['alarm_id', 'type', 'name', 'state', 'severity', 'enabled']
@@ -86,6 +87,13 @@ def _format_alarm(alarm):
         alarm["time_constraints"] = jsonutils.dumps(alarm["time_constraints"],
                                                     sort_keys=True,
                                                     indent=2)
+    # only works for threshold and event alarm
+    if isinstance(alarm.get('query'), list):
+        query_rows = []
+        for q in alarm['query']:
+            op = ALARM_OP_MAP.get(q['op'], q['op'])
+            query_rows.append('%s %s %s' % (q['field'], op, q['value']))
+        alarm['query'] = ' AND\n'.join(query_rows)
     return alarm
 
 
