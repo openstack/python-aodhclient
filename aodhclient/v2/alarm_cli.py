@@ -312,11 +312,11 @@ class CliAlarmCreate(show.ShowOne):
             '--composite-rule', metavar='<COMPOSITE_RULE>',
             dest='composite_rule',
             type=jsonutils.loads,
-            help='Composite threshold rule with JSON format, the form can'
-                 'be a nested dict which combine threshold/gnocchi rules by'
-                 ' "and", "or". For example, the form is like: '
-                 '{"or":[RULE1, RULE2, {"and": [RULE3, RULE4]}]}, The'
-                 'RULEx can be basic threshold rules but must include a'
+            help='Composite threshold rule with JSON format, the form can '
+                 'be a nested dict which combine threshold/gnocchi rules by '
+                 '"and", "or". For example, the form is like: '
+                 '{"or":[RULE1, RULE2, {"and": [RULE3, RULE4]}]}, The '
+                 'RULEx can be basic threshold rules but must include a '
                  '"type" field, like this: {"threshold": 0.8,'
                  '"meter_name":"cpu_util","type":"threshold"}'
         )
