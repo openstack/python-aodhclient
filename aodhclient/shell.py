@@ -40,6 +40,8 @@ class AodhCommandManager(commandmanager.CommandManager):
         "alarm list": alarm_cli.CliAlarmList,
         "alarm show": alarm_cli.CliAlarmShow,
         "alarm update": alarm_cli.CliAlarmUpdate,
+        "alarm state get": alarm_cli.CliAlarmStateGet,
+        "alarm state set": alarm_cli.CliAlarmStateSet,
         "alarm-history show": alarm_history_cli.CliAlarmHistoryShow,
         "alarm-history search": alarm_history_cli.CliAlarmHistorySearch,
         "capabilities list": capabilities_cli.CliCapabilitiesList,

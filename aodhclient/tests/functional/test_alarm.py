@@ -437,6 +437,27 @@ class AodhClientTest(base.ClientTestBase):
         params = 'create --type event --name alarm-no-query'
         self._test_alarm_create_show_query(params, {'query': ''})
 
+    def test_set_get_alarm_state(self):
+        result = self.aodh(
+            'alarm',
+            params=("create --type threshold --name alarm_state_test "
+                    "-m meter_name --threshold 5"))
+        alarm = self.details_multiple(result)[0]
+        alarm_id = alarm['alarm_id']
+        result = self.aodh(
+            'alarm', params="show %s" % alarm_id)
+        alarm_show = self.details_multiple(result)[0]
+        self.assertEqual('insufficient data', alarm_show['state'])
+        result = self.aodh('alarm', params="state get %s" % alarm_id)
+        state_get = self.details_multiple(result)[0]
+        self.assertEqual('insufficient data', state_get['state'])
+        self.aodh('alarm',
+                  params="state set --state ok  %s" % alarm_id)
+        result = self.aodh('alarm', params="state get %s" % alarm_id)
+        state_get = self.details_multiple(result)[0]
+        self.assertEqual('ok', state_get['state'])
+        self.aodh('alarm', params='delete %s' % alarm_id)
+
 
 class AodhClientGnocchiRulesTest(base.ClientTestBase):
 

@@ -476,3 +476,67 @@ class CliAlarmDelete(command.Command):
             _id = _find_alarm_id_by_name(c, parsed_args.id)
 
         c.alarm.delete(_id)
+
+
+class CliAlarmStateGet(show.ShowOne):
+    """Delete an alarm"""
+
+    def get_parser(self, prog_name):
+        return _add_name_to_parser(
+            _add_id_to_parser(
+                super(CliAlarmStateGet, self).get_parser(prog_name)))
+
+    def take_action(self, parsed_args):
+        _check_name_and_id(parsed_args, 'get state of')
+        c = utils.get_client(self)
+
+        if parsed_args.name:
+            _id = _find_alarm_id_by_name(c, parsed_args.name)
+        elif uuidutils.is_uuid_like(parsed_args.id):
+            try:
+                state = c.alarm.get_state(parsed_args.id)
+            except exceptions.NotFound:
+                # Maybe it was not an ID after all
+                _id = _find_alarm_id_by_name(c, parsed_args.id)
+            else:
+                return self.dict2columns({'state': state})
+        else:
+            _id = _find_alarm_id_by_name(c, parsed_args.id)
+
+        state = c.alarm.get_state(_id)
+        return self.dict2columns({'state': state})
+
+
+class CliAlarmStateSet(show.ShowOne):
+    """Delete an alarm"""
+
+    def get_parser(self, prog_name):
+        parser = _add_name_to_parser(
+            _add_id_to_parser(
+                super(CliAlarmStateSet, self).get_parser(prog_name)))
+        parser.add_argument('--state', metavar='<STATE>',
+                            required=True,
+                            choices=ALARM_STATES,
+                            help='State of the alarm, one of: '
+                            + str(ALARM_STATES))
+        return parser
+
+    def take_action(self, parsed_args):
+        _check_name_and_id(parsed_args, 'set state of')
+        c = utils.get_client(self)
+
+        if parsed_args.name:
+            _id = _find_alarm_id_by_name(c, parsed_args.name)
+        elif uuidutils.is_uuid_like(parsed_args.id):
+            try:
+                state = c.alarm.set_state(parsed_args.id, parsed_args.state)
+            except exceptions.NotFound:
+                # Maybe it was not an ID after all
+                _id = _find_alarm_id_by_name(c, parsed_args.id)
+            else:
+                return self.dict2columns({'state': state})
+        else:
+            _id = _find_alarm_id_by_name(c, parsed_args.id)
+
+        state = c.alarm.set_state(_id, parsed_args.state)
+        return self.dict2columns({'state': state})

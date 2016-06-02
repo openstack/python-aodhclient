@@ -128,3 +128,24 @@ class AlarmManager(base.Manager):
         :type alarm_id: str
         """
         self._delete(self.url + '/' + alarm_id)
+
+    def get_state(self, alarm_id):
+        """Get the state of an alarm
+
+        :param alarm_id: ID of the alarm
+        :type alarm_id: str
+        """
+        return self._get(self.url + '/' + alarm_id + '/state').json()
+
+    def set_state(self, alarm_id, state):
+        """Set the state of an alarm
+
+        :param alarm_id: ID of the alarm
+        :type alarm_id: str
+        :param state: the state to be updated to the alarm
+        :type state: str
+        """
+        return self._put(self.url + '/' + alarm_id + '/state',
+                         headers={'Content-Type': "application/json"},
+                         data='"%s"' % state
+                         ).json()
