@@ -64,6 +64,13 @@ class AlarmHistoryTest(base.ClientTestBase):
         self.assertEqual(sorted_timestamp, timestamp)
         self.assertEqual('creation', creation['type'])
 
+        # TEST FIELDS
+        result = self.aodh(
+            'alarm-history', params=("show %s" % ALARM_ID))
+        history = self.parser.listing(result)[0]
+        for key in ["timestamp", "type", "detail", "event_id"]:
+            self.assertIn(key, history)
+
         # SHOW
         result = self.aodh(
             'alarm-history', params=("show %s" % ALARM_ID))

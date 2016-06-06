@@ -42,7 +42,7 @@ class CliAlarmHistorySearch(lister.Lister):
 class CliAlarmHistoryShow(lister.Lister):
     """Show history for an alarm"""
 
-    COLS = ('timestamp', 'type', 'detail')
+    COLS = ('timestamp', 'type', 'detail', 'event_id')
 
     def get_parser(self, prog_name):
         parser = super(CliAlarmHistoryShow, self).get_parser(prog_name)
