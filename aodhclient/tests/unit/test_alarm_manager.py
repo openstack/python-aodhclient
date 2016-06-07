@@ -47,10 +47,10 @@ class AlarmManagerTest(testtools.TestCase):
         mock_am.assert_called_with('v2/alarms')
 
     @mock.patch.object(alarm.AlarmManager, '_post')
-    def test_list_with_query(self, mock_am):
+    def test_query(self, mock_am):
         am = alarm.AlarmManager(self.client)
         query = '{"=": {"type": "event"}}'
-        am.list(query)
+        am.query(query)
         url = 'v2/query/alarms'
         expected_value = ('{"filter": "{\\"=\\": {\\"type\\":'
                           ' \\"event\\"}}"}')

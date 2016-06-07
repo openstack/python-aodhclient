@@ -67,11 +67,10 @@ class CliAlarmList(lister.Lister):
         if parsed_args.query:
             query = jsonutils.dumps(
                 utils.search_query_builder(parsed_args.query))
+            alarms = utils.get_client(self).alarm.query(query=query)
         else:
-            query = None
-        filters = dict(parsed_args.filter) if parsed_args.filter else None
-        alarms = utils.get_client(self).alarm.list(query=query,
-                                                   filters=filters)
+            filters = dict(parsed_args.filter) if parsed_args.filter else None
+            alarms = utils.get_client(self).alarm.list(filters=filters)
         return utils.list2cols(ALARM_LIST_COLS, alarms)
 
 
@@ -100,7 +99,7 @@ def _format_alarm(alarm):
 def _find_alarm_by_name(client, name):
     # then try to get entity as name
     query = jsonutils.dumps({"=": {"name": name}})
-    alarms = client.alarm.list(query)
+    alarms = client.alarm.query(query)
     if len(alarms) > 1:
         msg = (_("Multiple alarms matches found for '%s', "
                  "use an ID to be more specific.") % name)

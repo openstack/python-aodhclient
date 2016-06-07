@@ -1,0 +1,9 @@
+---
+upgrade:
+  - Alarm list and query has been split into two separate functions
+    in the SDK layer( CLI user still uses alarm list with --query
+    or --filter as before).
+deprecations:
+  - Calling alarm list function with query parameter has been deprecated
+    and will be removed in python-aodhclient 0.7.0, please use alarm query
+    function instead.

@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from debtcollector import removals
 from oslo_serialization import jsonutils
 
 from aodhclient.v2.alarm_cli import ALARM_TYPES
@@ -29,29 +30,44 @@ class AlarmManager(base.Manager):
             urls.append(url)
         return '&'.join(urls)
 
-    def list(self, query=None, filters=None):
+    @removals.removed_kwarg('query',
+                            message='Calling list() with query parameter'
+                                    'is deprecated, and will be removed'
+                                    'in python-aodhclient 0.7.0, please '
+                                    'use query() instead.')
+    def list(self, filters=None, query=None):
         """List alarms.
 
-        :param query: A json format complex query expression, like this:
-                      '{"=":{"type":"threshold"}}', this expression is used to
-                      query all the threshold type alarms.
-        :type query: json
         :param filters: A dict includes filters parameters, for example,
                         {'type': 'threshold', 'severity': 'low'} represent
                         filters to query alarms with type='threshold' and
                         severity='low'.
         :type filters: dict
+        :param query: A json format complex query expression, like this:
+              '{"=":{"type":"threshold"}}', this expression is used to
+              query all the threshold type alarms.
+        :type query: js
         """
         if query:
-            query = {'filter': query}
-            url = "v2/query/alarms"
-            return self._post(url,
-                              headers={'Content-Type': "application/json"},
-                              data=jsonutils.dumps(query)).json()
+            return query(query)
         else:
             url = (self.url + '?' + self._filtersdict_to_url(filters) if
                    filters else self.url)
             return self._get(url).json()
+
+    def query(self, query=None):
+        """Query alarms.
+
+        :param query: A json format complex query expression, like this:
+                      '{"=":{"type":"threshold"}}', this expression is used to
+                      query all the threshold type alarms.
+        :type query: json
+        """
+        query = {'filter': query}
+        url = "v2/query/alarms"
+        return self._post(url,
+                          headers={'Content-Type': "application/json"},
+                          data=jsonutils.dumps(query)).json()
 
     def get(self, alarm_id):
         """Get an alarm
