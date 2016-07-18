@@ -12,7 +12,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from openstackclient.common import utils
+from osc_lib import utils
 
 
 DEFAULT_ALARMING_API_VERSION = '2'
