@@ -169,7 +169,7 @@ def cli_to_array(cli_query):
                 'string', 'integer', 'float', 'datetime', 'boolean'):
             err = ('Invalid value type %(type)s, the type of value'
                    'should be one of: integer, string, float, datetime,'
-                   ' boolean.' % opt['type'])
+                   ' boolean.' % opt)
             raise ValueError(err)
         opts.append(opt)
     return opts
