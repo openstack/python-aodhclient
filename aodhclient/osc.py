@@ -12,11 +12,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import logging
-
 from openstackclient.common import utils
 
-LOG = logging.getLogger(__name__)
 
 DEFAULT_ALARMING_API_VERSION = '2'
 API_VERSION_OPTION = 'os_alarming_api_version'
