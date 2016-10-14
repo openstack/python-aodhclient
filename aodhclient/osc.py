@@ -12,6 +12,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+"""OpenStackClient plugin for Telemetry Alarming service."""
+
 from osc_lib import utils
 
 
