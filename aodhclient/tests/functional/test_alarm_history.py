@@ -10,9 +10,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import uuid
-
 from oslo_serialization import jsonutils
+from oslo_utils import uuidutils
 
 from aodhclient.tests.functional import base
 
@@ -25,7 +24,7 @@ class AlarmHistoryTest(base.ClientTestBase):
 
     def test_alarm_history_scenario(self):
 
-        PROJECT_ID = str(uuid.uuid4())
+        PROJECT_ID = uuidutils.generate_uuid()
 
         result = self.aodh(u'alarm',
                            params=(u"create --type threshold --name history1 "
