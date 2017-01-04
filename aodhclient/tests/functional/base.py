@@ -12,8 +12,8 @@
 
 import os
 import time
-import uuid
 
+from oslo_utils import uuidutils
 from tempest.lib.cli import base
 from tempest.lib import exceptions
 
@@ -27,8 +27,8 @@ class AodhClient(object):
     def __init__(self):
         self.cli_dir = os.environ.get('AODH_CLIENT_EXEC_DIR')
         self.endpoint = os.environ.get('AODH_ENDPOINT')
-        self.user_id = str(uuid.uuid4())
-        self.project_id = str(uuid.uuid4())
+        self.user_id = uuidutils.generate_uuid()
+        self.project_id = uuidutils.generate_uuid()
 
     def aodh(self, action, flags='', params='',
              fail_ok=False, merge_stderr=False):

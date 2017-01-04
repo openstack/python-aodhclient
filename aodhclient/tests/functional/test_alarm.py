@@ -11,8 +11,8 @@
 #    under the License.
 
 import os
-import uuid
 
+from oslo_utils import uuidutils
 import requests
 import six
 from tempest.lib import exceptions
@@ -90,12 +90,12 @@ class AodhClientTest(base.ClientTestBase):
             result = self.aodh('alarm', params=params)
             self.assertEqual("", result)
 
-        _test(str(uuid.uuid4()))
+        _test(uuidutils.generate_uuid())
         _test('normal-alarm-name')
 
     def test_event_scenario(self):
 
-        PROJECT_ID = str(uuid.uuid4())
+        PROJECT_ID = uuidutils.generate_uuid()
 
         # CREATE
         result = self.aodh(u'alarm',
@@ -185,7 +185,7 @@ class AodhClientTest(base.ClientTestBase):
 
     def test_threshold_scenario(self):
 
-        PROJECT_ID = str(uuid.uuid4())
+        PROJECT_ID = uuidutils.generate_uuid()
 
         # CREATE
         result = self.aodh(u'alarm',
@@ -335,7 +335,7 @@ class AodhClientTest(base.ClientTestBase):
 
     def test_composite_scenario(self):
 
-        project_id = str(uuid.uuid4())
+        project_id = uuidutils.generate_uuid()
         # CREATE
         result = self.aodh(u'alarm',
                            params=(u'create --type composite --name calarm1 '
@@ -503,8 +503,8 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
 
     def test_gnocchi_resources_threshold_scenario(self):
 
-        PROJECT_ID = str(uuid.uuid4())
-        RESOURCE_ID = str(uuid.uuid4())
+        PROJECT_ID = uuidutils.generate_uuid()
+        RESOURCE_ID = uuidutils.generate_uuid()
 
         req = requests.post(
             os.environ.get("GNOCCHI_ENDPOINT") + "/v1/resource/instance",
@@ -629,7 +629,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
 
     def test_gnocchi_aggr_by_resources_scenario(self):
 
-        PROJECT_ID = str(uuid.uuid4())
+        PROJECT_ID = uuidutils.generate_uuid()
 
         # CREATE
         result = self.aodh(
@@ -722,7 +722,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
 
     def test_gnocchi_aggr_by_metrics_scenario(self):
 
-        PROJECT_ID = str(uuid.uuid4())
+        PROJECT_ID = uuidutils.generate_uuid()
         METRIC1 = 'cpu'
         METRIC2 = 'cpu_util'
 
