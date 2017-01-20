@@ -14,6 +14,7 @@ import os
 
 from oslo_utils import uuidutils
 import requests
+import requests.auth
 import six
 from tempest.lib import exceptions
 
@@ -508,6 +509,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
 
         req = requests.post(
             os.environ.get("GNOCCHI_ENDPOINT") + "/v1/resource/instance",
+            auth=requests.auth.HTTPBasicAuth('admin', ''),
             json={
                 "display_name": "myvm",
                 "flavor_id": "2", "host": "blah",
