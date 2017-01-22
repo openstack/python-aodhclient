@@ -495,7 +495,7 @@ class CliAlarmDelete(command.Command):
 
 
 class CliAlarmStateGet(show.ShowOne):
-    """Delete an alarm"""
+    """Get state of an alarm"""
 
     def get_parser(self, prog_name):
         return _add_name_to_parser(
@@ -524,7 +524,7 @@ class CliAlarmStateGet(show.ShowOne):
 
 
 class CliAlarmStateSet(show.ShowOne):
-    """Delete an alarm"""
+    """Set state of an alarm"""
 
     def get_parser(self, prog_name):
         parser = _add_name_to_parser(
