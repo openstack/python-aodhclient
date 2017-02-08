@@ -25,12 +25,12 @@ from cliff import commandmanager
 from keystoneauth1 import exceptions
 from keystoneauth1 import loading
 
+from aodhclient import __version__
 from aodhclient import client
 from aodhclient import noauth
 from aodhclient.v2 import alarm_cli
 from aodhclient.v2 import alarm_history_cli
 from aodhclient.v2 import capabilities_cli
-from aodhclient.version import __version__
 
 
 class AodhCommandManager(commandmanager.CommandManager):
@@ -56,7 +56,6 @@ class AodhShell(app.App):
     def __init__(self):
         super(AodhShell, self).__init__(
             description='Aodh command line client',
-            # FIXME(sileht): get version from pbr
             version=__version__,
             command_manager=AodhCommandManager(None),
             deferred_help=True,
