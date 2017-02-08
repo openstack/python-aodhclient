@@ -11,7 +11,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from debtcollector import removals
 from oslo_serialization import jsonutils
 
 from aodhclient import utils
@@ -31,12 +30,7 @@ class AlarmManager(base.Manager):
             urls.append(url)
         return '&'.join(urls)
 
-    @removals.removed_kwarg('query',
-                            message='Calling list() with query parameter'
-                                    'is deprecated, and will be removed'
-                                    'in python-aodhclient 0.7.0, please '
-                                    'use query() instead.')
-    def list(self, filters=None, query=None, limit=None,
+    def list(self, filters=None, limit=None,
              marker=None, sorts=None):
         """List alarms.
 
@@ -45,10 +39,6 @@ class AlarmManager(base.Manager):
                         filters to query alarms with type='threshold' and
                         severity='low'.
         :type filters: dict
-        :param query: A json format complex query expression, like this:
-              '{"=":{"type":"threshold"}}', this expression is used to
-              query all the threshold type alarms.
-        :type query: js
         :param limit: maximum number of resources to return
         :type limit: int
         :param marker: the last item of the previous page; we return the next
@@ -57,9 +47,6 @@ class AlarmManager(base.Manager):
         :param sorts: list of resource attributes to order by.
         :type sorts: list of str
         """
-        if query:
-            return query(query)
-
         pagination = utils.get_pagination_options(limit, marker, sorts)
         filter_string = (self._filtersdict_to_url(filters) if
                          filters else "")
