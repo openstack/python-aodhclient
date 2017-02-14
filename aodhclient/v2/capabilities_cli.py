@@ -17,7 +17,7 @@ from aodhclient import utils
 
 
 class CliCapabilitiesList(show.ShowOne):
-    """List capabilities"""
+    """List capabilities of alarming service"""
 
     def take_action(self, parsed_args):
         caps = utils.get_client(self).capabilities.list()
