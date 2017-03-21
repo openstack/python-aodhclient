@@ -508,15 +508,10 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         RESOURCE_ID = uuidutils.generate_uuid()
 
         req = requests.post(
-            os.environ.get("GNOCCHI_ENDPOINT") + "/v1/resource/instance",
+            os.environ.get("GNOCCHI_ENDPOINT") + "/v1/resource/generic",
             auth=requests.auth.HTTPBasicAuth('admin', ''),
             json={
-                "display_name": "myvm",
-                "flavor_id": "2", "host": "blah",
                 "id": RESOURCE_ID,
-                "image_ref": "http://image",
-                "project_id": "BD3A1E52-1C62-44CB-BF04-660BD88CD74D",
-                "user_id": "BD3A1E52-1C62-44CB-BF04-660BD88CD74D",
             })
         self.assertEqual(201, req.status_code)
 
@@ -526,7 +521,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                                    "--type gnocchi_resources_threshold "
                                    "--name alarm_gn1 --metric cpu_util "
                                    "--threshold 80 "
-                                   "--resource-id %s --resource-type instance "
+                                   "--resource-id %s --resource-type generic "
                                    "--aggregation-method last "
                                    "--project-id %s"
                                    % (RESOURCE_ID, PROJECT_ID)))
@@ -538,7 +533,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual('last', alarm['aggregation_method'])
         self.assertEqual(RESOURCE_ID,
                          alarm['resource_id'])
-        self.assertEqual('instance', alarm['resource_type'])
+        self.assertEqual('generic', alarm['resource_type'])
 
         # CREATE FAIL MISSING PARAM
         self.assertRaises(exceptions.CommandFailed,
@@ -546,7 +541,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                           params=(u"create "
                                   "--type gnocchi_resources_threshold "
                                   "--name alarm1 --metric cpu_util "
-                                  "--resource-id %s --resource-type instance "
+                                  "--resource-id %s --resource-type generic "
                                   "--aggregation-method last "
                                   "--project-id %s"
                                   % (RESOURCE_ID, PROJECT_ID)))
@@ -571,7 +566,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual('90.0', alarm_show['threshold'])
         self.assertEqual('critical', alarm_show['severity'])
         self.assertEqual('last', alarm_show['aggregation_method'])
-        self.assertEqual('instance', alarm_show['resource_type'])
+        self.assertEqual('generic', alarm_show['resource_type'])
 
         # GET BY NAME
         result = self.aodh(
@@ -583,7 +578,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual('90.0', alarm_show['threshold'])
         self.assertEqual('critical', alarm_show['severity'])
         self.assertEqual('last', alarm_show['aggregation_method'])
-        self.assertEqual('instance', alarm_show['resource_type'])
+        self.assertEqual('generic', alarm_show['resource_type'])
 
         # GET BY NAME AND ID ERROR
         self.assertRaises(exceptions.CommandFailed,
@@ -641,8 +636,8 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                     "gnocchi_aggregation_by_resources_threshold "
                     "--name alarm1 --metric cpu --threshold 80 "
                     "--query "
-                    '\'{"=": {"server_group": "my_group"}}\' '
-                    "--resource-type instance "
+                    '\'{"=": {"creator": "cr3at0r"}}\' '
+                    "--resource-type generic "
                     "--aggregation-method last "
                     "--project-id %s" % PROJECT_ID))
         alarm = self.details_multiple(result)[0]
@@ -651,8 +646,8 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual('cpu', alarm['metric'])
         self.assertEqual('80.0', alarm['threshold'])
         self.assertEqual('last', alarm['aggregation_method'])
-        self.assertEqual('instance', alarm['resource_type'])
-        self.assertEqual('{"=": {"server_group": "my_group"}}',
+        self.assertEqual('generic', alarm['resource_type'])
+        self.assertEqual('{"=": {"creator": "cr3at0r"}}',
                          alarm['query'])
 
         # CREATE FAIL MISSING PARAM
@@ -664,8 +659,8 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                     "gnocchi_aggregation_by_resources_threshold "
                     "--name alarm1 --metric cpu "
                     "--query "
-                    '\'{"=": {"server_group": "my_group"}}\' '
-                    "--resource-type instance "
+                    '\'{"=": {"creator": "cr3at0r"}}\' '
+                    "--resource-type generic "
                     "--aggregation-method last "
                     "--project-id %s" % PROJECT_ID))
 
@@ -689,7 +684,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual('90.0', alarm_show['threshold'])
         self.assertEqual('critical', alarm_show['severity'])
         self.assertEqual('last', alarm_show['aggregation_method'])
-        self.assertEqual('instance', alarm_show['resource_type'])
+        self.assertEqual('generic', alarm_show['resource_type'])
 
         # LIST
         result = self.aodh('alarm', params="list")
