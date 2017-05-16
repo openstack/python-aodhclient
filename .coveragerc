@@ -1,7 +1,6 @@
 [run]
 branch = True
 source = aodhclient
-omit = aodhclient/openstack/*
 
 [report]
 ignore_errors = True
