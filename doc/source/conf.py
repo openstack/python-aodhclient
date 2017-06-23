@@ -63,8 +63,8 @@ gen_ref("v2", "Version 2 API", ["client"])
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'openstackdocstheme',
     #'sphinx.ext.intersphinx',
-    'oslosphinx'
 ]
 
 # autodoc generation is a bit aggressive and a nuisance when doing heavy
@@ -77,7 +77,10 @@ source_suffix = '.rst'
 # The master toctree document.
 master_doc = 'index'
 
-# General information about the project.
+# openstackdocstheme options
+repository_name = 'openstack/python-aodhclient'
+bug_project = 'python-aodhclient'
+bug_tag = ''
 project = u'aodhclient'
 copyright = u'2015, OpenStack Foundation'
 
@@ -98,6 +101,11 @@ pygments_style = 'sphinx'
 # html_theme_path = ["."]
 # html_theme = '_theme'
 # html_static_path = ['static']
+html_theme = 'openstackdocs'
+html_last_updated_fmt = '%Y-%m-%d %H:%M'
+
+# Add any paths that contain custom themes here, relative to this directory.
+#html_theme_path = ['_theme']
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = '%sdoc' % project
