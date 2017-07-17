@@ -10,6 +10,6 @@ This is a client for OpenStack Aodh API. There's :doc:`a Python API
 OpenStack Aodh API.
 
 * Free software: Apache license
-* Documentation: http://docs.openstack.org/developer/python-aodhclient
-* Source: http://git.openstack.org/cgit/openstack/python-aodhclient
-* Bugs: http://bugs.launchpad.net/python-aodhclient
+* Documentation: https://docs.openstack.org/python-aodhclient/latest/
+* Source: https://git.openstack.org/cgit/openstack/python-aodhclient
+* Bugs: https://bugs.launchpad.net/python-aodhclient

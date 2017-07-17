@@ -24,7 +24,7 @@ Aodh API.
     least -- to get an idea of the concepts. By understanding the concepts
     this library should make more sense.
 
-    __ http://docs.openstack.org/developer/aodh/
+    __ https://docs.openstack.org/aodh/latest/
 
 
 Contents:
