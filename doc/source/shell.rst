@@ -5,8 +5,7 @@ The :program:`aodh` shell utility
 .. highlight:: bash
 
 The :program:`aodh` shell utility interacts with Aodh API
-from the command line. It supports the entirety of the Aodh API excluding
-deprecated combination alarms.
+from the command line. It supports the entirety of the Aodh API.
 
 You'll need to provide :program:`aodh` with your OpenStack credentials.
 You can do this with the :option:`--os-username`, :option:`--os-password`,
