@@ -82,5 +82,5 @@ Show an alarm's history::
 
 Search alarm history data::
 
-    aodh --debug alarm-history search --query 'timestamp>"2016-03-09T01:22:35"'
+    aodh alarm-history search --query 'timestamp>"2016-03-09T01:22:35"'
 
