@@ -57,7 +57,7 @@ class AodhShell(app.App):
         super(AodhShell, self).__init__(
             description='Aodh command line client',
             version=__version__,
-            command_manager=AodhCommandManager(None),
+            command_manager=AodhCommandManager('aodhclient'),
             deferred_help=True,
             )
 
