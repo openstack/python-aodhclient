@@ -344,21 +344,22 @@ class CliAlarmCreate(show.ShowOne):
 
     def _validate_args(self, parsed_args):
         if (parsed_args.type == 'gnocchi_resources_threshold' and
-            not (parsed_args.metric and parsed_args.threshold and
-                 parsed_args.resource_id and parsed_args.resource_type
-                 and parsed_args.aggregation_method)):
+                not (parsed_args.metric and parsed_args.threshold is not None
+                     and parsed_args.resource_id and parsed_args.resource_type
+                     and parsed_args.aggregation_method)):
             self.parser.error('gnocchi_resources_threshold requires --metric, '
                               '--threshold, --resource-id, --resource-type '
                               'and --aggregation-method')
         elif (parsed_args.type == 'gnocchi_aggregation_by_metrics_threshold'
-              and not (parsed_args.metrics and parsed_args.threshold and
-                       parsed_args.aggregation_method)):
+              and not (parsed_args.metrics
+                       and parsed_args.threshold is not None
+                       and parsed_args.aggregation_method)):
             self.parser.error('gnocchi_aggregation_by_metrics_threshold '
                               'requires --metrics, --threshold and '
                               '--aggregation-method')
         elif (parsed_args.type == 'gnocchi_aggregation_by_resources_threshold'
-              and not (parsed_args.metric and parsed_args.threshold and
-                       parsed_args.query and parsed_args.resource_type and
+              and not (parsed_args.metric and parsed_args.threshold is not None
+                       and parsed_args.query and parsed_args.resource_type and
                        parsed_args.aggregation_method)):
             self.parser.error('gnocchi_aggregation_by_resources_threshold '
                               'requires --metric, --threshold, '
