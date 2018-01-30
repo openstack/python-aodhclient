@@ -37,13 +37,14 @@ class AlarmHistoryManagerTest(testtools.TestCase):
     @mock.patch.object(alarm_history.AlarmHistoryManager, '_post')
     def test_search(self, mock_ahm):
         ahm = alarm_history.AlarmHistoryManager(self.client)
-        q = ('{"and": [{"=": {"type": "threshold"}}, '
+        q = ('{"and": [{"=": {"type": "gnocchi_resources_threshold"}}, '
              '{"=": {"alarm_id": "87bacbcb-a09c-4cb9-86d0-ad410dd8ad98"}}]}')
         ahm.search(q)
-        expected_called_data = ('{"filter": "{\\"and\\": [{\\"=\\": '
-                                '{\\"type\\": \\"threshold\\"}}, '
-                                '{\\"=\\": {\\"alarm_id\\": \\"87bacbcb-'
-                                'a09c-4cb9-86d0-ad410dd8ad98\\"}}]}"}')
+        expected_called_data = (
+            '{"filter": "{\\"and\\": ['
+            '{\\"=\\": {\\"type\\": \\"gnocchi_resources_threshold\\"}}, '
+            '{\\"=\\": {\\"alarm_id\\": '
+            '\\"87bacbcb-a09c-4cb9-86d0-ad410dd8ad98\\"}}]}"}')
         mock_ahm.assert_called_with(
             'v2/query/alarms/history',
             data=expected_called_data,

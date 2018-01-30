@@ -66,7 +66,9 @@ Examples
 
 Create an alarm::
 
-    aodh alarm create -t threshold --name alarm1 -m cpu_util --threshold 5
+    aodh alarm create -t gnocchi_resources_threshold --name alarm1 \
+    --metric cpu_util --threshold 5 --resource_id <RES_ID> \
+    --resource_type generic --aggregation_method mean --project-id <PROJ_ID>
 
 List alarms::
 
@@ -74,7 +76,7 @@ List alarms::
 
 List alarm with query parameters::
 
-    aodh alarm list --query "state=alarm and type=threshold"
+    aodh alarm list --query "state=alarm and type=gnocchi_resources_threshold"
 
 Show an alarm's history::
 

@@ -25,17 +25,28 @@ class AlarmHistoryTest(base.ClientTestBase):
     def test_alarm_history_scenario(self):
 
         PROJECT_ID = uuidutils.generate_uuid()
+        RESOURCE_ID = uuidutils.generate_uuid()
 
         result = self.aodh(u'alarm',
-                           params=(u"create --type threshold --name history1 "
-                                   "-m meter_name --threshold 5 "
-                                   "--project-id %s" % PROJECT_ID))
+                           params=(u"create "
+                                   "--type gnocchi_resources_threshold "
+                                   "--name history1 --metric cpu_util "
+                                   "--threshold 5 "
+                                   "--resource-id %s --resource-type generic "
+                                   "--aggregation-method last "
+                                   "--project-id %s"
+                                   % (RESOURCE_ID, PROJECT_ID)))
         alarm = self.details_multiple(result)[0]
         ALARM_ID = alarm['alarm_id']
         result = self.aodh(u'alarm',
-                           params=(u"create --type threshold --name history2 "
-                                   "-m meter_name --threshold 10 "
-                                   "--project-id %s" % PROJECT_ID))
+                           params=(u"create "
+                                   "--type gnocchi_resources_threshold "
+                                   "--name history2 --metric cpu_util "
+                                   "--threshold 10 "
+                                   "--resource-id %s --resource-type generic "
+                                   "--aggregation-method last "
+                                   "--project-id %s"
+                                   % (RESOURCE_ID, PROJECT_ID)))
         alarm = self.details_multiple(result)[0]
         ALARM_ID2 = alarm['alarm_id']
 

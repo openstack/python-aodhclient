@@ -50,22 +50,6 @@ class CliAlarmCreateTest(testtools.TestCase):
             '--aggregation-method')
 
     @mock.patch.object(argparse.ArgumentParser, 'error')
-    def test_validate_args_threshold(self, mock_arg):
-        # Cover the test case of the method _validate_args for
-        # threshold
-        parser = self.cli_alarm_create.get_parser('aodh alarm create')
-        test_parsed_args = parser.parse_args([
-            '--name', 'threshold_test',
-            '--type', 'threshold',
-            '--threshold', '80'
-            ])
-        self.cli_alarm_create._validate_args(test_parsed_args)
-        mock_arg.assert_called_once_with(
-            'Threshold alarm requires -m/--meter-name and '
-            '--threshold parameters. Meter name can be '
-            'found in Ceilometer')
-
-    @mock.patch.object(argparse.ArgumentParser, 'error')
     def test_validate_args_composite(self, mock_arg):
         # Cover the test case of the method _validate_args for
         # composite
@@ -117,7 +101,7 @@ class CliAlarmCreateTest(testtools.TestCase):
         # The test case to cover the method _alarm_from_args
         parser = self.cli_alarm_create.get_parser('aodh alarm create')
         test_parsed_args = parser.parse_args([
-            '--type', 'threshold',
+            '--type', 'event',
             '--name', 'alarm_from_args_test',
             '--project-id', '01919bbd-8b0e-451c-be28-abe250ae9b1b',
             '--user-id', '01919bbd-8b0e-451c-be28-abe250ae9c1c',
@@ -132,10 +116,7 @@ class CliAlarmCreateTest(testtools.TestCase):
             'http://something/insufficient',
             '--time-constraint',
             'name=cons1;start="0 11 * * *";duration=300;description=desc1',
-            '--meter-name', 'cpu',
-            '--period', '60',
             '--evaluation-periods', '60',
-            '--statistic', 'max',
             '--comparison-operator', 'le',
             '--threshold', '80',
             '--event-type', 'event',
@@ -165,18 +146,6 @@ class CliAlarmCreateTest(testtools.TestCase):
                                   'name': 'cons1',
                                   'start': '0 11 * * *'}],
             'repeat_actions': True,
-            'threshold_rule': {
-                'meter_name': 'cpu',
-                'period': 60,
-                'evaluation_periods': 60,
-                'statistic': 'max',
-                'comparison_operator': 'le',
-                'threshold': 80.0,
-                'query': [{'field': 'resource',
-                           'op': 'eq',
-                           'type': '',
-                           'value': 'fake-resource-id'}]
-            },
             'event_rule': {
                 'event_type': 'event',
                 'query': [{'field': 'resource',
@@ -215,7 +184,7 @@ class CliAlarmCreateTest(testtools.TestCase):
                 'resource_type': 'generic'
             },
             'composite_rule': None,
-            'type': 'threshold'
+            'type': 'event'
             }
         alarm_rep = self.cli_alarm_create._alarm_from_args(test_parsed_args)
         self.assertEqual(alarm, alarm_rep)

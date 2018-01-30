@@ -35,8 +35,9 @@ class AlarmManager(base.Manager):
         """List alarms.
 
         :param filters: A dict includes filters parameters, for example,
-                        {'type': 'threshold', 'severity': 'low'} represent
-                        filters to query alarms with type='threshold' and
+                        {'type': 'gnocchi_resources_threshold',
+                         'severity': 'low'} represent filters to query alarms
+                        with type='gnocchi_resources_threshold' and
                         severity='low'.
         :type filters: dict
         :param limit: maximum number of resources to return
@@ -64,8 +65,9 @@ class AlarmManager(base.Manager):
         """Query alarms.
 
         :param query: A json format complex query expression, like this:
-                      '{"=":{"type":"threshold"}}', this expression is used to
-                      query all the threshold type alarms.
+                      '{"=":{"type":"gnocchi_resources_threshold"}}', this
+                      expression is used to query all the
+                      gnocchi_resources_threshold type alarms.
         :type query: json
         """
         query = {'filter': query}
@@ -110,10 +112,7 @@ class AlarmManager(base.Manager):
         alarm = self._get(self.url + '/' + alarm_id).json()
         self._clean_rules(alarm['type'], alarm_update)
 
-        if 'threshold_rule' in alarm_update:
-            alarm['threshold_rule'].update(alarm_update.get('threshold_rule'))
-            alarm_update.pop('threshold_rule')
-        elif 'event_rule' in alarm_update:
+        if 'event_rule' in alarm_update:
             alarm['event_rule'].update(alarm_update.get('event_rule'))
             alarm_update.pop('event_rule')
         elif 'gnocchi_resources_threshold_rule' in alarm_update:

@@ -24,7 +24,7 @@ from aodhclient import exceptions
 from aodhclient.i18n import _
 from aodhclient import utils
 
-ALARM_TYPES = ['threshold', 'event', 'composite',
+ALARM_TYPES = ['event', 'composite',
                'gnocchi_resources_threshold',
                'gnocchi_aggregation_by_metrics_threshold',
                'gnocchi_aggregation_by_resources_threshold']
@@ -32,7 +32,6 @@ ALARM_STATES = ['ok', 'alarm', 'insufficient data']
 ALARM_SEVERITY = ['low', 'moderate', 'critical']
 ALARM_OPERATORS = ['lt', 'le', 'eq', 'ne', 'ge', 'gt']
 ALARM_OP_MAP = dict(zip(ALARM_OPERATORS, ('<', '<=', '=', '!=', '>=', '>')))
-STATISTICS = ['max', 'min', 'avg', 'sum', 'count']
 
 ALARM_LIST_COLS = ['alarm_id', 'type', 'name', 'state', 'severity', 'enabled']
 
@@ -103,7 +102,7 @@ def _format_alarm(alarm):
         alarm["time_constraints"] = jsonutils.dumps(alarm["time_constraints"],
                                                     sort_keys=True,
                                                     indent=2)
-    # only works for threshold and event alarm
+    # only works for event alarm
     if isinstance(alarm.get('query'), list):
         query_rows = []
         for q in alarm['query']:
@@ -265,7 +264,7 @@ class CliAlarmCreate(show.ShowOne):
         common_group = parser.add_argument_group('common alarm rules')
         common_group.add_argument(
             '--query', metavar='<QUERY>', dest='query',
-            help="For alarms of type threshold or event: "
+            help="For alarms of type event: "
                  "key[op]data_type::value; list. data_type is optional, "
                  "but if supplied must be string, integer, float, or boolean. "
                  'For alarms of '
@@ -286,20 +285,6 @@ class CliAlarmCreate(show.ShowOne):
         common_group.add_argument(
             '--metric', metavar='<METRIC>',
             dest='metric', help='Metric to evaluate against.')
-
-        threshold_group = parser.add_argument_group('threshold alarm')
-        threshold_group.add_argument(
-            '-m', '--meter-name', metavar='<METER NAME>',
-            dest='meter_name', help='Meter to evaluate against')
-
-        threshold_group.add_argument(
-            '--period', type=int, metavar='<PERIOD>', dest='period',
-            help='Length of each period (seconds) to evaluate over.')
-
-        threshold_group.add_argument(
-            '--statistic', metavar='<STATISTIC>', dest='statistic',
-            choices=STATISTICS,
-            help='Statistic to evaluate, one of: ' + str(STATISTICS))
 
         event_group = parser.add_argument_group('event alarm')
         event_group.add_argument(
@@ -337,12 +322,9 @@ class CliAlarmCreate(show.ShowOne):
             dest='composite_rule',
             type=jsonutils.loads,
             help='Composite threshold rule with JSON format, the form can '
-                 'be a nested dict which combine threshold/gnocchi rules by '
+                 'be a nested dict which combine gnocchi rules by '
                  '"and", "or". For example, the form is like: '
-                 '{"or":[RULE1, RULE2, {"and": [RULE3, RULE4]}]}, The '
-                 'RULEx can be basic threshold rules but must include a '
-                 '"type" field, like this: {"threshold": 0.8,'
-                 '"meter_name":"cpu_util","type":"threshold"}'
+                 '{"or":[RULE1, RULE2, {"and": [RULE3, RULE4]}]}.'
         )
         self.parser = parser
         return parser
@@ -361,15 +343,10 @@ class CliAlarmCreate(show.ShowOne):
             raise argparse.ArgumentTypeError(msg)
 
     def _validate_args(self, parsed_args):
-        if (parsed_args.type == 'threshold' and
-                not (parsed_args.meter_name and parsed_args.threshold)):
-            self.parser.error('Threshold alarm requires -m/--meter-name and '
-                              '--threshold parameters. Meter name can be '
-                              'found in Ceilometer')
-        elif (parsed_args.type == 'gnocchi_resources_threshold' and
-              not (parsed_args.metric and parsed_args.threshold and
-                   parsed_args.resource_id and parsed_args.resource_type
-                   and parsed_args.aggregation_method)):
+        if (parsed_args.type == 'gnocchi_resources_threshold' and
+            not (parsed_args.metric and parsed_args.threshold and
+                 parsed_args.resource_id and parsed_args.resource_type
+                 and parsed_args.aggregation_method)):
             self.parser.error('gnocchi_resources_threshold requires --metric, '
                               '--threshold, --resource-id, --resource-type '
                               'and --aggregation-method')
@@ -398,12 +375,8 @@ class CliAlarmCreate(show.ShowOne):
                           'state', 'severity', 'enabled', 'alarm_actions',
                           'ok_actions', 'insufficient_data_actions',
                           'time_constraints', 'repeat_actions'])
-        if parsed_args.type in ('threshold', 'event') and parsed_args.query:
+        if parsed_args.type == 'event' and parsed_args.query:
             parsed_args.query = utils.cli_to_array(parsed_args.query)
-        alarm['threshold_rule'] = utils.dict_from_parsed_args(
-            parsed_args, ['meter_name', 'period', 'evaluation_periods',
-                          'statistic', 'comparison_operator', 'threshold',
-                          'query'])
         alarm['event_rule'] = utils.dict_from_parsed_args(
             parsed_args, ['event_type', 'query'])
         alarm['gnocchi_resources_threshold_rule'] = (

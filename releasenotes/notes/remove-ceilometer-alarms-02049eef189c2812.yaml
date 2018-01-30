@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    Ceilometer alarms are no longer supported.
+upgrade:
+  - |
+    Ceilometer alarms will need to be recreated as alarms that target Gnocchi
+    as storage is not provided in Ceilometer anymore. You must downgrade client
+    if you still continue to use Ceilometer storage in older deployments.
