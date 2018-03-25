@@ -35,10 +35,10 @@ class AlarmHistoryManager(base.Manager):
         :type sorts: list of str
         """
         pagination = utils.get_pagination_options(limit, marker, sorts)
-        self.url = self.url % alarm_id
+        url = self.url % alarm_id
         if pagination:
-            self.url = "%s?%s" % (self.url, pagination)
-        return self._get(self.url).json()
+            url = "%s?%s" % (url, pagination)
+        return self._get(url).json()
 
     def search(self, query=None):
         """List of history matching corresponding query
