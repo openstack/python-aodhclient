@@ -372,9 +372,10 @@ class CliAlarmCreate(show.ShowOne):
 
     def _alarm_from_args(self, parsed_args):
         alarm = utils.dict_from_parsed_args(
-            parsed_args, ['name', 'project_id', 'user_id', 'description',
-                          'state', 'severity', 'enabled', 'alarm_actions',
-                          'ok_actions', 'insufficient_data_actions',
+            parsed_args, ['name', 'type', 'project_id', 'user_id',
+                          'description', 'state', 'severity', 'enabled',
+                          'alarm_actions', 'ok_actions',
+                          'insufficient_data_actions',
                           'time_constraints', 'repeat_actions'])
         if parsed_args.type == 'event' and parsed_args.query:
             parsed_args.query = utils.cli_to_array(parsed_args.query)
