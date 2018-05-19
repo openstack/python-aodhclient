@@ -627,7 +627,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                     "--type gnocchi_aggregation_by_metrics_threshold "
                     "--name alarm1 "
                     "--metrics %s "
-                    "--metrics %s "
+                    "--metric %s "
                     "--threshold 80 "
                     "--aggregation-method last "
                     "--project-id %s"

@@ -123,7 +123,13 @@ def format_archive_policy(ap):
 def dict_from_parsed_args(parsed_args, attrs):
     d = {}
     for attr in attrs:
-        value = getattr(parsed_args, attr)
+        if attr == "metric":
+            if parsed_args.metrics:
+                value = parsed_args.metrics[0]
+            else:
+                value = None
+        else:
+            value = getattr(parsed_args, attr)
         if value is not None:
             d[attr] = value
     return d

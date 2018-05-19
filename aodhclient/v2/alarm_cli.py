@@ -282,9 +282,6 @@ class CliAlarmCreate(show.ShowOne):
         common_group.add_argument(
             '--threshold', type=float, metavar='<THRESHOLD>',
             dest='threshold', help='Threshold to evaluate against.')
-        common_group.add_argument(
-            '--metric', metavar='<METRIC>',
-            dest='metric', help='Metric to evaluate against.')
 
         event_group = parser.add_argument_group('event alarm')
         event_group.add_argument(
@@ -301,6 +298,10 @@ class CliAlarmCreate(show.ShowOne):
             '--aggregation-method', metavar='<AGGR_METHOD>',
             dest='aggregation_method',
             help='The aggregation_method to compare to the threshold.')
+        gnocchi_common_group.add_argument(
+            '--metric', '--metrics', metavar='<METRIC>', action='append',
+            dest='metrics', help='The metric id or name '
+            'depending of the alarm type')
 
         gnocchi_resource_threshold_group = parser.add_argument_group(
             'gnocchi resource threshold alarm')
@@ -311,11 +312,6 @@ class CliAlarmCreate(show.ShowOne):
             '--resource-id', metavar='<RESOURCE_ID>',
             dest='resource_id', help='The id of a resource.')
 
-        gnocchi_aggr_metrics_group = parser.add_argument_group(
-            'gnocchi aggregation by metrics alarm')
-        gnocchi_aggr_metrics_group.add_argument(
-            '--metrics', metavar='<METRICS>', action='append',
-            dest='metrics', help='The list of metric ids.')
         composite_group = parser.add_argument_group('composite alarm')
         composite_group.add_argument(
             '--composite-rule', metavar='<COMPOSITE_RULE>',
@@ -344,7 +340,7 @@ class CliAlarmCreate(show.ShowOne):
 
     def _validate_args(self, parsed_args):
         if (parsed_args.type == 'gnocchi_resources_threshold' and
-                not (parsed_args.metric and parsed_args.threshold is not None
+                not (parsed_args.metrics and parsed_args.threshold is not None
                      and parsed_args.resource_id and parsed_args.resource_type
                      and parsed_args.aggregation_method)):
             self.parser.error('gnocchi_resources_threshold requires --metric, '
@@ -355,10 +351,11 @@ class CliAlarmCreate(show.ShowOne):
                        and parsed_args.threshold is not None
                        and parsed_args.aggregation_method)):
             self.parser.error('gnocchi_aggregation_by_metrics_threshold '
-                              'requires --metrics, --threshold and '
+                              'requires --metric, --threshold and '
                               '--aggregation-method')
         elif (parsed_args.type == 'gnocchi_aggregation_by_resources_threshold'
-              and not (parsed_args.metric and parsed_args.threshold is not None
+              and not (parsed_args.metrics
+                       and parsed_args.threshold is not None
                        and parsed_args.query and parsed_args.resource_type and
                        parsed_args.aggregation_method)):
             self.parser.error('gnocchi_aggregation_by_resources_threshold '

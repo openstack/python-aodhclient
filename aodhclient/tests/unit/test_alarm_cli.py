@@ -95,7 +95,7 @@ class CliAlarmCreateTest(testtools.TestCase):
         self.cli_alarm_create._validate_args(test_parsed_args)
         mock_arg.assert_called_once_with(
             'gnocchi_aggregation_by_metrics_threshold requires '
-            '--metrics, --threshold and --aggregation-method')
+            '--metric, --threshold and --aggregation-method')
 
     def test_alarm_from_args(self):
         # The test case to cover the method _alarm_from_args
@@ -168,7 +168,8 @@ class CliAlarmCreateTest(testtools.TestCase):
                 'aggregation_method': 'last',
                 'evaluation_periods': 60,
                 'comparison_operator': 'le',
-                'threshold': 80.0
+                'threshold': 80.0,
+                'metrics': ['cpu'],
             },
             'gnocchi_aggregation_by_resources_threshold_rule': {
                 'granularity': '60',
