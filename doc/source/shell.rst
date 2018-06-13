@@ -8,8 +8,8 @@ The :program:`aodh` shell utility interacts with Aodh API
 from the command line. It supports the entirety of the Aodh API.
 
 You'll need to provide :program:`aodh` with your OpenStack credentials.
-You can do this with the :option:`--os-username`, :option:`--os-password`,
-:option:`--os-tenant-id` and :option:`--os-auth-url` options, but it's easier to
+You can do this with the ``--os-username``, ``--os-password``,
+``--os-tenant-id`` and ``--os-auth-url`` options, but it's easier to
 just set them as environment variables:
 
 .. envvar:: OS_USERNAME
@@ -37,7 +37,7 @@ For example, in Bash you would use::
 
 The command line tool will attempt to reauthenticate using your provided credentials
 for every request. You can override this behavior by manually supplying an auth
-token using :option:`--aodh-endpoint` and :option:`--os-auth-token`. You can alternatively
+token using ``--aodh-endpoint`` and ``--os-auth-token``. You can alternatively
 set these environment variables::
 
     export AODH_ENDPOINT=http://aodh.example.org:8041
@@ -45,8 +45,8 @@ set these environment variables::
     export OS_AUTH_TOKEN=3bcc3d3a03f44e3d8377f9247b0ad155
 
 Also, if the server doesn't support authentication, you can provide
-:option:`--os-auth-plugon` aodh-noauth, :option:`--aodh-endpoint`, :option:`--user-id`
-and :option:`--project-id`. You can alternatively set these environment variables::
+``--os-auth-plugin`` aodh-noauth, ``--aodh-endpoint``, ``--user-id``
+and ``--project-id``. You can alternatively set these environment variables::
 
     export OS_AUTH_PLUGIN=aodh-noauth
     export AODH_ENDPOINT=http://aodh.example.org:8041
