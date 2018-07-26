@@ -1,0 +1,7 @@
+mysql-server [test platform:dpkg]
+postgresql [test]
+postgresql-client [test platform:dpkg]
+postgresql-devel [test platform:rpm]
+postgresql-server [test platform:rpm]
+libpq-dev [test platform:dpkg]
+python37 [platform:rpm py37]
