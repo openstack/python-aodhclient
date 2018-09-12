@@ -46,7 +46,8 @@ class CliAlarmHistoryShow(lister.Lister):
 
     def get_parser(self, prog_name):
         parser = super(CliAlarmHistoryShow, self).get_parser(prog_name)
-        parser.add_argument("alarm_id", help="ID of an alarm")
+        parser.add_argument("alarm_id", metavar="<alarm-id>",
+                            help="ID of an alarm")
         parser.add_argument("--limit", type=int, metavar="<LIMIT>",
                             help="Number of resources to return "
                                  "(Default is server default)")
