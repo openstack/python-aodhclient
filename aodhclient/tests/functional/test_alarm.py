@@ -425,6 +425,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         # GET BY NAME
         result = self.aodh(
             'alarm', params="show --name alarm_gn1")
+        alarm_show = self.details_multiple(result)[0]
         self.assertEqual(ALARM_ID, alarm_show["alarm_id"])
         self.assertEqual(PROJECT_ID, alarm_show["project_id"])
         self.assertEqual('alarm_gn1', alarm_show['name'])
