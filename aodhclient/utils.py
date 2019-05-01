@@ -131,7 +131,14 @@ def dict_from_parsed_args(parsed_args, attrs):
         else:
             value = getattr(parsed_args, attr)
         if value is not None:
-            d[attr] = value
+            if value == [""]:
+                # NOTE(jake): As options like --alarm-actions is an array,
+                # their value can be array with empty string if user set option
+                # to ''. In this case we set it to None here so that a None
+                # value gets sent to API.
+                d[attr] = None
+            else:
+                d[attr] = value
     return d
 
 
