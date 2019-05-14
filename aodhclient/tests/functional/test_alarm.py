@@ -336,6 +336,52 @@ class AodhClientTest(base.ClientTestBase):
         self.assertEqual('ok', state_get['state'])
         self.aodh('alarm', params='delete %s' % alarm_id)
 
+    def test_update_type_event_composite(self):
+
+        res_id = uuidutils.generate_uuid()
+        # CREATE
+        result = self.aodh(u'alarm',
+                           params=(u"create --type event --name ev_alarm123"))
+        alarm = self.details_multiple(result)[0]
+        ALARM_ID = alarm['alarm_id']
+        self.assertEqual('ev_alarm123', alarm['name'])
+        self.assertEqual('*', alarm['event_type'])
+
+        # UPDATE TYPE TO COMPOSITE
+        result = self.aodh(
+            'alarm',
+            params=('update %s --type composite --composite-rule '
+                    '\'{"or":[{"threshold": 0.8, "metric": "cpu_util", '
+                    '"type": "gnocchi_resources_threshold", "resource_type": '
+                    '"generic", "resource_id": "%s", '
+                    '"aggregation_method": "mean"},'
+                    '{"and": [{"threshold": 200, "metric": "disk.iops", '
+                    '"type": "gnocchi_resources_threshold", "resource_type": '
+                    '"generic", "resource_id": "%s", '
+                    '"aggregation_method": "mean"},'
+                    '{"threshold": 1000, "metric": "memory",'
+                    '"type": "gnocchi_resources_threshold", "resource_type": '
+                    '"generic", "resource_id": "%s", '
+                    '"aggregation_method": "mean"}]}]}\'' %
+                    (ALARM_ID, res_id, res_id, res_id)))
+        alarm_updated = self.details_multiple(result)[0]
+        self.assertEqual(ALARM_ID, alarm_updated["alarm_id"])
+        self.assertEqual('composite', alarm_updated['type'])
+        self.assertIn('composite_rule', alarm_updated)
+
+        # UPDATE TYPE TO EVENT
+        result = self.aodh(
+            'alarm', params=("update %s --type event"
+                             % ALARM_ID))
+        alarm_updated = self.details_multiple(result)[0]
+        self.assertEqual(ALARM_ID, alarm_updated["alarm_id"])
+        self.assertEqual('event', alarm_updated['type'])
+        self.assertEqual('*', alarm_updated['event_type'])
+
+        # DELETE
+        result = self.aodh('alarm', params="delete %s" % ALARM_ID)
+        self.assertEqual("", result)
+
 
 class AodhClientGnocchiRulesTest(base.ClientTestBase):
 
@@ -714,3 +760,135 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
             self.assertEqual(sorted(output_colums), sorted(alarm_list.keys()))
         self.assertNotIn(ALARM_ID,
                          [r['alarm_id'] for r in self.parser.listing(result)])
+
+    def test_update_gnresthr_gnaggrresthr(self):
+
+        RESOURCE_ID = uuidutils.generate_uuid()
+        # CREATE
+        result = self.aodh(u'alarm',
+                           params=(u"create "
+                                   "--type gnocchi_resources_threshold "
+                                   "--name alarm_gn123 --metric cpu_util "
+                                   "--resource-id %s --threshold 80 "
+                                   "--resource-type generic "
+                                   "--aggregation-method last "
+                                   % RESOURCE_ID))
+        alarm = self.details_multiple(result)[0]
+        ALARM_ID = alarm['alarm_id']
+        self.assertEqual('alarm_gn123', alarm['name'])
+        self.assertEqual('cpu_util', alarm['metric'])
+        self.assertEqual('80.0', alarm['threshold'])
+        self.assertEqual('last', alarm['aggregation_method'])
+        self.assertEqual('generic', alarm['resource_type'])
+
+        # UPDATE TYPE TO GNOCCHI_AGGREGATION_BY_RESOURCES_THRESHOLD
+        result = self.aodh(
+            'alarm', params=("update %s --type "
+                             "gnocchi_aggregation_by_resources_threshold "
+                             "--metric cpu --threshold 90 "
+                             "--query "
+                             '\'{"=": {"creator": "cr3at0r"}}\' '
+                             "--resource-type generic "
+                             "--aggregation-method last "
+                             % ALARM_ID))
+        alarm_updated = self.details_multiple(result)[0]
+        self.assertEqual(ALARM_ID, alarm_updated["alarm_id"])
+        self.assertEqual('cpu', alarm_updated['metric'])
+        self.assertEqual('90.0', alarm_updated['threshold'])
+        self.assertEqual('last', alarm_updated['aggregation_method'])
+        self.assertEqual('generic', alarm_updated['resource_type'])
+        self.assertEqual('{"=": {"creator": "cr3at0r"}}',
+                         alarm_updated['query'])
+        self.assertEqual('gnocchi_aggregation_by_resources_threshold',
+                         alarm_updated['type'])
+
+        # UPDATE TYPE TO GNOCCHI_RESOURCES_THRESHOLD
+        result = self.aodh(
+            'alarm', params=("update %s "
+                             "--type gnocchi_resources_threshold "
+                             "--metric cpu_util "
+                             "--resource-id %s --threshold 80 "
+                             "--resource-type generic "
+                             "--aggregation-method last "
+                             % (ALARM_ID, RESOURCE_ID)))
+        alarm_updated = self.details_multiple(result)[0]
+        self.assertEqual(ALARM_ID, alarm_updated["alarm_id"])
+        self.assertEqual('cpu_util', alarm_updated['metric'])
+        self.assertEqual('80.0', alarm_updated['threshold'])
+        self.assertEqual('last', alarm_updated['aggregation_method'])
+        self.assertEqual('generic', alarm_updated['resource_type'])
+        self.assertEqual('gnocchi_resources_threshold',
+                         alarm_updated['type'])
+
+        # DELETE
+        result = self.aodh('alarm', params="delete %s" % ALARM_ID)
+        self.assertEqual("", result)
+
+    def test_update_gnaggrresthr_gnaggrmetricthr(self):
+
+        METRIC1 = 'cpu'
+        METRIC2 = 'cpu_util'
+
+        # CREATE
+        result = self.aodh(
+            u'alarm',
+            params=(u"create "
+                    "--type "
+                    "gnocchi_aggregation_by_resources_threshold "
+                    "--name alarm123 --metric cpu --threshold 80 "
+                    "--query "
+                    '\'{"=": {"creator": "cr3at0r"}}\' '
+                    "--resource-type generic "
+                    "--aggregation-method last "))
+        alarm = self.details_multiple(result)[0]
+        ALARM_ID = alarm['alarm_id']
+        self.assertEqual('alarm123', alarm['name'])
+        self.assertEqual('cpu', alarm['metric'])
+        self.assertEqual('80.0', alarm['threshold'])
+        self.assertEqual('last', alarm['aggregation_method'])
+        self.assertEqual('generic', alarm['resource_type'])
+        self.assertEqual('{"=": {"creator": "cr3at0r"}}',
+                         alarm['query'])
+
+        # UPDATE TYPE TO GNOCCHI_AGGREGATION_BY_METRICS_THRESHOLD
+        result = self.aodh(
+            'alarm', params=("update %s --type "
+                             "gnocchi_aggregation_by_metrics_threshold "
+                             "--metrics %s "
+                             "--metrics %s "
+                             "--threshold 80 "
+                             "--aggregation-method last"
+                             % (ALARM_ID, METRIC1, METRIC2)))
+        alarm_updated = self.details_multiple(result)[0]
+        self.assertEqual(ALARM_ID, alarm_updated["alarm_id"])
+        metrics = "[u'cpu', u'cpu_util']" if six.PY2 else "['cpu', 'cpu_util']"
+        self.assertEqual(metrics, alarm_updated['metrics'])
+        self.assertEqual('80.0', alarm_updated['threshold'])
+        self.assertEqual('last', alarm_updated['aggregation_method'])
+        self.assertEqual('gnocchi_aggregation_by_metrics_threshold',
+                         alarm_updated['type'])
+
+        # UPDATE TYPE TO GNOCCHI_AGGREGATION_BY_RESOURCES_THRESHOLD
+        result = self.aodh(
+            'alarm', params=("update %s --type "
+                             "gnocchi_aggregation_by_resources_threshold "
+                             "--metric cpu --threshold 80 "
+                             "--query "
+                             '\'{"=": {"creator": "cr3at0r"}}\' '
+                             "--resource-type generic "
+                             "--aggregation-method last "
+                             % ALARM_ID))
+        alarm_updated = self.details_multiple(result)[0]
+        self.assertEqual(ALARM_ID, alarm_updated["alarm_id"])
+        self.assertEqual('cpu', alarm_updated['metric'])
+        self.assertEqual('80.0', alarm_updated['threshold'])
+        self.assertEqual('last', alarm_updated['aggregation_method'])
+        self.assertEqual('generic', alarm_updated['resource_type'])
+        self.assertEqual('{"=": {"creator": "cr3at0r"}}',
+                         alarm_updated['query'])
+        self.assertEqual('gnocchi_aggregation_by_resources_threshold',
+                         alarm_updated['type'])
+
+        # DELETE
+        result = self.aodh('alarm', params="delete %s" % ALARM_ID)
+        self.assertEqual("", result)

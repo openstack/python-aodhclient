@@ -110,29 +110,61 @@ class AlarmManager(base.Manager):
         :type attributes: dict
         """
         alarm = self._get(self.url + '/' + alarm_id).json()
-        self._clean_rules(alarm['type'], alarm_update)
+        if 'type' not in alarm_update:
+            self._clean_rules(alarm['type'], alarm_update)
+        else:
+            self._clean_rules(alarm_update['type'], alarm_update)
 
         if 'event_rule' in alarm_update:
-            alarm['event_rule'].update(alarm_update.get('event_rule'))
+            if ('type' in alarm_update and
+                    alarm_update['type'] != alarm['type']):
+                alarm.pop('%s_rule' % alarm['type'], None)
+                alarm['event_rule'] = alarm_update['event_rule']
+            else:
+                alarm['event_rule'].update(alarm_update.get('event_rule'))
             alarm_update.pop('event_rule')
         elif 'gnocchi_resources_threshold_rule' in alarm_update:
-            alarm['gnocchi_resources_threshold_rule'].update(
-                alarm_update.get('gnocchi_resources_threshold_rule'))
+            if ('type' in alarm_update and
+                    alarm_update['type'] != alarm['type']):
+                alarm.pop('%s_rule' % alarm['type'], None)
+                alarm['gnocchi_resources_threshold_rule'] = alarm_update[
+                    'gnocchi_resources_threshold_rule']
+            else:
+                alarm['gnocchi_resources_threshold_rule'].update(
+                    alarm_update.get('gnocchi_resources_threshold_rule'))
             alarm_update.pop('gnocchi_resources_threshold_rule')
         elif 'gnocchi_aggregation_by_metrics_threshold_rule' in alarm_update:
-            alarm['gnocchi_aggregation_by_metrics_threshold_rule'].update(
-                alarm_update.get(
-                    'gnocchi_aggregation_by_metrics_threshold_rule'))
+            if ('type' in alarm_update and
+                    alarm_update['type'] != alarm['type']):
+                alarm.pop('%s_rule' % alarm['type'], None)
+                alarm['gnocchi_aggregation_by_metrics_threshold_rule'] = \
+                    alarm_update[
+                        'gnocchi_aggregation_by_metrics_threshold_rule']
+            else:
+                alarm['gnocchi_aggregation_by_metrics_threshold_rule'].update(
+                    alarm_update.get(
+                        'gnocchi_aggregation_by_metrics_threshold_rule'))
             alarm_update.pop('gnocchi_aggregation_by_metrics_threshold_rule')
         elif 'gnocchi_aggregation_by_resources_threshold_rule' in alarm_update:
-            alarm['gnocchi_aggregation_by_resources_threshold_rule'].update(
-                alarm_update.get(
-                    'gnocchi_aggregation_by_resources_threshold_rule'))
+            if ('type' in alarm_update and
+                    alarm_update['type'] != alarm['type']):
+                alarm.pop('%s_rule' % alarm['type'], None)
+                alarm['gnocchi_aggregation_by_resources_threshold_rule'] = \
+                    alarm_update[
+                        'gnocchi_aggregation_by_resources_threshold_rule']
+            else:
+                alarm['gnocchi_aggregation_by_resources_threshold_rule'].\
+                    update(alarm_update.get(
+                        'gnocchi_aggregation_by_resources_threshold_rule'))
             alarm_update.pop(
                 'gnocchi_aggregation_by_resources_threshold_rule')
         elif 'composite_rule' in alarm_update:
-            if alarm_update['composite_rule']:
-                alarm['composite_rule'] = alarm_update['composite_rule']
+            if ('type' in alarm_update and
+                    alarm_update['type'] != alarm['type']):
+                alarm.pop('%s_rule' % alarm['type'], None)
+            if alarm_update['composite_rule'] is not None:
+                alarm['composite_rule'] = alarm_update[
+                    'composite_rule']
             alarm_update.pop('composite_rule')
 
         alarm.update(alarm_update)
