@@ -81,7 +81,6 @@ master_doc = 'index'
 repository_name = 'openstack/python-aodhclient'
 bug_project = 'python-aodhclient'
 bug_tag = ''
-project = u'aodhclient'
 copyright = u'2015, OpenStack Foundation'
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
@@ -102,21 +101,20 @@ pygments_style = 'sphinx'
 # html_theme = '_theme'
 # html_static_path = ['static']
 html_theme = 'openstackdocs'
-html_last_updated_fmt = '%Y-%m-%d %H:%M'
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = ['_theme']
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = '%sdoc' % project
+htmlhelp_basename = 'aodhclientdoc'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass
 # [howto/manual]).
 latex_documents = [
     ('index',
-     '%s.tex' % project,
-     u'%s Documentation' % project,
+     'aodhclient.tex',
+     u'aodhclient Documentation',
      u'OpenStack Foundation', 'manual'),
 ]
 
