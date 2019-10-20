@@ -27,7 +27,8 @@ from aodhclient import utils
 ALARM_TYPES = ['event', 'composite',
                'gnocchi_resources_threshold',
                'gnocchi_aggregation_by_metrics_threshold',
-               'gnocchi_aggregation_by_resources_threshold']
+               'gnocchi_aggregation_by_resources_threshold',
+               'loadbalancer_member_health']
 ALARM_STATES = ['ok', 'alarm', 'insufficient data']
 ALARM_SEVERITY = ['low', 'moderate', 'critical']
 ALARM_OPERATORS = ['lt', 'le', 'eq', 'ne', 'ge', 'gt']
@@ -322,6 +323,32 @@ class CliAlarmCreate(show.ShowOne):
                  '"and", "or". For example, the form is like: '
                  '{"or":[RULE1, RULE2, {"and": [RULE3, RULE4]}]}.'
         )
+
+        loadbalancer_member_health_group = parser.add_argument_group(
+            'loadbalancer member health alarm')
+        loadbalancer_member_health_group.add_argument(
+            '--stack-id', metavar='<STACK_NAME_OR_ID>',
+            dest="stack_id",
+            type=str, help=(
+                "Name or ID of the root / top level Heat stack containing the "
+                "loadbalancer pool and members. An update will be triggered "
+                "on the root Stack if an unhealthy member is detected in the "
+                "loadbalancer pool.")
+        )
+        loadbalancer_member_health_group.add_argument(
+            '--pool-id', metavar='<LOADBALANCER_POOL_NAME_OR_ID>',
+            dest="pool_id",
+            type=str, help=(
+                "Name or ID of the loadbalancer pool for which the health of "
+                "each member will be evaluated.")
+        )
+        loadbalancer_member_health_group.add_argument(
+            '--autoscaling-group-id', metavar='<AUTOSCALING_GROUP_NAME_OR_ID>',
+            dest="autoscaling_group_id",
+            type=str, help=(
+                "ID of the Heat autoscaling group that contains the "
+                "loadbalancer members. Unhealthy members will be marked "
+                "as such before an update is triggered on the root stack."))
         self.parser = parser
         return parser
 
@@ -366,6 +393,13 @@ class CliAlarmCreate(show.ShowOne):
               not parsed_args.composite_rule):
             self.parser.error('Composite alarm requires'
                               ' --composite-rule parameter')
+        elif (parsed_args.type == 'loadbalancer_member_health') and \
+                (parsed_args.stack_id is None or
+                 parsed_args.pool_id is None or
+                 parsed_args.autoscaling_group_id is None):
+            self.parser.error('Loadbalancer member health alarm requires'
+                              '--stack-id, --pool-id and'
+                              '--autoscaling-group-id')
 
     def _alarm_from_args(self, parsed_args):
         alarm = utils.dict_from_parsed_args(
@@ -395,6 +429,10 @@ class CliAlarmCreate(show.ShowOne):
                                          'threshold', 'aggregation_method',
                                          'evaluation_periods', 'metric',
                                          'query', 'resource_type']))
+
+        alarm['loadbalancer_member_health_rule'] = (
+            utils.dict_from_parsed_args(parsed_args, [
+                "stack_id", "pool_id", "autoscaling_group_id"]))
 
         alarm['composite_rule'] = parsed_args.composite_rule
         if self.create:

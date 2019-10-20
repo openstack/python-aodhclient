@@ -125,7 +125,10 @@ class CliAlarmCreateTest(testtools.TestCase):
             '--aggregation-method', 'last',
             '--metric', 'cpu',
             '--resource-id', '01919bbd-8b0e-451c-be28-abe250ae9c1c',
-            '--resource-type', 'generic'
+            '--resource-type', 'generic',
+            '--stack-id', '0809ab348-8b0e-451c-be28-abe250ae9c1c',
+            '--pool-id', '79832aabf-343ba-be28-abe250ae9c1c',
+            '--autoscaling-group-id', 'abe250ae9c1c-79832aabf-343ba-be28'
             ])
 
         # Output for the test
@@ -170,6 +173,11 @@ class CliAlarmCreateTest(testtools.TestCase):
                 'comparison_operator': 'le',
                 'threshold': 80.0,
                 'metrics': ['cpu'],
+            },
+            'loadbalancer_member_health_rule': {
+                'autoscaling_group_id': 'abe250ae9c1c-79832aabf-343ba-be28',
+                'pool_id': '79832aabf-343ba-be28-abe250ae9c1c',
+                'stack_id': '0809ab348-8b0e-451c-be28-abe250ae9c1c'
             },
             'gnocchi_aggregation_by_resources_threshold_rule': {
                 'granularity': '60',

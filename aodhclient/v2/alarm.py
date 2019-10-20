@@ -166,8 +166,17 @@ class AlarmManager(base.Manager):
                 alarm['composite_rule'] = alarm_update[
                     'composite_rule']
             alarm_update.pop('composite_rule')
+        elif 'loadbalancer_member_health_rule' in alarm_update:
+            if ('type' in alarm_update and
+                    alarm_update['type'] != alarm['type']):
+                alarm.pop('%s_rule' % alarm['type'], None)
+            if alarm_update['loadbalancer_member_health_rule'] is not None:
+                alarm['loadbalancer_member_health_rule'] = alarm_update[
+                    'loadbalancer_member_health_rule']
+            alarm_update.pop('loadbalancer_member_health_rule')
 
         alarm.update(alarm_update)
+
         return self._put(
             self.url + '/' + alarm_id,
             headers={'Content-Type': "application/json"},
