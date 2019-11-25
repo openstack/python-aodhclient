@@ -115,7 +115,10 @@ class AlarmManager(base.Manager):
         else:
             self._clean_rules(alarm_update['type'], alarm_update)
 
-        if 'event_rule' in alarm_update:
+        if 'threshold_rule' in alarm_update:
+            alarm['threshold_rule'].update(alarm_update.get('threshold_rule'))
+            alarm_update.pop('threshold_rule')
+        elif 'event_rule' in alarm_update:
             if ('type' in alarm_update and
                     alarm_update['type'] != alarm['type']):
                 alarm.pop('%s_rule' % alarm['type'], None)

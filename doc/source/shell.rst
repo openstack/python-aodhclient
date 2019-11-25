@@ -64,25 +64,34 @@ command.
 Examples
 --------
 
-Create an alarm::
+Create a Ceilometer threshold alarm::
 
-    aodh alarm create -t gnocchi_resources_threshold --name alarm1 \
+    openstack alarm create --name alarm1 --description 'CPU High Average' \
+    --type threshold --meter-name cpu_util \
+    --threshold 5 --comparison-operator gt --statistic avg \
+    --period 60 --evaluation-periods 3 \
+    --query "metadata.user_metadata.stack=$heat_stack_id" \
+    --alarm-action 'log://'
+
+Create a Gnocchi threshold alarm::
+
+    openstack alarm create -t gnocchi_resources_threshold --name alarm1 \
     --metric cpu_util --threshold 5 --resource_id <RES_ID> \
     --resource_type generic --aggregation_method mean --project-id <PROJ_ID>
 
 List alarms::
 
-    aodh alarm list
+    openstack alarm list
 
 List alarm with query parameters::
 
-    aodh alarm list --query "state=alarm and type=gnocchi_resources_threshold"
+    openstack alarm list --query "state=alarm and type=gnocchi_resources_threshold"
 
 Show an alarm's history::
 
-    aodh alarm-history show <ALARM_ID>
+    openstack alarm-history show <ALARM_ID>
 
 Search alarm history data::
 
-    aodh alarm-history search --query 'timestamp>"2016-03-09T01:22:35"'
+    openstack alarm-history search --query 'timestamp>"2016-03-09T01:22:35"'
 

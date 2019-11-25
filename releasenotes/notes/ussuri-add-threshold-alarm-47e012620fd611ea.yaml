@@ -1,0 +1,5 @@
+---
+features:
+  - Add threshold type alarm back. Gnocchi is not actively maintained currently
+    but there are still users running Ceilometer in production and relying on
+    Ceilometer for auditing and billing.

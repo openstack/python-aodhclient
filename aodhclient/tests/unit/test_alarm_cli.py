@@ -50,6 +50,22 @@ class CliAlarmCreateTest(testtools.TestCase):
             '--aggregation-method')
 
     @mock.patch.object(argparse.ArgumentParser, 'error')
+    def test_validate_args_threshold(self, mock_arg):
+        # Cover the test case of the method _validate_args for
+        # threshold
+        parser = self.cli_alarm_create.get_parser('aodh alarm create')
+        test_parsed_args = parser.parse_args([
+            '--name', 'threshold_test',
+            '--type', 'threshold',
+            '--threshold', '80'
+            ])
+        self.cli_alarm_create._validate_args(test_parsed_args)
+        mock_arg.assert_called_once_with(
+            'Threshold alarm requires -m/--meter-name and '
+            '--threshold parameters. Meter name can be '
+            'found in Ceilometer')
+
+    @mock.patch.object(argparse.ArgumentParser, 'error')
     def test_validate_args_composite(self, mock_arg):
         # Cover the test case of the method _validate_args for
         # composite
@@ -156,6 +172,13 @@ class CliAlarmCreateTest(testtools.TestCase):
                            'type': '',
                            'value': 'fake-resource-id'}]
             },
+            'threshold_rule': {'comparison_operator': 'le',
+                               'evaluation_periods': 60,
+                               'query': [{'field': 'resource',
+                                          'op': 'eq',
+                                          'type': '',
+                                          'value': 'fake-resource-id'}],
+                               'threshold': 80.0},
             'gnocchi_resources_threshold_rule': {
                 'granularity': '60',
                 'metric': 'cpu',
