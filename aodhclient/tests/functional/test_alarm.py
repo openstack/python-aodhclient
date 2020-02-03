@@ -147,7 +147,7 @@ class AodhClientTest(base.ClientTestBase):
                                   ALARM_ID))
 
         # LIST
-        result = self.aodh('alarm', params="list")
+        result = self.aodh('alarm', params="list --filter all_projects=true")
         self.assertIn(ALARM_ID,
                       [r['alarm_id'] for r in self.parser.listing(result)])
         output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
@@ -258,7 +258,7 @@ class AodhClientTest(base.ClientTestBase):
                                   ALARM_ID))
 
         # LIST
-        result = self.aodh('alarm', params="list")
+        result = self.aodh('alarm', params="list --filter all_projects=true")
         self.assertIn(ALARM_ID,
                       [r['alarm_id'] for r in self.parser.listing(result)])
         output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
@@ -271,12 +271,13 @@ class AodhClientTest(base.ClientTestBase):
         # LIST WITH PAGINATION
         # list with limit
         result = self.aodh('alarm',
-                           params="list --limit 1")
+                           params="list --filter all_projects=true --limit 1 ")
         alarm_list = self.parser.listing(result)
         self.assertEqual(1, len(alarm_list))
         # list with sort with key=name dir=asc
-        result = self.aodh('alarm',
-                           params="list --sort name:asc")
+        result = self.aodh(
+            'alarm',
+            params="list --filter all_projects=true --sort name:asc")
         names = [r['name'] for r in self.parser.listing(result)]
         sorted_name = sorted(names)
         self.assertEqual(sorted_name, names)
@@ -287,8 +288,10 @@ class AodhClientTest(base.ClientTestBase):
                                    "-m meter_name --threshold 5 "
                                    "--project-id %s" % PROJECT_ID))
         created_alarm_id = self.details_multiple(result)[0]['alarm_id']
-        result = self.aodh('alarm',
-                           params="list --sort name:asc --sort alarm_id:asc")
+        result = self.aodh(
+            'alarm',
+            params="list --filter all_projects=true --sort name:asc --sort "
+                   "alarm_id:asc")
         alarm_list = self.parser.listing(result)
         ids_with_same_name = []
         names = []
@@ -302,9 +305,10 @@ class AodhClientTest(base.ClientTestBase):
         self.assertEqual(sorted_ids, ids_with_same_name)
         # list with sort with key=name dir=desc and with the marker equal to
         # the alarm_id of the test_threshold_scenario we created for this test.
-        result = self.aodh('alarm',
-                           params="list --sort name:desc "
-                                  "--marker %s" % created_alarm_id)
+        result = self.aodh(
+            'alarm',
+            params="list --filter all_projects=true --sort name:desc "
+                   "--marker %s" % created_alarm_id)
         self.assertIn('alarm_tc',
                       [r['name'] for r in self.parser.listing(result)])
         self.aodh('alarm', params="delete %s" % created_alarm_id)
@@ -399,7 +403,7 @@ class AodhClientTest(base.ClientTestBase):
                                   alarm_id))
 
         # LIST
-        result = self.aodh('alarm', params="list")
+        result = self.aodh('alarm', params="list --filter all_projects=true")
         self.assertIn(alarm_id,
                       [r['alarm_id'] for r in self.parser.listing(result)])
         output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
@@ -659,7 +663,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                                   ALARM_ID))
 
         # LIST
-        result = self.aodh('alarm', params="list")
+        result = self.aodh('alarm', params="list --filter all_projects=true")
         self.assertIn(ALARM_ID,
                       [r['alarm_id'] for r in self.parser.listing(result)])
         output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
@@ -672,12 +676,13 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         # LIST WITH PAGINATION
         # list with limit
         result = self.aodh('alarm',
-                           params="list --limit 1")
+                           params="list --filter all_projects=true --limit 1")
         alarm_list = self.parser.listing(result)
         self.assertEqual(1, len(alarm_list))
         # list with sort with key=name dir=asc
-        result = self.aodh('alarm',
-                           params="list --sort name:asc")
+        result = self.aodh(
+            'alarm',
+            params="list --filter all_projects=true --sort name:asc")
         names = [r['name'] for r in self.parser.listing(result)]
         sorted_name = sorted(names)
         self.assertEqual(sorted_name, names)
@@ -690,8 +695,10 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                     "--aggregation-method last --project-id %s "
                     % (RESOURCE_ID, PROJECT_ID)))
         created_alarm_id = self.details_multiple(result)[0]['alarm_id']
-        result = self.aodh('alarm',
-                           params="list --sort name:asc --sort alarm_id:asc")
+        result = self.aodh(
+            'alarm',
+            params="list --filter all_projects=true --sort name:asc "
+                   "--sort alarm_id:asc")
         alarm_list = self.parser.listing(result)
         ids_with_same_name = []
         names = []
@@ -705,9 +712,10 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual(sorted_ids, ids_with_same_name)
         # list with sort with key=name dir=desc and with the marker equal to
         # the alarm_id of the alarm_th we created for this test.
-        result = self.aodh('alarm',
-                           params="list --sort name:desc "
-                                  "--marker %s" % created_alarm_id)
+        result = self.aodh(
+            'alarm',
+            params="list --filter all_projects=true --sort name:desc "
+                   "--marker %s" % created_alarm_id)
         self.assertIn('alarm_tc',
                       [r['name'] for r in self.parser.listing(result)])
         self.aodh('alarm', params="delete %s" % created_alarm_id)
@@ -802,7 +810,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual('generic', alarm_show['resource_type'])
 
         # LIST
-        result = self.aodh('alarm', params="list")
+        result = self.aodh('alarm', params="list --filter all_projects=true")
         self.assertIn(ALARM_ID,
                       [r['alarm_id'] for r in self.parser.listing(result)])
         output_colums = ['alarm_id', 'type', 'name', 'state', 'severity',
@@ -893,7 +901,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual('last', alarm_show['aggregation_method'])
 
         # LIST
-        result = self.aodh('alarm', params="list")
+        result = self.aodh('alarm', params="list --filter all_projects=true")
         self.assertIn(ALARM_ID,
                       [r['alarm_id'] for r in self.parser.listing(result)])
         for alarm_list in self.parser.listing(result):
