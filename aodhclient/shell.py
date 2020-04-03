@@ -59,7 +59,7 @@ class AodhShell(app.App):
             version=__version__,
             command_manager=AodhCommandManager('aodhclient'),
             deferred_help=True,
-            )
+        )
 
         self._client = None
 

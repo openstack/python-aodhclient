@@ -42,7 +42,7 @@ class CliAlarmCreateTest(testtools.TestCase):
             '--aggregation-method', 'last',
             '--resource-type', 'generic',
             '--threshold', '80'
-            ])
+        ])
         self.cli_alarm_create._validate_args(test_parsed_args)
         mock_arg.assert_called_once_with(
             'gnocchi_resources_threshold requires --metric, '
@@ -58,7 +58,7 @@ class CliAlarmCreateTest(testtools.TestCase):
             '--name', 'threshold_test',
             '--type', 'threshold',
             '--threshold', '80'
-            ])
+        ])
         self.cli_alarm_create._validate_args(test_parsed_args)
         mock_arg.assert_called_once_with(
             'Threshold alarm requires -m/--meter-name and '
@@ -73,7 +73,7 @@ class CliAlarmCreateTest(testtools.TestCase):
         test_parsed_args = parser.parse_args([
             '--name', 'composite_test',
             '--type', 'composite'
-            ])
+        ])
         self.cli_alarm_create._validate_args(test_parsed_args)
         mock_arg.assert_called_once_with(
             'Composite alarm requires --composite-rule parameter')
@@ -90,7 +90,7 @@ class CliAlarmCreateTest(testtools.TestCase):
             '--aggregation-method', 'last',
             '--resource-type', 'generic',
             '--threshold', '80'
-            ])
+        ])
         self.cli_alarm_create._validate_args(test_parsed_args)
         mock_arg.assert_called_once_with(
             'gnocchi_aggregation_by_resources_threshold requires '
@@ -107,7 +107,7 @@ class CliAlarmCreateTest(testtools.TestCase):
             '--type', 'gnocchi_aggregation_by_metrics_threshold',
             '--resource-type', 'generic',
             '--threshold', '80'
-            ])
+        ])
         self.cli_alarm_create._validate_args(test_parsed_args)
         mock_arg.assert_called_once_with(
             'gnocchi_aggregation_by_metrics_threshold requires '
@@ -145,7 +145,7 @@ class CliAlarmCreateTest(testtools.TestCase):
             '--stack-id', '0809ab348-8b0e-451c-be28-abe250ae9c1c',
             '--pool-id', '79832aabf-343ba-be28-abe250ae9c1c',
             '--autoscaling-group-id', 'abe250ae9c1c-79832aabf-343ba-be28'
-            ])
+        ])
 
         # Output for the test
         alarm = {
@@ -217,7 +217,7 @@ class CliAlarmCreateTest(testtools.TestCase):
             },
             'composite_rule': None,
             'type': 'event'
-            }
+        }
         alarm_rep = self.cli_alarm_create._alarm_from_args(test_parsed_args)
         self.assertEqual(alarm, alarm_rep)
 
