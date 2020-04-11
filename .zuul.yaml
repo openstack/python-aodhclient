@@ -1,5 +1,5 @@
 - project:
     templates:
-      - openstack-python3-ussuri-jobs
+      - openstack-python3-victoria-jobs
       - publish-openstack-docs-pti
       - openstackclient-plugin-jobs
