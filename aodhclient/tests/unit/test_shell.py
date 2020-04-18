@@ -13,9 +13,9 @@
 # under the License.
 
 import sys
+from unittest import mock
 
 from keystoneauth1 import exceptions
-import mock
 import six
 import testtools
 

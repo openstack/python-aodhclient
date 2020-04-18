@@ -14,8 +14,8 @@
 #    under the License.
 
 import argparse
+from unittest import mock
 
-import mock
 import testtools
 
 from aodhclient.v2 import alarm_cli
