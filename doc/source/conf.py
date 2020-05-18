@@ -78,9 +78,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # openstackdocstheme options
-repository_name = 'openstack/python-aodhclient'
-bug_project = 'python-aodhclient'
-bug_tag = ''
+openstackdocs_repo_name = 'openstack/python-aodhclient'
+openstackdocs_bug_project = 'python-aodhclient'
+openstackdocs_bug_tag = ''
 copyright = u'2015, OpenStack Foundation'
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
@@ -91,7 +91,7 @@ add_function_parentheses = True
 add_module_names = True
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'native'
 
 # -- Options for HTML output --------------------------------------------------
 

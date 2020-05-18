@@ -52,9 +52,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # openstackdocstheme options
-repository_name = 'openstack/python-aodhclient'
-bug_project = 'python-aodhclient'
-bug_tag = ''
+openstackdocs_repo_name = 'openstack/python-aodhclient'
+openstackdocs_bug_project = 'python-aodhclient'
+openstackdocs_bug_tag = ''
 copyright = u'2015-present, Aodh developers'
 
 # Release notes are version independent.
@@ -93,7 +93,7 @@ exclude_patterns = []
 # show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'native'
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
