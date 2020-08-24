@@ -18,7 +18,7 @@ import six
 
 class Manager(object):
     DEFAULT_HEADERS = {
-        "Accept": "application/json, */*",
+        "Accept": "application/json",
     }
 
     def __init__(self, client):
