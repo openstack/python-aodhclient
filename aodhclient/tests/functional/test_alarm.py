@@ -15,7 +15,6 @@ import os
 from oslo_utils import uuidutils
 import requests
 import requests.auth
-import six
 from tempest.lib import exceptions
 
 from aodhclient.tests.functional import base
@@ -289,7 +288,7 @@ class AodhClientTest(base.ClientTestBase):
         def test(params):
             result = self.aodh('alarm', params=params)
             alarm = self.details_multiple(result)[0]
-            for key, value in six.iteritems(expected_lines):
+            for key, value in expected_lines.items():
                 self.assertEqual(value, alarm[key])
             return alarm
 
@@ -686,7 +685,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         alarm = self.details_multiple(result)[0]
         ALARM_ID = alarm['alarm_id']
         self.assertEqual('alarm1', alarm['name'])
-        metrics = "[u'cpu', u'cpu_util']" if six.PY2 else "['cpu', 'cpu_util']"
+        metrics = "['cpu', 'cpu_util']"
         self.assertEqual(metrics, alarm['metrics'])
         self.assertEqual('80.0', alarm['threshold'])
         self.assertEqual('last', alarm['aggregation_method'])
@@ -865,7 +864,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                              % (ALARM_ID, METRIC1, METRIC2)))
         alarm_updated = self.details_multiple(result)[0]
         self.assertEqual(ALARM_ID, alarm_updated["alarm_id"])
-        metrics = "[u'cpu', u'cpu_util']" if six.PY2 else "['cpu', 'cpu_util']"
+        metrics = "['cpu', 'cpu_util']"
         self.assertEqual(metrics, alarm_updated['metrics'])
         self.assertEqual('80.0', alarm_updated['threshold'])
         self.assertEqual('last', alarm_updated['aggregation_method'])

@@ -12,7 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import re
-from six.moves.urllib import parse as urllib_parse
+from urllib import parse as urllib_parse
 
 import pyparsing as pp
 
