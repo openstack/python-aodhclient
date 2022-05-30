@@ -586,14 +586,14 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                     "--query "
                     '\'{"=": {"creator": "cr3at0r"}}\' '
                     "--resource-type generic "
-                    "--aggregation-method last "
+                    "--aggregation-method mean "
                     "--project-id %s" % PROJECT_ID))
         alarm = self.details_multiple(result)[0]
         ALARM_ID = alarm['alarm_id']
         self.assertEqual('alarm1', alarm['name'])
         self.assertEqual('cpu', alarm['metric'])
         self.assertEqual('80.0', alarm['threshold'])
-        self.assertEqual('last', alarm['aggregation_method'])
+        self.assertEqual('mean', alarm['aggregation_method'])
         self.assertEqual('generic', alarm['resource_type'])
         self.assertEqual('{"=": {"creator": "cr3at0r"}}',
                          alarm['query'])
@@ -609,7 +609,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                     "--query "
                     '\'{"=": {"creator": "cr3at0r"}}\' '
                     "--resource-type generic "
-                    "--aggregation-method last "
+                    "--aggregation-method mean "
                     "--project-id %s" % PROJECT_ID))
 
         # UPDATE
@@ -631,7 +631,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual('cpu', alarm_show['metric'])
         self.assertEqual('90.0', alarm_show['threshold'])
         self.assertEqual('critical', alarm_show['severity'])
-        self.assertEqual('last', alarm_show['aggregation_method'])
+        self.assertEqual('mean', alarm_show['aggregation_method'])
         self.assertEqual('generic', alarm_show['resource_type'])
 
         # LIST
@@ -793,13 +793,13 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                              "--query "
                              '\'{"=": {"creator": "cr3at0r"}}\' '
                              "--resource-type generic "
-                             "--aggregation-method last "
+                             "--aggregation-method mean "
                              % ALARM_ID))
         alarm_updated = self.details_multiple(result)[0]
         self.assertEqual(ALARM_ID, alarm_updated["alarm_id"])
         self.assertEqual('cpu', alarm_updated['metric'])
         self.assertEqual('90.0', alarm_updated['threshold'])
-        self.assertEqual('last', alarm_updated['aggregation_method'])
+        self.assertEqual('mean', alarm_updated['aggregation_method'])
         self.assertEqual('generic', alarm_updated['resource_type'])
         self.assertEqual('{"=": {"creator": "cr3at0r"}}',
                          alarm_updated['query'])
@@ -843,13 +843,13 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                     "--query "
                     '\'{"=": {"creator": "cr3at0r"}}\' '
                     "--resource-type generic "
-                    "--aggregation-method last "))
+                    "--aggregation-method mean "))
         alarm = self.details_multiple(result)[0]
         ALARM_ID = alarm['alarm_id']
         self.assertEqual('alarm123', alarm['name'])
         self.assertEqual('cpu', alarm['metric'])
         self.assertEqual('80.0', alarm['threshold'])
-        self.assertEqual('last', alarm['aggregation_method'])
+        self.assertEqual('mean', alarm['aggregation_method'])
         self.assertEqual('generic', alarm['resource_type'])
         self.assertEqual('{"=": {"creator": "cr3at0r"}}',
                          alarm['query'])
@@ -880,13 +880,13 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                              "--query "
                              '\'{"=": {"creator": "cr3at0r"}}\' '
                              "--resource-type generic "
-                             "--aggregation-method last "
+                             "--aggregation-method mean "
                              % ALARM_ID))
         alarm_updated = self.details_multiple(result)[0]
         self.assertEqual(ALARM_ID, alarm_updated["alarm_id"])
         self.assertEqual('cpu', alarm_updated['metric'])
         self.assertEqual('80.0', alarm_updated['threshold'])
-        self.assertEqual('last', alarm_updated['aggregation_method'])
+        self.assertEqual('mean', alarm_updated['aggregation_method'])
         self.assertEqual('generic', alarm_updated['resource_type'])
         self.assertEqual('{"=": {"creator": "cr3at0r"}}',
                          alarm_updated['query'])
