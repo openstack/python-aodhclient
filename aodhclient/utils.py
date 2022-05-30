@@ -40,7 +40,7 @@ comparison_term << (null | boolean | uuid | identifier | number |
                     quoted_string)
 condition = pp.Group(comparison_term + operator + comparison_term)
 
-expr = pp.operatorPrecedence(condition, [
+expr = pp.infixNotation(condition, [
     ("not", 1, pp.opAssoc.RIGHT, ),
     ("and", 2, pp.opAssoc.LEFT, ),
     ("or", 2, pp.opAssoc.LEFT, ),
