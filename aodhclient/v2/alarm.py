@@ -115,7 +115,11 @@ class AlarmManager(base.Manager):
         else:
             self._clean_rules(alarm_update['type'], alarm_update)
 
-        if 'threshold_rule' in alarm_update:
+        if 'prometheus_rule' in alarm_update:
+            rule = alarm_update.get('prometheus_rule')
+            alarm['prometheus_rule'].update(rule)
+            alarm_update.pop('prometheus_rule')
+        elif 'threshold_rule' in alarm_update:
             alarm['threshold_rule'].update(alarm_update.get('threshold_rule'))
             alarm_update.pop('threshold_rule')
         elif 'event_rule' in alarm_update:

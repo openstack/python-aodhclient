@@ -113,6 +113,21 @@ class CliAlarmCreateTest(testtools.TestCase):
             'gnocchi_aggregation_by_metrics_threshold requires '
             '--metric, --threshold and --aggregation-method')
 
+    @mock.patch.object(argparse.ArgumentParser, 'error')
+    def test_validate_args_prometheus(self, mock_arg):
+        # Cover the test case of the method _validate_args for
+        # prometheus
+        parser = self.cli_alarm_create.get_parser('aodh alarm create')
+        test_parsed_args = parser.parse_args([
+            '--name', 'prom_test',
+            '--type', 'prometheus',
+            '--comparison-operator', 'gt',
+            '--threshold', '666',
+        ])
+        self.cli_alarm_create._validate_args(test_parsed_args)
+        mock_arg.assert_called_once_with(
+            'Prometheus alarm requires --query and --threshold parameters.')
+
     def test_alarm_from_args(self):
         # The test case to cover the method _alarm_from_args
         parser = self.cli_alarm_create.get_parser('aodh alarm create')
@@ -179,6 +194,12 @@ class CliAlarmCreateTest(testtools.TestCase):
                                           'type': '',
                                           'value': 'fake-resource-id'}],
                                'threshold': 80.0},
+            'prometheus_rule': {'comparison_operator': 'le',
+                                'query': [{'field': 'resource',
+                                           'op': 'eq',
+                                           'type': '',
+                                           'value': 'fake-resource-id'}],
+                                'threshold': 80.0},
             'gnocchi_resources_threshold_rule': {
                 'granularity': '60',
                 'metric': 'cpu',
@@ -220,6 +241,24 @@ class CliAlarmCreateTest(testtools.TestCase):
         }
         alarm_rep = self.cli_alarm_create._alarm_from_args(test_parsed_args)
         self.assertEqual(alarm, alarm_rep)
+
+    def test_alarm_from_args_for_prometheus(self):
+        # The test case to cover the method _alarm_from_args
+        parser = self.cli_alarm_create.get_parser('aodh alarm create')
+        test_parsed_args = parser.parse_args([
+            '--name', 'alarm_prom',
+            '--type', 'prometheus',
+            '--comparison-operator', 'gt',
+            '--threshold', '666',
+            '--query', r'some_metric{some_label="some_value"}'
+        ])
+
+        prom_rule = {'comparison_operator': 'gt',
+                     'query': r'some_metric{some_label="some_value"}',
+                     'threshold': 666.0}
+
+        alarm_rep = self.cli_alarm_create._alarm_from_args(test_parsed_args)
+        self.assertEqual(prom_rule, alarm_rep['prometheus_rule'])
 
     def test_validate_time_constraint(self):
         starts = ['0 11 * * *', ' 0 11 * * * ',

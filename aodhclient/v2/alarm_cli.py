@@ -24,7 +24,7 @@ from aodhclient import exceptions
 from aodhclient.i18n import _
 from aodhclient import utils
 
-ALARM_TYPES = ['event', 'composite', 'threshold',
+ALARM_TYPES = ['prometheus', 'event', 'composite', 'threshold',
                'gnocchi_resources_threshold',
                'gnocchi_aggregation_by_metrics_threshold',
                'gnocchi_aggregation_by_resources_threshold',
@@ -271,7 +271,9 @@ class CliAlarmCreate(show.ShowOne):
                  'For alarms of '
                  'type gnocchi_aggregation_by_resources_threshold: '
                  'need to specify a complex query json string, like:'
-                 ' {"and": [{"=": {"ended_at": null}}, ...]}.')
+                 ' {"and": [{"=": {"ended_at": null}}, ...]}. '
+                 'For alarms of type prometheus this should be valid '
+                 'PromQL query.')
         common_group.add_argument(
             '--comparison-operator', metavar='<OPERATOR>',
             dest='comparison_operator', choices=ALARM_OPERATORS,
@@ -424,6 +426,10 @@ class CliAlarmCreate(show.ShowOne):
             self.parser.error('Loadbalancer member health alarm requires'
                               '--stack-id, --pool-id and'
                               '--autoscaling-group-id')
+        elif (parsed_args.type == 'prometheus' and
+                not (parsed_args.query and parsed_args.threshold)):
+            self.parser.error('Prometheus alarm requires --query and '
+                              '--threshold parameters.')
 
     def _alarm_from_args(self, parsed_args):
         alarm = utils.dict_from_parsed_args(
@@ -440,6 +446,10 @@ class CliAlarmCreate(show.ShowOne):
                           'query'])
         alarm['event_rule'] = utils.dict_from_parsed_args(
             parsed_args, ['event_type', 'query'])
+        alarm['prometheus_rule'] = (
+            utils.dict_from_parsed_args(parsed_args,
+                                        ['comparison_operator', 'threshold',
+                                         'query']))
         alarm['gnocchi_resources_threshold_rule'] = (
             utils.dict_from_parsed_args(parsed_args,
                                         ['granularity', 'comparison_operator',
