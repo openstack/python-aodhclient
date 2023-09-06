@@ -1,4 +1,5 @@
-mysql-server [test platform:dpkg]
+mysql-server [test platform:dpkg !platform:debian]
+mariadb-server [platform:debian]
 postgresql [test]
 postgresql-client [test platform:dpkg]
 postgresql-devel [test platform:rpm]
