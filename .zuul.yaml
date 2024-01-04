@@ -1,5 +1,38 @@
+- job:
+    name: aodhclient-dsvm-functional
+    parent: devstack-tox-functional
+    description: |
+      Devstack-based functional tests for aodhclient.
+    required-projects:
+      - openstack/python-aodhclient
+      - openstack/aodh
+        # We neeed ceilometer's devstack plugin to install gnocchi
+      - openstack/ceilometer
+      - gnocchixyz/gnocchi
+    timeout: 4200
+    vars:
+      devstack_localrc:
+        USE_PYTHON3: True
+        GLOBAL_VENV: False
+        CEILOMETER_BACKENDS: "gnocchi"
+      devstack_plugins:
+        aodh: https://opendev.org/openstack/aodh
+        ceilometer: https://opendev.org/openstack/ceilometer
+
 - project:
     templates:
       - openstack-python3-jobs
       - publish-openstack-docs-pti
       - openstackclient-plugin-jobs
+    check:
+      jobs:
+        - aodhclient-dsvm-functional:
+            irrelevant-files: &ac-irrelevant-files
+              - ^(test-|)requirements.txt$
+              - ^setup.cfg$
+              - ^.*\.rst$
+              - ^releasenotes/.*$
+    gate:
+      jobs:
+        - aodhclient-dsvm-functional:
+            irrelevant-files: *ac-irrelevant-files

@@ -391,7 +391,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
 
         req = requests.post(
             os.environ.get("GNOCCHI_ENDPOINT") + "/v1/resource/generic",
-            auth=requests.auth.HTTPBasicAuth('admin', ''),
+            headers={"X-Auth-Token": self.get_token()},
             json={
                 "id": RESOURCE_ID,
             })
@@ -573,8 +573,6 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
 
     def test_gnocchi_aggr_by_resources_scenario(self):
 
-        PROJECT_ID = uuidutils.generate_uuid()
-
         # CREATE
         result = self.aodh(
             u'alarm',
@@ -585,8 +583,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                     "--query "
                     '\'{"=": {"creator": "cr3at0r"}}\' '
                     "--resource-type generic "
-                    "--aggregation-method mean "
-                    "--project-id %s" % PROJECT_ID))
+                    "--aggregation-method mean "))
         alarm = self.details_multiple(result)[0]
         ALARM_ID = alarm['alarm_id']
         self.assertEqual('alarm1', alarm['name'])
@@ -608,8 +605,7 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
                     "--query "
                     '\'{"=": {"creator": "cr3at0r"}}\' '
                     "--resource-type generic "
-                    "--aggregation-method mean "
-                    "--project-id %s" % PROJECT_ID))
+                    "--aggregation-method mean "))
 
         # UPDATE
         result = self.aodh(
@@ -625,7 +621,6 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
             'alarm', params="show %s" % ALARM_ID)
         alarm_show = self.details_multiple(result)[0]
         self.assertEqual(ALARM_ID, alarm_show["alarm_id"])
-        self.assertEqual(PROJECT_ID, alarm_show["project_id"])
         self.assertEqual('alarm1', alarm_show['name'])
         self.assertEqual('cpu', alarm_show['metric'])
         self.assertEqual('90.0', alarm_show['threshold'])
