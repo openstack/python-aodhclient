@@ -142,7 +142,7 @@ _code_map = dict(
 
 
 def from_response(response, url, method=None):
-    """Return an instance of one of the ClientException on an requests response.
+    """Return an instance of ClientException on an requests response.
 
     Usage::
 
