@@ -13,6 +13,7 @@
 import os
 import time
 
+import os_client_config
 from oslo_utils import uuidutils
 from tempest.lib.cli import base
 from tempest.lib import exceptions
@@ -27,18 +28,28 @@ class AodhClient(object):
     def __init__(self):
         self.cli_dir = os.environ.get('AODH_CLIENT_EXEC_DIR')
         self.endpoint = os.environ.get('AODH_ENDPOINT')
+        self.cloud = os.environ.get('OS_ADMIN_CLOUD', 'devstack-admin')
         self.user_id = uuidutils.generate_uuid()
         self.project_id = uuidutils.generate_uuid()
 
     def aodh(self, action, flags='', params='',
              fail_ok=False, merge_stderr=False):
-        creds = ("--os-auth-plugin aodh-noauth "
-                 "--user-id %s --project-id %s "
-                 "--aodh-endpoint %s") % (self.user_id,
-                                          self.project_id,
-                                          self.endpoint)
+        auth_args = []
+        if self.cloud is None:
+            auth_args.append("--os-auth-type none")
+        elif self.cloud != '':
+            conf = os_client_config.OpenStackConfig()
+            creds = conf.get_one_cloud(cloud=self.cloud).get_auth_args()
+            auth_args.append(f"--os-auth-url {creds['auth_url']}")
+            auth_args.append(f"--os-username {creds['username']}")
+            auth_args.append(f"--os-password {creds['password']}")
+            auth_args.append(f"--os-project-name {creds['project_name']}")
+            auth_args.append(f"--os-user-domain-id {creds['user_domain_id']}")
+            auth_args.append("--os-project-domain-id "
+                             f"{creds['project_domain_id']}")
+        endpoint_arg = "--aodh-endpoint %s" % self.endpoint
 
-        flags = creds + ' ' + flags
+        flags = " ".join(auth_args + [endpoint_arg] + [flags])
 
         return base.execute("aodh", action, flags, params, fail_ok,
                             merge_stderr, self.cli_dir)
@@ -65,6 +76,15 @@ class ClientTestBase(base.ClientTestBase):
 
     def aodh(self, *args, **kwargs):
         return self.clients.aodh(*args, **kwargs)
+
+    def get_token(self):
+        cloud = os.environ.get('OS_ADMIN_CLOUD', 'devstack-admin')
+        if cloud is not None and cloud != "":
+            conf = os_client_config.OpenStackConfig()
+            region_conf = conf.get_one_cloud(cloud=cloud)
+            return region_conf.get_auth().get_token(region_conf.get_session())
+        else:
+            return ""
 
     def details_multiple(self, output_lines, with_label=False):
         """Return list of dicts with item details from cli output tables.
