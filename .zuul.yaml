@@ -9,15 +9,18 @@
         # We neeed ceilometer's devstack plugin to install gnocchi
       - openstack/ceilometer
       - gnocchixyz/gnocchi
+      - infrawatch/sg-core
     timeout: 4200
     vars:
       devstack_localrc:
         USE_PYTHON3: True
         GLOBAL_VENV: False
-        CEILOMETER_BACKENDS: "gnocchi"
+        CEILOMETER_BACKENDS: "gnocchi,sg-core"
+        PROMETHEUS_SERVICE_SCRAPE_TARGETS: prometheus,sg-core
       devstack_plugins:
         aodh: https://opendev.org/openstack/aodh
         ceilometer: https://opendev.org/openstack/ceilometer
+        sg-core: https://github.com/infrawatch/sg-core
 
 - project:
     templates:
