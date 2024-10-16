@@ -13,8 +13,8 @@
     timeout: 4200
     vars:
       devstack_localrc:
-        USE_PYTHON3: True
-        GLOBAL_VENV: False
+        AODH_SERVICE_HOST: localhost
+        AODH_DEPLOY: uwsgi
         CEILOMETER_BACKENDS: "gnocchi,sg-core"
         PROMETHEUS_SERVICE_SCRAPE_TARGETS: prometheus,sg-core
       devstack_plugins:
