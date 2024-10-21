@@ -24,6 +24,7 @@
 
 - project:
     templates:
+      - check-requirements
       - openstack-python3-jobs
       - publish-openstack-docs-pti
       - openstackclient-plugin-jobs
