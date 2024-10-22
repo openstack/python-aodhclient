@@ -1,6 +1,7 @@
 [run]
 branch = True
 source = aodhclient
+omit = aodhclient/tests/*
 
 [report]
 ignore_errors = True
