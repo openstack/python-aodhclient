@@ -27,6 +27,7 @@
       - check-requirements
       - openstack-python3-jobs
       - publish-openstack-docs-pti
+      - release-notes-jobs-python3
       - openstackclient-plugin-jobs
     check:
       jobs:
