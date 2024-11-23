@@ -10,17 +10,25 @@
       - openstack/ceilometer
       - gnocchixyz/gnocchi
       - openstack-k8s-operators/sg-core
+      - openstack/devstack-plugin-prometheus
     timeout: 4200
     vars:
       devstack_localrc:
-        AODH_SERVICE_HOST: localhost
-        AODH_DEPLOY: uwsgi
         CEILOMETER_BACKENDS: "gnocchi,sg-core"
         PROMETHEUS_SERVICE_SCRAPE_TARGETS: prometheus,sg-core
+        PROMETHEUS_CONF_DIR: /opt/stack
+        PROMETHEUS_CONFIG_FILE: /opt/stack/prometheus.yml
+        PROMETHEUS_CLIENT_CONF_DIR: /etc/openstack
       devstack_plugins:
         aodh: https://opendev.org/openstack/aodh
         ceilometer: https://opendev.org/openstack/ceilometer
         sg-core: https://github.com/openstack-k8s-operators/sg-core
+        devstack-plugin-prometheus: https://opendev.org/openstack/devstack-plugin-prometheus
+      devstack_services:
+        node_exporter: false
+      zuul_copy_output:
+        /etc/prometheus/prometheus.yml: logs
+        /etc/openstack/prometheus.yaml: logs
 
 - project:
     queue: telemetry
