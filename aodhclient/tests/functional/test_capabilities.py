@@ -17,6 +17,8 @@ class CapabilitiesClientTest(base.ClientTestBase):
     def test_capabilities_scenario(self):
         # GET
         result = self.aodh('capabilities', params="list")
-        caps = self.parser.listing(result)[0]
-        self.assertIsNotNone(caps)
-        self.assertEqual('alarm_storage', caps['Field'])
+        caps = self.parser.listing(result)
+        self.assertEqual(2, len(caps))
+        caps_list = sorted([cap['Field'] for cap in caps])
+        self.assertEqual('alarm_storage', caps_list[0])
+        self.assertEqual('api', caps_list[1])
