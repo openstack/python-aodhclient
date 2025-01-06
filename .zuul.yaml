@@ -9,7 +9,7 @@
         # We neeed ceilometer's devstack plugin to install gnocchi
       - openstack/ceilometer
       - gnocchixyz/gnocchi
-      - infrawatch/sg-core
+      - openstack-k8s-operators/sg-core
     timeout: 4200
     vars:
       devstack_localrc:
@@ -20,7 +20,7 @@
       devstack_plugins:
         aodh: https://opendev.org/openstack/aodh
         ceilometer: https://opendev.org/openstack/ceilometer
-        sg-core: https://github.com/infrawatch/sg-core
+        sg-core: https://github.com/openstack-k8s-operators/sg-core
 
 - project:
     templates:
