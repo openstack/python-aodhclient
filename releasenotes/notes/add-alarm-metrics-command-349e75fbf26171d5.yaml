@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    Added a ``alarm metrics`` command to retrieve alarming metrics from the aodh /v2/metrics API endpoint.

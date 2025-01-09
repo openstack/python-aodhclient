@@ -29,6 +29,7 @@ from aodhclient import noauth
 from aodhclient.v2 import alarm_cli
 from aodhclient.v2 import alarm_history_cli
 from aodhclient.v2 import capabilities_cli
+from aodhclient.v2 import metrics_cli
 
 
 class AodhCommandManager(commandmanager.CommandManager):
@@ -43,6 +44,7 @@ class AodhCommandManager(commandmanager.CommandManager):
         "alarm-history show": alarm_history_cli.CliAlarmHistoryShow,
         "alarm-history search": alarm_history_cli.CliAlarmHistorySearch,
         "capabilities list": capabilities_cli.CliCapabilitiesList,
+        "alarm metrics": metrics_cli.CliMetrics,
     }
 
     def load_commands(self, namespace):

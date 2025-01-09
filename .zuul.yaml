@@ -29,6 +29,11 @@
       zuul_copy_output:
         /etc/prometheus/prometheus.yml: logs
         /etc/openstack/prometheus.yaml: logs
+      devstack_local_conf:
+        post-config:
+          $AODH_CONF:
+            DEFAULT:
+              enable_evaluation_results_metrics: True
 
 - project:
     queue: telemetry

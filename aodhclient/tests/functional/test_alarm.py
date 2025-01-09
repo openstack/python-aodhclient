@@ -28,6 +28,7 @@ class AodhClientTest(base.ClientTestBase):
         self.aodh("help", params="alarm list")
         self.aodh("help", params="alarm show")
         self.aodh("help", params="alarm update")
+        self.aodh("help", params="alarm metrics")
 
     def test_alarm_id_or_name_scenario(self):
         def _test(name):

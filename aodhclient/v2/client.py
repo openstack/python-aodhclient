@@ -17,6 +17,7 @@ from aodhclient import client
 from aodhclient.v2 import alarm
 from aodhclient.v2 import alarm_history
 from aodhclient.v2 import capabilities
+from aodhclient.v2 import metrics
 from aodhclient.v2 import quota
 
 
@@ -35,3 +36,4 @@ class Client(object):
         self.alarm_history = alarm_history.AlarmHistoryManager(self)
         self.capabilities = capabilities.CapabilitiesManager(self)
         self.quota = quota.QuotasManager(self)
+        self.metrics = metrics.MetricsManager(self)
