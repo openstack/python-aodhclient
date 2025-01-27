@@ -23,6 +23,7 @@
         sg-core: https://github.com/openstack-k8s-operators/sg-core
 
 - project:
+    queue: telemetry
     templates:
       - check-requirements
       - openstack-python3-jobs
