@@ -30,9 +30,10 @@ class ClientException(Exception):
         return self.http_status
 
     def __str__(self):
-        formatted_string = "%s (HTTP %s)" % (self.message, self.http_status)
+        formatted_string = "{} (HTTP {})".format(
+            self.message, self.http_status)
         if self.request_id:
-            formatted_string += " (Request-ID: %s)" % self.request_id
+            formatted_string += " (Request-ID: {})".format(self.request_id)
 
         return formatted_string
 
@@ -45,10 +46,10 @@ class RetryAfterException(ClientException):
         except (KeyError, ValueError):
             self.retry_after = 0
 
-        super(RetryAfterException, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
-class MutipleMeaningException(object):
+class MutipleMeaningException:
     """An mixin for exception that can be enhanced by reading the details"""
 
 
@@ -136,9 +137,9 @@ _error_classes = [BadRequest, Unauthorized, Forbidden, NotFound,
                   MethodNotAllowed, NotAcceptable, Conflict, OverLimit,
                   RateLimit, NotImplemented]
 _error_classes_enhanced = {}
-_code_map = dict(
-    (c.http_status, (c, _error_classes_enhanced.get(c, [])))
-    for c in _error_classes)
+_code_map = {
+    c.http_status: (c, _error_classes_enhanced.get(c, []))
+    for c in _error_classes}
 
 
 def from_response(response, url, method=None):

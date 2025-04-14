@@ -14,7 +14,7 @@
 #    under the License.
 
 
-class Manager(object):
+class Manager:
     DEFAULT_HEADERS = {
         "Accept": "application/json",
     }

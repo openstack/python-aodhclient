@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -17,11 +16,11 @@ from urllib import parse as urllib_parse
 import pyparsing as pp
 
 uninary_operators = ("not", )
-binary_operator = (u">=", u"<=", u"!=", u">", u"<", u"=", u"==", u"eq", u"ne",
-                   u"lt", u"gt", u"ge", u"le")
-multiple_operators = (u"and", u"or")
+binary_operator = (">=", "<=", "!=", ">", "<", "=", "==", "eq", "ne",
+                   "lt", "gt", "ge", "le")
+multiple_operators = ("and", "or")
 
-operator = pp.Regex(u"|".join(binary_operator))
+operator = pp.Regex("|".join(binary_operator))
 null = pp.Regex("None|none|null").setParseAction(pp.replaceWith(None))
 boolean = "False|True|false|true"
 boolean = pp.Regex(boolean).setParseAction(lambda t: t[0].lower() == "true")
@@ -104,14 +103,14 @@ def format_string_list(objs, field):
 
 def format_dict_list(objs, field):
     objs[field] = "\n".join(
-        "- " + ", ".join("%s: %s" % (k, v)
+        "- " + ", ".join("{}: {}".format(k, v)
                          for k, v in elem.items())
         for elem in objs[field])
 
 
 def format_move_dict_to_root(obj, field):
     for attr in obj[field]:
-        obj["%s/%s" % (field, attr)] = obj[field][attr]
+        obj["{}/{}".format(field, attr)] = obj[field][attr]
     del obj[field]
 
 
@@ -143,7 +142,7 @@ def dict_from_parsed_args(parsed_args, attrs):
 
 
 def dict_to_querystring(objs):
-    return "&".join(["%s=%s" % (k, v)
+    return "&".join(["{}={}".format(k, v)
                      for k, v in objs.items()
                      if v is not None])
 

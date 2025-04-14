@@ -22,7 +22,7 @@ class CliAlarmHistorySearch(lister.Lister):
     COLS = ('alarm_id', 'timestamp', 'type', 'detail')
 
     def get_parser(self, prog_name):
-        parser = super(CliAlarmHistorySearch, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("--query",
                             help="Rich query supported by aodh, "
                                  "e.g. project_id!=my-id "
@@ -45,7 +45,7 @@ class CliAlarmHistoryShow(lister.Lister):
     COLS = ('timestamp', 'type', 'detail', 'event_id')
 
     def get_parser(self, prog_name):
-        parser = super(CliAlarmHistoryShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument("alarm_id", metavar="<alarm-id>",
                             help="ID of an alarm")
         parser.add_argument("--limit", type=int, metavar="<LIMIT>",

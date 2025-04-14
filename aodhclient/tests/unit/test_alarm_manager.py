@@ -22,7 +22,7 @@ from aodhclient.v2 import alarm
 class AlarmManagerTest(testtools.TestCase):
 
     def setUp(self):
-        super(AlarmManagerTest, self).setUp()
+        super().setUp()
         self.client = mock.Mock()
         self.alarms = {
             'event_alarm': {

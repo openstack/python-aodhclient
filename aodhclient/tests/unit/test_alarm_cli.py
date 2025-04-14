@@ -24,7 +24,7 @@ from aodhclient.v2 import alarm_cli
 class CliAlarmCreateTest(testtools.TestCase):
 
     def setUp(self):
-        super(CliAlarmCreateTest, self).setUp()
+        super().setUp()
         self.app = mock.Mock()
         self.parser = mock.Mock()
         self.cli_alarm_create = (

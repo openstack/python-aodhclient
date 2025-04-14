@@ -21,7 +21,7 @@ from aodhclient.v2 import metrics
 from aodhclient.v2 import quota
 
 
-class Client(object):
+class Client:
     """Client for the Aodh v2 API.
 
     :param string session: session

@@ -19,7 +19,7 @@ from aodhclient.v2 import metrics_cli
 
 class MetricsTest(testtools.TestCase):
     def setUp(self):
-        super(MetricsTest, self).setUp()
+        super().setUp()
         self.app = mock.Mock()
         self.metrics_mgr_mock = self.app.client_manager.alarming.metrics
         self.parser = mock.Mock()

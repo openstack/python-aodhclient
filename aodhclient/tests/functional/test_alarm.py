@@ -60,13 +60,13 @@ class AodhClientTest(base.ClientTestBase):
             self.assertEqual("another-name",
                              self.details_multiple(result)[0]['name'])
 
-            params = "update --name %s %s" % (name, alarm_id)
+            params = "update --name {} {}".format(name, alarm_id)
             result = self.aodh('alarm', params=params)
             self.assertEqual(name,
                              self.details_multiple(result)[0]['name'])
 
             # Check update with no change is allowed
-            params = "update --name %s %s" % (name, name)
+            params = "update --name {} {}".format(name, name)
             result = self.aodh('alarm', params=params)
             self.assertEqual(name,
                              self.details_multiple(result)[0]['name'])
@@ -99,8 +99,8 @@ class AodhClientTest(base.ClientTestBase):
         PROJECT_ID = uuidutils.generate_uuid()
 
         # CREATE
-        result = self.aodh(u'alarm',
-                           params=(u"create --type event --name ev_alarm1 "
+        result = self.aodh('alarm',
+                           params=("create --type event --name ev_alarm1 "
                                    "--project-id %s" % PROJECT_ID))
         alarm = self.details_multiple(result)[0]
         ALARM_ID = alarm['alarm_id']
@@ -142,8 +142,8 @@ class AodhClientTest(base.ClientTestBase):
 
         # GET BY NAME AND ID ERROR
         self.assertRaises(exceptions.CommandFailed,
-                          self.aodh, u'alarm',
-                          params=(u"show %s --name ev_alarm1" %
+                          self.aodh, 'alarm',
+                          params=("show %s --name ev_alarm1" %
                                   ALARM_ID))
 
         # LIST
@@ -190,8 +190,8 @@ class AodhClientTest(base.ClientTestBase):
         res_id = uuidutils.generate_uuid()
         # CREATE
         result = self.aodh(
-            u'alarm',
-            params=(u'create --type composite --name calarm1 --composite-rule '
+            'alarm',
+            params=('create --type composite --name calarm1 --composite-rule '
                     '\'{"or":[{"threshold": 0.8, "metric": "cpu_util", '
                     '"type": "gnocchi_resources_threshold", "resource_type": '
                     '"generic", "resource_id": "%s", '
@@ -213,8 +213,8 @@ class AodhClientTest(base.ClientTestBase):
 
         # CREATE FAIL MISSING PARAM
         self.assertRaises(exceptions.CommandFailed,
-                          self.aodh, u'alarm',
-                          params=(u"create --type composite --name calarm1 "
+                          self.aodh, 'alarm',
+                          params=("create --type composite --name calarm1 "
                                   "--project-id %s" % project_id))
 
         # UPDATE
@@ -242,8 +242,8 @@ class AodhClientTest(base.ClientTestBase):
 
         # GET BY NAME AND ID ERROR
         self.assertRaises(exceptions.CommandFailed,
-                          self.aodh, u'alarm',
-                          params=(u"show %s --name calarm1" %
+                          self.aodh, 'alarm',
+                          params=("show %s --name calarm1" %
                                   alarm_id))
 
         # LIST
@@ -340,8 +340,8 @@ class AodhClientTest(base.ClientTestBase):
 
         res_id = uuidutils.generate_uuid()
         # CREATE
-        result = self.aodh(u'alarm',
-                           params=(u"create --type event --name ev_alarm123"))
+        result = self.aodh('alarm',
+                           params=("create --type event --name ev_alarm123"))
         alarm = self.details_multiple(result)[0]
         ALARM_ID = alarm['alarm_id']
         self.assertEqual('ev_alarm123', alarm['name'])
@@ -399,8 +399,8 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual(201, req.status_code)
 
         # CREATE
-        result = self.aodh(u'alarm',
-                           params=(u"create "
+        result = self.aodh('alarm',
+                           params=("create "
                                    "--type gnocchi_resources_threshold "
                                    "--name alarm_gn1 --metric cpu_util "
                                    "--threshold 80 "
@@ -420,8 +420,8 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
 
         # CREATE WITH --TIME-CONSTRAINT
         result = self.aodh(
-            u'alarm',
-            params=(u"create --type gnocchi_resources_threshold "
+            'alarm',
+            params=("create --type gnocchi_resources_threshold "
                     "--name alarm_tc --metric cpu_util --threshold 80 "
                     "--resource-id %s --resource-type generic "
                     "--aggregation-method last --project-id %s "
@@ -437,8 +437,8 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
 
         # CREATE FAIL MISSING PARAM
         self.assertRaises(exceptions.CommandFailed,
-                          self.aodh, u'alarm',
-                          params=(u"create "
+                          self.aodh, 'alarm',
+                          params=("create "
                                   "--type gnocchi_resources_threshold "
                                   "--name alarm1 --metric cpu_util "
                                   "--resource-id %s --resource-type generic "
@@ -483,8 +483,8 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
 
         # GET BY NAME AND ID ERROR
         self.assertRaises(exceptions.CommandFailed,
-                          self.aodh, u'alarm',
-                          params=(u"show %s --name alarm_gn1" %
+                          self.aodh, 'alarm',
+                          params=("show %s --name alarm_gn1" %
                                   ALARM_ID))
 
         # LIST
@@ -513,8 +513,8 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         self.assertEqual(sorted_name, names)
         # list with sort with key=name dir=asc and key=alarm_id dir=asc
         result = self.aodh(
-            u'alarm',
-            params=(u"create --type gnocchi_resources_threshold "
+            'alarm',
+            params=("create --type gnocchi_resources_threshold "
                     "--name alarm_th --metric cpu_util --threshold 80 "
                     "--resource-id %s --resource-type generic "
                     "--aggregation-method last --project-id %s "
@@ -576,8 +576,8 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
 
         # CREATE
         result = self.aodh(
-            u'alarm',
-            params=(u"create "
+            'alarm',
+            params=("create "
                     "--type "
                     "gnocchi_aggregation_by_resources_threshold "
                     "--name alarm1 --metric cpu --threshold 80 "
@@ -598,8 +598,8 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         # CREATE FAIL MISSING PARAM
         self.assertRaises(
             exceptions.CommandFailed,
-            self.aodh, u'alarm',
-            params=(u"create "
+            self.aodh, 'alarm',
+            params=("create "
                     "--type "
                     "gnocchi_aggregation_by_resources_threshold "
                     "--name alarm1 --metric cpu "
@@ -668,8 +668,8 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
 
         # CREATE
         result = self.aodh(
-            u'alarm',
-            params=(u"create "
+            'alarm',
+            params=("create "
                     "--type gnocchi_aggregation_by_metrics_threshold "
                     "--name alarm1 "
                     "--metrics %s "
@@ -689,8 +689,8 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
         # CREATE FAIL MISSING PARAM
         self.assertRaises(
             exceptions.CommandFailed,
-            self.aodh, u'alarm',
-            params=(u"create "
+            self.aodh, 'alarm',
+            params=("create "
                     "--type gnocchi_aggregation_by_metrics_threshold "
                     "--name alarm1 "
                     "--metrics %s "
@@ -764,8 +764,8 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
 
         RESOURCE_ID = uuidutils.generate_uuid()
         # CREATE
-        result = self.aodh(u'alarm',
-                           params=(u"create "
+        result = self.aodh('alarm',
+                           params=("create "
                                    "--type gnocchi_resources_threshold "
                                    "--name alarm_gn123 --metric cpu_util "
                                    "--resource-id %s --threshold 80 "
@@ -830,8 +830,8 @@ class AodhClientGnocchiRulesTest(base.ClientTestBase):
 
         # CREATE
         result = self.aodh(
-            u'alarm',
-            params=(u"create "
+            'alarm',
+            params=("create "
                     "--type "
                     "gnocchi_aggregation_by_resources_threshold "
                     "--name alarm123 --metric cpu --threshold 80 "
@@ -906,8 +906,8 @@ class AodhClientPrometheusRulesTest(base.ClientTestBase):
         self.assertEqual(200, req.status_code)
 
         # CREATE
-        result = self.aodh(u'alarm',
-                           params=(u"create "
+        result = self.aodh('alarm',
+                           params=("create "
                                    "--type prometheus "
                                    "--name alarm_p1 "
                                    "--threshold 80 "
@@ -921,8 +921,8 @@ class AodhClientPrometheusRulesTest(base.ClientTestBase):
 
         # CREATE WITH --TIME-CONSTRAINT
         result = self.aodh(
-            u'alarm',
-            params=(u"create --type prometheus "
+            'alarm',
+            params=("create --type prometheus "
                     "--name alarm_ptc --threshold 80 "
                     "--time-constraint "
                     "name=cons1;start='0 11 * * *';duration=300 "
@@ -938,8 +938,8 @@ class AodhClientPrometheusRulesTest(base.ClientTestBase):
 
         # CREATE FAIL MISSING PARAM
         self.assertRaises(exceptions.CommandFailed,
-                          self.aodh, u'alarm',
-                          params=(u"create "
+                          self.aodh, 'alarm',
+                          params=("create "
                                   "--type prometheus "
                                   "--name alarm1 "
                                   "--query %s "
@@ -976,8 +976,8 @@ class AodhClientPrometheusRulesTest(base.ClientTestBase):
 
         # GET BY NAME AND ID ERROR
         self.assertRaises(exceptions.CommandFailed,
-                          self.aodh, u'alarm',
-                          params=(u"show %s --name alarm_p1" %
+                          self.aodh, 'alarm',
+                          params=("show %s --name alarm_p1" %
                                   ALARM_ID))
 
         # LIST
@@ -1006,8 +1006,8 @@ class AodhClientPrometheusRulesTest(base.ClientTestBase):
         self.assertEqual(sorted_name, names)
         # list with sort with key=name dir=asc and key=alarm_id dir=asc
         result = self.aodh(
-            u'alarm',
-            params=(u"create --type prometheus "
+            'alarm',
+            params=("create --type prometheus "
                     "--name alarm_p2 --threshold 80 "
                     "--query %s"
                     % QUERY))

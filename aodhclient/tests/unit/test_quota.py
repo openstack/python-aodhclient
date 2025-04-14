@@ -20,7 +20,7 @@ from aodhclient.v2 import quota_cli
 
 class QuotaShowTest(testtools.TestCase):
     def setUp(self):
-        super(QuotaShowTest, self).setUp()
+        super().setUp()
         self.app = mock.Mock()
         self.quota_mgr_mock = self.app.client_manager.alarming.quota
         self.parser = mock.Mock()
@@ -50,7 +50,7 @@ class QuotaShowTest(testtools.TestCase):
 
 class QuotaSetTest(testtools.TestCase):
     def setUp(self):
-        super(QuotaSetTest, self).setUp()
+        super().setUp()
         self.app = mock.Mock()
         self.quota_mgr_mock = self.app.client_manager.alarming.quota
         self.parser = mock.Mock()

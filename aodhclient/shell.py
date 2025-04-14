@@ -54,7 +54,7 @@ class AodhCommandManager(commandmanager.CommandManager):
 
 class AodhShell(app.App):
     def __init__(self):
-        super(AodhShell, self).__init__(
+        super().__init__(
             description='Aodh command line client',
             version=__version__,
             command_manager=AodhCommandManager('aodhclient'),
@@ -74,7 +74,7 @@ class AodhShell(app.App):
         :param version: version number for the application
         :paramtype version: str
         """
-        parser = super(AodhShell, self).build_option_parser(
+        parser = super().build_option_parser(
             description, version, argparse_kwargs={'allow_abbrev': False})
         # Global arguments, one day this should go to keystoneauth1
         parser.add_argument(
@@ -141,7 +141,7 @@ class AodhShell(app.App):
             # Set this here so cliff.app.configure_logging() can work
             self.options.verbose_level = 3
 
-        super(AodhShell, self).configure_logging()
+        super().configure_logging()
         root_logger = logging.getLogger('')
 
         # Set logging to the requested level

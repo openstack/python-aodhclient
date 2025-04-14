@@ -31,10 +31,7 @@ class SessionClient(adapter.Adapter):
         # keystoneauth, where we need to raise the aodhclient errors.
         raise_exc = kwargs.pop('raise_exc', True)
         kwargs['headers'].update(web.get_trace_id_headers())
-        resp = super(SessionClient, self).request(url,
-                                                  method,
-                                                  raise_exc=False,
-                                                  **kwargs)
+        resp = super().request(url, method, raise_exc=False, **kwargs)
 
         if raise_exc and resp.status_code >= 400:
             raise exceptions.from_response(resp, url, method)

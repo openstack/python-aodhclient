@@ -49,7 +49,7 @@ class CliAlarmList(lister.Lister):
         return key, value
 
     def get_parser(self, prog_name):
-        parser = super(CliAlarmList, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         exclusive_group = parser.add_mutually_exclusive_group()
         exclusive_group.add_argument("--query",
                                      help="Rich query supported by aodh, "
@@ -108,7 +108,7 @@ def _format_alarm(alarm):
         query_rows = []
         for q in alarm['query']:
             op = ALARM_OP_MAP.get(q['op'], q['op'])
-            query_rows.append('%s %s %s' % (q['field'], op, q['value']))
+            query_rows.append('{} {} {}'.format(q['field'], op, q['value']))
         alarm['query'] = ' AND\n'.join(query_rows)
     return alarm
 
@@ -174,7 +174,7 @@ class CliAlarmShow(show.ShowOne):
     def get_parser(self, prog_name):
         return _add_name_to_parser(
             _add_id_to_parser(
-                super(CliAlarmShow, self).get_parser(prog_name)))
+                super().get_parser(prog_name)))
 
     def take_action(self, parsed_args):
         _check_name_and_id(parsed_args, 'query')
@@ -201,7 +201,7 @@ class CliAlarmCreate(show.ShowOne):
 
     def get_parser(self, prog_name):
         parser = _add_name_to_parser(
-            super(CliAlarmCreate, self).get_parser(prog_name),
+            super().get_parser(prog_name),
             required=self.create)
 
         parser.add_argument('-t', '--type', metavar='<TYPE>',
@@ -491,7 +491,7 @@ class CliAlarmUpdate(CliAlarmCreate):
 
     def get_parser(self, prog_name):
         return _add_id_to_parser(
-            super(CliAlarmUpdate, self).get_parser(prog_name))
+            super().get_parser(prog_name))
 
     def take_action(self, parsed_args):
         attributes = self._alarm_from_args(parsed_args)
@@ -522,7 +522,7 @@ class CliAlarmDelete(command.Command):
     def get_parser(self, prog_name):
         return _add_name_to_parser(
             _add_id_to_parser(
-                super(CliAlarmDelete, self).get_parser(prog_name)))
+                super().get_parser(prog_name)))
 
     def take_action(self, parsed_args):
         _check_name_and_id(parsed_args, 'delete')
@@ -548,7 +548,7 @@ class CliAlarmStateGet(show.ShowOne):
     def get_parser(self, prog_name):
         return _add_name_to_parser(
             _add_id_to_parser(
-                super(CliAlarmStateGet, self).get_parser(prog_name)))
+                super().get_parser(prog_name)))
 
     def take_action(self, parsed_args):
         _check_name_and_id(parsed_args, 'get state of')
@@ -577,7 +577,7 @@ class CliAlarmStateSet(show.ShowOne):
     def get_parser(self, prog_name):
         parser = _add_name_to_parser(
             _add_id_to_parser(
-                super(CliAlarmStateSet, self).get_parser(prog_name)))
+                super().get_parser(prog_name)))
         parser.add_argument('--state', metavar='<STATE>',
                             required=True,
                             choices=ALARM_STATES,

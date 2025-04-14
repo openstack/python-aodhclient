@@ -67,7 +67,7 @@ class AodhNoAuthLoader(loading.BaseLoader):
     plugin_class = AodhNoAuthPlugin
 
     def get_options(self):
-        options = super(AodhNoAuthLoader, self).get_options()
+        options = super().get_options()
         options.extend([
             AodhOpt('user-id', help='User ID', required=True),
             AodhOpt('project-id', help='Project ID', required=True),

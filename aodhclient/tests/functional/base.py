@@ -19,7 +19,7 @@ from tempest.lib.cli import base
 from tempest.lib import exceptions
 
 
-class AodhClient(object):
+class AodhClient:
     """Aodh Client for tempest-lib
 
     This client doesn't use any authentication system

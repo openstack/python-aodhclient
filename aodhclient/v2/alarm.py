@@ -26,7 +26,7 @@ class AlarmManager(base.Manager):
     def _filtersdict_to_url(filters):
         urls = []
         for k, v in sorted(filters.items()):
-            url = "q.field=%s&q.op=eq&q.value=%s" % (k, v)
+            url = "q.field={}&q.op=eq&q.value={}".format(k, v)
             urls.append(url)
         return '&'.join(urls)
 

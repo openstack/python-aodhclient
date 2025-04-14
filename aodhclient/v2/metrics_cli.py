@@ -37,7 +37,7 @@ class CliMetrics(lister.Lister):
         return METRIC_COLS, cols_data
 
     def get_parser(self, prog_name):
-        parser = super(CliMetrics, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         return parser
 
     def take_action(self, parsed_args):

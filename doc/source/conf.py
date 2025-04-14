@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -26,7 +25,7 @@ def gen_ref(ver, title, names):
     refdir = os.path.join(BASE_DIR, "ref")
     pkg = "aodhclient"
     if ver:
-        pkg = "%s.%s" % (pkg, ver)
+        pkg = "{}.{}".format(pkg, ver)
         refdir = os.path.join(refdir, ver)
     if not os.path.exists(refdir):
         os.makedirs(refdir)
@@ -82,7 +81,7 @@ master_doc = 'index'
 openstackdocs_repo_name = 'openstack/python-aodhclient'
 openstackdocs_bug_project = 'python-aodhclient'
 openstackdocs_bug_tag = ''
-copyright = u'2015, OpenStack Foundation'
+copyright = '2015, OpenStack Foundation'
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 add_function_parentheses = True
@@ -115,8 +114,8 @@ htmlhelp_basename = 'aodhclientdoc'
 latex_documents = [
     ('index',
      'aodhclient.tex',
-     u'aodhclient Documentation',
-     u'OpenStack Foundation', 'manual'),
+     'aodhclient Documentation',
+     'OpenStack Foundation', 'manual'),
 ]
 
 # Example configuration for intersphinx: refer to the Python standard library.

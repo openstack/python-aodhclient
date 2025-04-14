@@ -20,7 +20,7 @@ class QuotaShow(show.ShowOne):
     """Show quota for a project"""
 
     def get_parser(self, prog_name):
-        parser = super(QuotaShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "--project",
             help="Project ID. If not specified, get quota for the current "
@@ -41,7 +41,7 @@ class QuotaShow(show.ShowOne):
 
 class QuotaSet(show.ShowOne):
     def get_parser(self, prog_name):
-        parser = super(QuotaSet, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "project",
             help="Project ID."

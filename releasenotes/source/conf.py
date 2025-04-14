@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -55,7 +54,7 @@ master_doc = 'index'
 openstackdocs_repo_name = 'openstack/python-aodhclient'
 openstackdocs_bug_project = 'python-aodhclient'
 openstackdocs_bug_tag = ''
-copyright = u'2015-present, Aodh developers'
+copyright = '2015-present, Aodh developers'
 
 # Release notes are version independent.
 # The short X.Y version.
@@ -190,8 +189,8 @@ htmlhelp_basename = 'AodhClientReleaseNotestdoc'
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     ('index', 'PythonAodhClient.tex',
-     u'Aodh Client Release Notes Documentation',
-     u'Aodh developers', 'manual'),
+     'Aodh Client Release Notes Documentation',
+     'Aodh developers', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -220,8 +219,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'pythonaodhclient', u'Aodh Client Release Notes Documentation',
-     [u'Aodh developers'], 1)
+    ('index', 'pythonaodhclient', 'Aodh Client Release Notes Documentation',
+     ['Aodh developers'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -234,8 +233,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'PythonAodhClient', u'Aodh Client Release Notes Documentation',
-     u'Aodh developers', 'PythonAodhClient',
+    ('index', 'PythonAodhClient', 'Aodh Client Release Notes Documentation',
+     'Aodh developers', 'PythonAodhClient',
      'One line description of project.', 'Miscellaneous'),
 ]
 
