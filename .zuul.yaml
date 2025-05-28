@@ -16,9 +16,7 @@
       devstack_localrc:
         CEILOMETER_BACKENDS: "gnocchi,sg-core"
         PROMETHEUS_SERVICE_SCRAPE_TARGETS: prometheus,sg-core
-        PROMETHEUS_CONF_DIR: /opt/stack
-        PROMETHEUS_CONFIG_FILE: /opt/stack/prometheus.yml
-        PROMETHEUS_CLIENT_CONF_DIR: /etc/openstack
+        PROMETHEUS_CUSTOM_SCRAPE_TARGETS: "localhost:3000,localhost:9090"
       devstack_plugins:
         aodh: https://opendev.org/openstack/aodh
         ceilometer: https://opendev.org/openstack/ceilometer
