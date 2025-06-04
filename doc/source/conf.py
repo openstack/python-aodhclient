@@ -55,6 +55,7 @@ def gen_ref(ver, title, names):
                              "signs": "=" * len(name),
                              "pkg": pkg, "name": name})
 
+
 gen_ref("v2", "Version 2 API", ["client"])
 
 # -- General configuration ----------------------------------------------------
@@ -64,7 +65,7 @@ gen_ref("v2", "Version 2 API", ["client"])
 extensions = [
     'sphinx.ext.autodoc',
     'openstackdocstheme',
-    #'sphinx.ext.intersphinx',
+    # 'sphinx.ext.intersphinx',
 ]
 
 # autodoc generation is a bit aggressive and a nuisance when doing heavy
@@ -103,7 +104,7 @@ pygments_style = 'native'
 html_theme = 'openstackdocs'
 
 # Add any paths that contain custom themes here, relative to this directory.
-#html_theme_path = ['_theme']
+# html_theme_path = ['_theme']
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'aodhclientdoc'
@@ -119,4 +120,4 @@ latex_documents = [
 ]
 
 # Example configuration for intersphinx: refer to the Python standard library.
-#intersphinx_mapping = {'http://docs.python.org/': None}
+# intersphinx_mapping = {'http://docs.python.org/': None}
