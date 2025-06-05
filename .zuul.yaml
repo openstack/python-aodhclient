@@ -45,8 +45,10 @@
       jobs:
         - aodhclient-dsvm-functional:
             irrelevant-files: &ac-irrelevant-files
+              - ^\.gitreview$
               - ^(test-|)requirements.txt$
               - ^setup.cfg$
+              - ^doc/.*$
               - ^.*\.rst$
               - ^releasenotes/.*$
     gate:
