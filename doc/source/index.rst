@@ -11,13 +11,6 @@ This is a client for Aodh API. There's :doc:`a Python API
 <shell>` (installed as :program:`aodh`). Each implements the entire
 Aodh API.
 
-.. warning::
-
-   This is a new client to interact with Aodh API. There may be differences
-   in functionality, syntax, and command line output when compared with the
-   alarm functionality provided by ceilometerclient.
-
-
 .. seealso::
 
     You may want to read the `Aodh Developer Guide`__  -- the overview, at
