@@ -13,7 +13,7 @@
 import os
 import time
 
-import os_client_config
+from openstack import config as occ
 from oslo_utils import uuidutils
 from tempest.lib.cli import base
 from tempest.lib import exceptions
@@ -38,8 +38,8 @@ class AodhClient:
         if self.cloud is None:
             auth_args.append("--os-auth-type none")
         elif self.cloud != '':
-            conf = os_client_config.OpenStackConfig()
-            creds = conf.get_one_cloud(cloud=self.cloud).get_auth_args()
+            conf = occ.OpenStackConfig()
+            creds = conf.get_one(cloud=self.cloud).get_auth_args()
             auth_args.append(f"--os-auth-url {creds['auth_url']}")
             auth_args.append(f"--os-username {creds['username']}")
             auth_args.append(f"--os-password {creds['password']}")
@@ -80,8 +80,8 @@ class ClientTestBase(base.ClientTestBase):
     def get_token(self):
         cloud = os.environ.get('OS_ADMIN_CLOUD', 'devstack-admin')
         if cloud is not None and cloud != "":
-            conf = os_client_config.OpenStackConfig()
-            region_conf = conf.get_one_cloud(cloud=cloud)
+            conf = occ.OpenStackConfig()
+            region_conf = conf.get_one(cloud=cloud)
             return region_conf.get_auth().get_token(region_conf.get_session())
         else:
             return ""
