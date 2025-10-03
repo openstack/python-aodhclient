@@ -1,4 +1,3 @@
-coverage>=3.6 # Apache-2.0
 openstacksdk>=0.10.0 # Apache-2.0
 oslotest>=1.10.0 # Apache-2.0
 tempest>=10 # Apache-2.0
