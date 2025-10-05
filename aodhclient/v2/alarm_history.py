@@ -37,7 +37,7 @@ class AlarmHistoryManager(base.Manager):
         pagination = utils.get_pagination_options(limit, marker, sorts)
         url = self.url % alarm_id
         if pagination:
-            url = "{}?{}".format(url, pagination)
+            url = f"{url}?{pagination}"
         return self._get(url).json()
 
     def search(self, query=None):

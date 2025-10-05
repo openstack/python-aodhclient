@@ -21,7 +21,7 @@ class QuotasManager(base.Manager):
     def list(self, project=None):
         url = self.base_url
         if project:
-            url = "{}?project_id={}".format(url, project)
+            url = f"{url}?project_id={project}"
 
         return self._get(url).json()
 

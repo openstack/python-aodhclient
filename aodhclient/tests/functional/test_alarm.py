@@ -60,13 +60,13 @@ class AodhClientTest(base.ClientTestBase):
             self.assertEqual("another-name",
                              self.details_multiple(result)[0]['name'])
 
-            params = "update --name {} {}".format(name, alarm_id)
+            params = f"update --name {name} {alarm_id}"
             result = self.aodh('alarm', params=params)
             self.assertEqual(name,
                              self.details_multiple(result)[0]['name'])
 
             # Check update with no change is allowed
-            params = "update --name {} {}".format(name, name)
+            params = f"update --name {name} {name}"
             result = self.aodh('alarm', params=params)
             self.assertEqual(name,
                              self.details_multiple(result)[0]['name'])

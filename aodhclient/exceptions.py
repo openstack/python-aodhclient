@@ -33,7 +33,7 @@ class ClientException(Exception):
         formatted_string = "{} (HTTP {})".format(
             self.message, self.http_status)
         if self.request_id:
-            formatted_string += " (Request-ID: {})".format(self.request_id)
+            formatted_string += f" (Request-ID: {self.request_id})"
 
         return formatted_string
 

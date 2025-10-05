@@ -103,14 +103,14 @@ def format_string_list(objs, field):
 
 def format_dict_list(objs, field):
     objs[field] = "\n".join(
-        "- " + ", ".join("{}: {}".format(k, v)
+        "- " + ", ".join(f"{k}: {v}"
                          for k, v in elem.items())
         for elem in objs[field])
 
 
 def format_move_dict_to_root(obj, field):
     for attr in obj[field]:
-        obj["{}/{}".format(field, attr)] = obj[field][attr]
+        obj[f"{field}/{attr}"] = obj[field][attr]
     del obj[field]
 
 
@@ -142,7 +142,7 @@ def dict_from_parsed_args(parsed_args, attrs):
 
 
 def dict_to_querystring(objs):
-    return "&".join(["{}={}".format(k, v)
+    return "&".join([f"{k}={v}"
                      for k, v in objs.items()
                      if v is not None])
 
