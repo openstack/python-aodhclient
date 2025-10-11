@@ -54,6 +54,7 @@
               - ^doc/.*$
               - ^.*\.rst$
               - ^releasenotes/.*$
+              - ^aodhclient/tests/unit/.*$
     gate:
       jobs:
         - aodhclient-dsvm-functional:
