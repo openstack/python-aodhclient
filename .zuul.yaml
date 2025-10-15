@@ -46,6 +46,7 @@
         - aodhclient-dsvm-functional:
             irrelevant-files: &ac-irrelevant-files
               - ^\.gitreview$
+              - ^aodhclient/tests/.*$
               - ^(test-|)requirements.txt$
               - ^setup.cfg$
               - ^doc/.*$
