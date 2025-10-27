@@ -1,3 +1,63 @@
 [build-system]
 requires = ["pbr>=6.0.0", "setuptools>=64.0.0"]
 build-backend = "pbr.build"
+
+[project]
+name = "aodhclient"
+description = "Python client library for Aodh"
+authors = [
+    {name = "OpenStack", email = "openstack-discuss@lists.openstack.org"},
+]
+readme = {file = "README.rst", content-type = "text/x-rst"}
+license = {text = "Apache-2.0"}
+dynamic = ["version", "dependencies"]
+requires-python = ">=3.10"
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Environment :: OpenStack",
+  "Intended Audience :: Information Technology",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3 :: Only",
+]
+
+[project.urls]
+Homepage = "https://docs.openstack.org/python-aodhclient"
+Repository = "https://opendev.org/openstack/python-aodhclient"
+
+[tool.setuptools]
+packages = [
+    "aodhclient"
+]
+
+[project.scripts]
+aodh = "aodhclient.shell:main"
+
+[project.entry-points."keystoneauth1.plugin"]
+aodh-noauth = "aodhclient.noauth:AodhNoAuthLoader"
+
+[project.entry-points."openstack.cli.extension"]
+alarm = "aodhclient.osc"
+
+[project.entry-points."openstack.alarming.v2"]
+alarm_create = "aodhclient.v2.alarm_cli:CliAlarmCreate"
+alarm_list = "aodhclient.v2.alarm_cli:CliAlarmList"
+alarm_show = "aodhclient.v2.alarm_cli:CliAlarmShow"
+alarm_delete = "aodhclient.v2.alarm_cli:CliAlarmDelete"
+alarm_update = "aodhclient.v2.alarm_cli:CliAlarmUpdate"
+alarm_state_get = "aodhclient.v2.alarm_cli:CliAlarmStateGet"
+alarm_state_set = "aodhclient.v2.alarm_cli:CliAlarmStateSet"
+alarm-history_search = "aodhclient.v2.alarm_history_cli:CliAlarmHistorySearch"
+alarm-history_show = "aodhclient.v2.alarm_history_cli:CliAlarmHistoryShow"
+alarming_capabilities_list = "aodhclient.v2.capabilities_cli:CliCapabilitiesList"
+alarm_quota_show = "aodhclient.v2.quota_cli:QuotaShow"
+alarm_quota_set = "aodhclient.v2.quota_cli:QuotaSet"
+alarm_metrics = "aodhclient.v2.metrics_cli:CliMetrics"
