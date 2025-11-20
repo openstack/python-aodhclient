@@ -2,6 +2,10 @@
 aodhclient
 ==========
 
+.. image:: https://governance.openstack.org/tc/badges/python-aodhclient.svg
+
+.. Change things from this point on
+
 Python bindings to the OpenStack Aodh API
 
 This is a client for OpenStack Aodh API. There's a `Python API
