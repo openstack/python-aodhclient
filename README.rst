@@ -18,4 +18,4 @@ as aodh). Each implements the entire OpenStack Aodh API.
 * Release notes: https://releases.openstack.org/teams/telemetry.html
 * Documentation: https://docs.openstack.org/python-aodhclient/latest/
 * Source: https://opendev.org/openstack/python-aodhclient
-* Bugs: https://storyboard.openstack.org/#!/project/openstack/python-aodhclient
+* Bugs: https://launchpad.net/python-aodhclient
