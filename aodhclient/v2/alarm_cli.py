@@ -51,16 +51,21 @@ class CliAlarmList(lister.Lister):
     def get_parser(self, prog_name):
         parser = super().get_parser(prog_name)
         exclusive_group = parser.add_mutually_exclusive_group()
-        exclusive_group.add_argument("--query",
-                                     help="Rich query supported by aodh, "
-                                          "e.g. project_id!=my-id "
-                                          "user_id=foo or user_id=bar")
-        exclusive_group.add_argument('--filter', dest='filter',
-                                     metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-                                     type=self.split_filter_param,
-                                     action='append',
-                                     help='Filter parameters to apply on'
-                                          ' returned alarms.')
+        exclusive_group.add_argument(
+            "--query",
+            help="List alarms using rich queries API, "
+                 "e.g. project_id!=my-id user_id=foo or user_id=bar."
+        )
+        exclusive_group.add_argument(
+            '--filter',
+            dest='filter',
+            metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+            type=self.split_filter_param,
+            action='append',
+            help='Filter parameters to apply on returned alarms. '
+                 'To list alarms in all projects, use all_projects=true '
+                 'filter (admin only).'
+        )
         parser.add_argument("--limit", type=int, metavar="<LIMIT>",
                             help="Number of resources to return "
                                  "(Default is server default)")
