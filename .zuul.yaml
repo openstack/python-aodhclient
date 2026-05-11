@@ -48,7 +48,6 @@
               - ^\.gitignore$
               - ^\.gitreview$
               - ^\.pre-commit-config\.yaml$
-              - ^aodhclient/tests/.*$
               - ^(test-|)requirements.txt$
               - ^setup.cfg$
               - ^doc/.*$
