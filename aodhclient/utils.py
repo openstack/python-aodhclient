@@ -21,25 +21,25 @@ binary_operator = (">=", "<=", "!=", ">", "<", "=", "==", "eq", "ne",
 multiple_operators = ("and", "or")
 
 operator = pp.Regex("|".join(binary_operator))
-null = pp.Regex("None|none|null").setParseAction(pp.replaceWith(None))
+null = pp.Regex("None|none|null").set_parse_action(pp.replace_with(None))
 boolean = "False|True|false|true"
-boolean = pp.Regex(boolean).setParseAction(lambda t: t[0].lower() == "true")
+boolean = pp.Regex(boolean).set_parse_action(lambda t: t[0].lower() == "true")
 hex_string = lambda n: pp.Word(pp.hexnums, exact=n)  # noqa: E731
 uuid = pp.Combine(hex_string(8) + ("-" + hex_string(4)) * 3 +
                   "-" + hex_string(12))
 number = r"[+-]?\d+(:?\.\d*)?(:?[eE][+-]?\d+)?"
-number = pp.Regex(number).setParseAction(lambda t: float(t[0]))
+number = pp.Regex(number).set_parse_action(lambda t: float(t[0]))
 identifier = pp.Word(pp.alphas, pp.alphanums + "_")
 quoted_string = pp.QuotedString('"') | pp.QuotedString("'")
 comparison_term = pp.Forward()
 in_list = pp.Group(pp.Suppress('[') +
-                   pp.Optional(pp.delimitedList(comparison_term)) +
+                   pp.Optional(pp.DelimitedList(comparison_term)) +
                    pp.Suppress(']'))("list")
 comparison_term << (null | boolean | uuid | identifier | number |
                     quoted_string)
 condition = pp.Group(comparison_term + operator + comparison_term)
 
-expr = pp.infixNotation(condition, [
+expr = pp.infix_notation(condition, [
     ("not", 1, pp.opAssoc.RIGHT, ),
     ("and", 2, pp.opAssoc.LEFT, ),
     ("or", 2, pp.opAssoc.LEFT, ),
@@ -73,9 +73,9 @@ def _parsed_query2dict(parsed_query):
         elif part in uninary_operators:
             result = {part: result}
         elif isinstance(part, pp.ParseResults):
-            kind = part.getName()
+            kind = part.get_name()
             if kind == "list":
-                res = part.asList()
+                res = part.as_list()
             else:
                 res = _parsed_query2dict(part)
             if result is None:
@@ -88,7 +88,7 @@ def _parsed_query2dict(parsed_query):
 
 
 def search_query_builder(query):
-    parsed_query = expr.parseString(query)[0]
+    parsed_query = expr.parse_string(query)[0]
     return _parsed_query2dict(parsed_query)
 
 
