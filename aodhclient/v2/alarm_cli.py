@@ -12,6 +12,7 @@
 #    under the License.
 
 import argparse
+import warnings
 
 from cliff import command
 from cliff import lister
@@ -301,14 +302,16 @@ class CliAlarmCreate(show.ShowOne):
         threshold_group = parser.add_argument_group('threshold alarm')
         threshold_group.add_argument(
             '-m', '--meter-name', metavar='<METER NAME>',
-            dest='meter_name', help='Meter to evaluate against')
+            dest='meter_name', help='(DEPRECATED) Meter to evaluate against')
         threshold_group.add_argument(
             '--period', type=int, metavar='<PERIOD>', dest='period',
-            help='Length of each period (seconds) to evaluate over.')
+            help='(DEPRECATED) Length of each period (seconds) to '
+                 'evaluate over.')
         threshold_group.add_argument(
             '--statistic', metavar='<STATISTIC>', dest='statistic',
             choices=STATISTICS,
-            help='Statistic to evaluate, one of: ' + str(STATISTICS))
+            help='(DEPRECATED) Statistic to evaluate, '
+                 'one of: %s' % str(STATISTICS))
 
         # For common Gnocchi threshold type alarm
         gnocchi_common_group = parser.add_argument_group(
@@ -392,6 +395,19 @@ class CliAlarmCreate(show.ShowOne):
             raise argparse.ArgumentTypeError(msg)
 
     def _validate_args(self, parsed_args):
+        if parsed_args.type == 'threshold':
+            warnings.warn('Support for threshold type alarm was formally '
+                          'deprecated', DeprecationWarning, stacklevel=3)
+        if parsed_args.meter_name:
+            warnings.warn('option \'--meter-name\' is deprecated',
+                          DeprecationWarning, stacklevel=3)
+        if parsed_args.period:
+            warnings.warn("option \'--period\' is deprecated",
+                          DeprecationWarning, stacklevel=3)
+        if parsed_args.statistic:
+            warnings.warn('option \'--statistic\' is deprecated',
+                          DeprecationWarning, stacklevel=3)
+
         if (parsed_args.type == 'threshold' and
                 not (parsed_args.meter_name and parsed_args.threshold)):
             self.parser.error('Threshold alarm requires -m/--meter-name and '

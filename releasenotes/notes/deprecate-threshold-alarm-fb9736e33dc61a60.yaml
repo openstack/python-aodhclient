@@ -1,0 +1,11 @@
+---
+deprecations:
+  - |
+    Support for the threshold alarm type is now formally deprecated. This type
+    was removed from aodh in 6.0.0 release. The following options
+    of the ``openstack alarm`` commands, which were used for the threshold
+    alarm type only, are now also deprecated.
+
+    - ``--period``
+    - ``-m``, ``-meter-name``
+    - ``--statistic``
